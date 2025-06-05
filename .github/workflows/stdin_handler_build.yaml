@@ -41,7 +41,7 @@ jobs:
     - name: Upload Windows artifact
       uses: actions/upload-artifact@v4
       with:
-        name: libstdin_handler-{{ matrix.os_arch }}
+        name: libstdin_handler-${{ matrix.os_arch }}
         path: ./stdin_handler/target/release/libstdin_handler.${{ matrix.ext }}
 
 
