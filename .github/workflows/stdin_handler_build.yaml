@@ -1,0 +1,51 @@
+name: Build libstdin_handler library
+
+on:
+  push:
+    paths:
+      - "stdin_handler/**"
+  pull_request:
+    paths:
+      - "stdin_handler/**"
+  workflow_dispatch:
+
+jobs:
+  os_matrix:
+    strategy:
+      matrix:
+        os_arch: [ubuntu-latest-aarch, ubuntu-latest-x86, windows-latest]
+        include:
+          - os_arch: windows-latest
+            os: windows-latest
+            ext: dll
+            toolchain: x86_64-pc-windows-gnu
+          - os_arch: ubuntu-latest-aarch
+            os: ubuntu-latest
+            ext: so
+            toolchain: aarch64-unknown-linux-gnu
+          - os_arch: ubuntu-latest-x86
+            os: ubuntu-latest
+            ext: so
+            toolchain: x86_64-unknown-windows-gnu
+    runs-on: ${{ matrix.os }}
+    steps:
+    - uses: actions/checkout@v3
+    - name: Install Rust toolchain
+      uses: actions-rs/toolchain@v1
+      with:
+        toolchain: stable
+        override: true
+    - name: Build Release
+      working-directory: ./stdin_handler
+      run: cargo build --release
+    - name: Upload Windows artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: libstdin_handler-{{ matrix.os_arch }}
+        path: ./stdin_handler/target/release/libstdin_handler.${{ matrix.ext }}
+
+
+
+
+
+
