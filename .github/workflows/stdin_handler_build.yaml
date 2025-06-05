@@ -13,7 +13,7 @@ jobs:
   os_matrix:
     strategy:
       matrix:
-        os_arch: [ubuntu-latest-aarch, ubuntu-latest-x86, windows-latest]
+        os_arch: [ubuntu-latest-aarch, ubuntu-latest-x86, windows-latest, macos-x86, macos-arm64]
         include:
           - os_arch: windows-latest
             os: windows-latest
@@ -27,8 +27,14 @@ jobs:
             os: ubuntu-latest
             ext: so
             toolchain: x86_64-unknown-windows-gnu
-          - os: ubuntu-latest
-            with_dylib: true
+          - os_arch: macos-x86
+            os: macos-13
+            ext: dylib
+            toolchain: x86_64-apple-darwin
+          - os_arch: macos-arm64
+            os: macos-latest
+            ext: dylib
+            toolchain: aarch64-apple-darwin
       fail-fast: false
     runs-on: ${{ matrix.os }}
     steps:
@@ -46,12 +52,6 @@ jobs:
       with:
         name: libstdin_handler-${{ matrix.os_arch }}-${{ matrix.ext }}
         path: ./stdin_handler/target/release/libstdin_handler.${{ matrix.ext }}
-    - name: Upload artifact
-      uses: actions/upload-artifact@v4
-      if: ${{ matrix.with_dylib }}
-      with:
-        name: libstdin_handler-${{ matrix.os_arch }}-dylib
-        path: ./stdin_handler/target/release/libstdin_handler.dylib
 
 
 
