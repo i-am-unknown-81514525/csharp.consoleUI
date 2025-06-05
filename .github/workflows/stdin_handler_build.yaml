@@ -27,6 +27,9 @@ jobs:
             os: ubuntu-latest
             ext: so
             toolchain: x86_64-unknown-windows-gnu
+          - os: ubuntu-latest
+            with_dylib: true
+      fail-fast: false
     runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v3
@@ -38,11 +41,18 @@ jobs:
     - name: Build Release
       working-directory: ./stdin_handler
       run: cargo build --release
-    - name: Upload Windows artifact
+    - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
-        name: libstdin_handler-${{ matrix.os_arch }}
+        name: libstdin_handler-${{ matrix.os_arch }}-${{ matrix.ext }}
         path: ./stdin_handler/target/release/libstdin_handler.${{ matrix.ext }}
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      if: ${{ matrix.with_dylib }}
+      with:
+        name: libstdin_handler-${{ matrix.os_arch }}-dylib
+        path: ./stdin_handler/target/release/libstdin_handler.dylib
+
 
 
 
