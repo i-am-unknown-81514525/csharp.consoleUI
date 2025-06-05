@@ -48,7 +48,7 @@ jobs:
       working-directory: ./stdin_handler
       run: cargo build --release
     - name: Rename file
-      if: ${{ matrix.ext == "dll" }}
+      if: ${{ matrix.ext == 'dll' }}
       working-directory: ./stdin_handler
       run: "cp target/release/stdin_handler.dll target/release/libstdin_handler.dll"
     - name: Upload artifact
