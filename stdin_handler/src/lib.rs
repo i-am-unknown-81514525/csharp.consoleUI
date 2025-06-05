@@ -1,4 +1,4 @@
-use std::arch::x86_64::_mm_test_mix_ones_zeros;use nix::sys::termios;
+use nix::sys::termios;
 use nix::sys::termios::{SetArg, Termios};
 use std::io;
 use std::io::Read;
