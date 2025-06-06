@@ -17,7 +17,7 @@ fn internal_init() -> i32{
     let mut termios: Termios;
     match tcgetattr(stdin) {
         Result::Ok(T) => termios = T,
-        Result::Err(_) => return 1,
+        Result::Err(_) => return -1,
     }
     cfmakeraw(&mut termios);
     let stdin = io::stdin();
