@@ -130,7 +130,7 @@ fn internal_reset() -> i32 {
 
 fn ansi_reset() -> Result<(), Box<dyn std::error::Error>> {
     let mut stdout = io::stdout();
-    stdout.write_all(b"\x1b[?1049l\x1b[H\x1b[0J\x1b[0m\x1b[?9l\x1b[?1000l\x1b[?1001l\x1b[?1002l\x1b[?1003l\x1b[?1006l\x1b[?25h\x1b[?7h\x1b[H")?;
+    stdout.write_all(b"\x1b[?1049l\x1b[H\x1b[0J\x1b[0m\x1b[?9l\x1b[?1000l\x1b[?1001l\x1b[?1002l\x1b[?1003l\x1b[?1006l\x1b[?1004l\x1b[?25h\x1b[?7h\x1b[H")?;
     Ok(())
 }
 
