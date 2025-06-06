@@ -49,10 +49,10 @@ fn internal_init() -> i32{
 
 #[cfg(target_family = "unix")]
 fn internal_reset() -> i32 {
-    let c_iflag = InputFlags::from_bits_truncate(0x6b02); // magic value from https://stackoverflow.com/a/78210709
-    let c_oflag = OutputFlags::from_bits_truncate(0x3);
-    let c_cflag = ControlFlags::from_bits_truncate(0x4b00);
-    let c_lflag = LocalFlags::from_bits_truncate(0x200005cb);
+    let c_iflag = InputFlags::from_bits_truncate(27906);
+    let c_oflag = OutputFlags::from_bits_truncate(5);
+    let c_cflag = ControlFlags::from_bits_truncate(1215);
+    let c_lflag = LocalFlags::from_bits_truncate(35387);
     let stdin = io::stdin();
     let mut termios: Termios;
     match tcgetattr(stdin) {
