@@ -81,7 +81,13 @@ namespace ui.core
         public void Dispatch(byte value)
         {
             this.AddBuffer(value);
-            //
+            this.ValidateAll();
+            LockStatus = this.GetLockInfo();
+            if (LockStatus.GetLockCount() > 0)
+            {
+                this.ResetBuffer();
+            }
+            this.Handle();
         }
 
         public override LockMetadata? Validate()
