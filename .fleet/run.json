@@ -1,0 +1,10 @@
+{
+    "configurations": [
+        {
+            "type": "dotnet",
+            "name": "NEA/ui C# build",
+            "projectPath": "ui.csproj",
+            "args": []
+        }
+    ]
+}

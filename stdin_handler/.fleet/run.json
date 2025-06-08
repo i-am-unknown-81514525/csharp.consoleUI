@@ -1,0 +1,9 @@
+{
+    "configurations": [
+        {
+            "type": "cargo",
+            "name": "ui/stdin_handler Rust lib build",
+            "cargoArgs": ["build", "--release"]
+        }
+    ]
+}
