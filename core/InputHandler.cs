@@ -6,13 +6,13 @@ namespace ui.core
 {
     public struct LockMetadata
     {
-        public readonly InputHandler lockHelder;
-        public readonly bool innerSharable;
+        public readonly InputHandler LockHelder;
+        public readonly bool InnerSharable;
 
         public LockMetadata(InputHandler lockHelder, bool innerSharable)
         {
-            this.lockHelder = lockHelder;
-            this.innerSharable = innerSharable;
+            this.LockHelder = lockHelder;
+            this.InnerSharable = innerSharable;
         }
     }
 
@@ -28,7 +28,7 @@ namespace ui.core
             for (int idx = 0; idx < lockHandler.Count; idx++)
             {
                 LockMetadata data = lockHandler[idx];
-                if (data.lockHelder == metadata.lockHelder)
+                if (data.LockHelder == metadata.LockHelder)
                 {
                     lockHandler[idx] = metadata;
                     added = true;
@@ -43,14 +43,59 @@ namespace ui.core
         public bool DropMember(InputHandler handler)
         {
             int initialSize = lockHandler.Count;
-            lockHandler = lockHandler.Where(metadata=>metadata.lockHelder!=handler).ToList();
+            lockHandler = lockHandler.Where(metadata=>metadata.LockHelder!=handler).ToList();
             return initialSize != lockHandler.Count;
         }
 
         public LockMetadata[] GetLockedHandler() => lockHandler.ToArray();
+
+        public static SharedLock operator +(SharedLock curr, SharedLock other)
+        {
+            SharedLock newLock = new SharedLock();
+            foreach (LockMetadata metadata in curr.lockHandler)
+            {
+                newLock.AddMember(metadata);
+            }
+            foreach (LockMetadata metadata in other.GetLockedHandler())
+            {
+                newLock.AddMember(metadata);
+            }
+            return newLock;
+        }
+
+        public int GetLockCount() => this.GetLockedHandler().Length;
     }
 
-    public class InputHandler
+    public class RootInputHandler : InputHandler
+    {
+        internal SharedLock LockStatus;
+        public RootInputHandler(InputHandler[] handlers): base(null)
+        {
+            foreach (InputHandler handler in handlers)
+            {
+                this.AddChild(handler);
+            }
+            this.LockStatus = new SharedLock();
+        }
+
+        public void Dispatch(byte value)
+        {
+            this.AddBuffer(value);
+            //
+        }
+
+        public override LockMetadata? Validate()
+        {
+            return null;
+        }
+
+        public override void Handle()
+        {
+            return;
+        }
+    }
+
+    public abstract class InputHandler
     {
         private readonly InputHandler _parent;
         private readonly List<InputHandler> _childs = new List<InputHandler>();
@@ -153,6 +198,38 @@ namespace ui.core
             {
                 return new LockMetadata(this, this.SelfRemovableLock);
             }
+        }
+
+        public SharedLock GetLockInfo()
+        {
+            SharedLock lockValue = new SharedLock();
+            LockMetadata? status = this.GetLockMetaData();
+            if (status != null)
+                lockValue.AddMember((LockMetadata)status);
+            foreach (InputHandler handler in this.GetChild())
+            {
+                lockValue += handler.GetLockInfo();
+            }
+            return lockValue;
+        }
+
+        public abstract LockMetadata? Validate();
+        public abstract void Handle(); // Validate should only perform the check of lock,
+                                       // where handle perform handling if needed
+
+        public SharedLock ValidateAll()
+        {
+            this.Validate();
+            foreach (InputHandler handler in this._childs)
+                handler.Validate();
+            return this.GetLockInfo();
+        }
+
+        public void HandleAll()
+        {
+            this.Handle();
+            foreach (InputHandler handler in this._childs)
+                handler.Handle();
         }
     }
 }

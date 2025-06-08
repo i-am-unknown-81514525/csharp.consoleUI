@@ -1,7 +1,7 @@
 #[cfg(target_family = "unix")]
 use nix::sys::termios::{SetArg, Termios, tcgetattr, cfmakeraw, tcsetattr, ControlFlags, InputFlags, LocalFlags, OutputFlags};
 #[cfg(target_family = "windows")]
-use win32console::console::{WinConsole, HandleType};
+use win32console::console::{HandleType, WinConsole};
 use std::io;
 use std::io::{Read, Write};
 
@@ -35,7 +35,9 @@ fn internal_init() -> i32{
     let stdin = io::stdin();
     let mut termios: Termios;
     match tcgetattr(stdin) {
-        Result::Ok(T) => termios = T,
+        Result::Ok(t) => {
+            termios = t
+        },
         Result::Err(_) => return -1,
     }
     cfmakeraw(&mut termios);
@@ -56,7 +58,9 @@ fn internal_reset() -> i32 {
     let stdin = io::stdin();
     let mut termios: Termios;
     match tcgetattr(stdin) {
-        Result::Ok(T) => termios = T,
+        Result::Ok(t) => {
+            termios = t
+        },
         Result::Err(_) => return -1,
     }
     termios.input_flags = c_iflag;
