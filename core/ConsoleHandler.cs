@@ -20,7 +20,7 @@ namespace ui.core
             [DllImport("libstdin_handler", SetLastError = true)]
             private static extern int reset();
 
-            public static int readStdin() => (int)read_stdin();
+            public static byte readStdin() => read_stdin();
 
             public static void Setup()
             {
@@ -44,7 +44,7 @@ namespace ui.core
             [DllImport("libstdin_handler", SetLastError = true)]
             private static extern int reset();
 
-            public static int readStdin() => (int)read_stdin();
+            public static byte readStdin() => read_stdin();
 
             private static void addPath(string name)
             {
@@ -85,7 +85,7 @@ namespace ui.core
                 }
             }
 
-            public static int Read()
+            public static byte Read()
             {
                 if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
                 {
