@@ -78,6 +78,11 @@ namespace ui.core
             this.LockStatus = new SharedLock();
         }
 
+        public RootInputHandler(): base(null)
+        {
+            this.LockStatus = new SharedLock();
+        }
+
         public void Dispatch(byte value)
         {
             this.AddBuffer(value);
