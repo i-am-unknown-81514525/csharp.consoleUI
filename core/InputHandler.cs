@@ -204,6 +204,7 @@ namespace ui.core
         // This code assuming that the code call from abstract function `Validate` and `Handle` in `InputHandler`
         // might have malicious intend, therefore it should attempt to defense against it.
         // The cause of an exception is not consider malicious and thus not required to be defense against
+        // TODO: Add method to set prioity for InputHandler, which would rearrange the list
         {
             private List<InputHandler> _handlers = new List<InputHandler>();
             private bool _hasLockChange = false;
