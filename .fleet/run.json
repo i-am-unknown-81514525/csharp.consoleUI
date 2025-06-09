@@ -1,4 +1,10 @@
 {
     "configurations": [
+        {
+            "type": "dotnet",
+            "name": "Native: NEA/ui C# build",
+            "projectPath": "ui.csproj",
+            "args": []
+        }
     ]
 }
