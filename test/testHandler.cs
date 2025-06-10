@@ -47,7 +47,7 @@ namespace ui.test
         internal override void Handle(RootInputHandler root)
         {
             base.Handle(root);
-            if (this.GetLockStatus() == LockStatus.NoLock) // Lock Reset => Valid ANSI
+            if (this.GetLockStatus() == LockStatus.NoLock && Buffer.Count > 1) // Lock Reset => Valid ANSI
             {
                 string content = string.Concat(
                     Buffer.Select(
