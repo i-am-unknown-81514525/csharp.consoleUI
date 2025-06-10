@@ -173,6 +173,7 @@ namespace ui.core
             catch (Exception e)
             {
                 if (!InputConst.IgnoreHanlderValidateException) throw;
+                return LockStatus.NoLock;
             }
             this._lockStatus = status;
             return status;
@@ -328,7 +329,7 @@ namespace ui.core
             }
             if (lockValue.GetIsShared()) // if already exclusive => ignore
             {
-                foreach (InputHandler handler in prevHandlers) // Then the normal order, the re-call of same handler doesn't matter
+                foreach (InputHandler handler in this._handlers) // Then the normal order, the re-call of same handler doesn't matter
                 {
                     LockStatus status = handler.GetLockStatus();
                     if (status == LockStatus.ExclusiveLock)
