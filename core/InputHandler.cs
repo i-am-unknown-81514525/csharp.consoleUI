@@ -290,19 +290,19 @@ namespace ui.core
             {
                 handler.AddBuffer(value);
             }
-            SharedLock lockValue = new SharedLock();
+            InputHandler[] prevHandlers = {};
             if (this._lockStatus != null)
             {
-                lockValue = this._lockStatus;
+                SharedLock prev = this._lockStatus;
+                prevHandlers = prev.GetLockedHandler();
             }
+            SharedLock lockValue = new SharedLock();
             foreach (InputHandler handler in this._handlers)
             {
-
-                LockStatus status;
                 this._recursivePreventLock = true;
                 try
                 {
-                    status = handler.ValidateExternal();
+                    handler.ValidateExternal();
                 }
                 catch (Exception e)
                 {
@@ -310,6 +310,10 @@ namespace ui.core
                     throw;
                 }
                 this._recursivePreventLock = false;
+            }
+            foreach (InputHandler handler in prevHandlers) // Previous handelr would be priotize
+            {
+                LockStatus status = handler.GetLockStatus();
                 if (status == LockStatus.ExclusiveLock)
                 {
                     lockValue = new SharedLock(handler, true);
@@ -318,6 +322,22 @@ namespace ui.core
                 else if (status == LockStatus.SharedLock)
                 {
                     lockValue.AddMember(handler);
+                }
+            }
+            if (lockValue.GetIsShared()) // if already exclusive => ignore
+            {
+                foreach (InputHandler handler in prevHandlers) // Then the normal order, the re-call of same handler doesn't matter
+                {
+                    LockStatus status = handler.GetLockStatus();
+                    if (status == LockStatus.ExclusiveLock)
+                    {
+                        lockValue = new SharedLock(handler, true);
+                        break;
+                    }
+                    else if (status == LockStatus.SharedLock)
+                    {
+                        lockValue.AddMember(handler);
+                    }
                 }
             }
             this._lockStatus = lockValue;
