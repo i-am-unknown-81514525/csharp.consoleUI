@@ -35,13 +35,13 @@ namespace ui.core
 
         private static class PosixConsoleHandler
         {
-            [DllImport("libstdin_handler", SetLastError = true)]
+            [DllImport("libstdin_handler", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
             private static extern int init();
 
-            [DllImport("libstdin_handler", SetLastError = true)]
+            [DllImport("libstdin_handler", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
             private static extern byte read_stdin();
 
-            [DllImport("libstdin_handler", SetLastError = true)]
+            [DllImport("libstdin_handler", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
             private static extern int reset();
 
             public static byte readStdin() => read_stdin();
