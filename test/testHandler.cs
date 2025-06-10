@@ -49,17 +49,6 @@ namespace ui.test
             Global.InputHandler.Add(new RndLockInputHandler());
             Global.InputHandler.Add(new StdoutInputHandler());
             Global.InputHandler.Add(new StdoutInputHandler());
-            ConsoleIntermediateHandler.Setup();
-            while (true)
-            {
-                byte result = ConsoleIntermediateHandler.Read();
-                if (result == 3)
-                {
-                    ConsoleIntermediateHandler.Reset();
-                    return;
-                }
-                Global.InputHandler.Dispatch(result);
-            }
         }
     }
 }

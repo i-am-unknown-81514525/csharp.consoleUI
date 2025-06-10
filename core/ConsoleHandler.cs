@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace ui.core
 {
-    internal static class ConsoleHandler
+    public static class ConsoleHandler
     {
         private static class WindowConsoleHandler
         {
@@ -71,7 +71,7 @@ namespace ui.core
             }
         }
 
-        internal static class ConsoleIntermediateHandler
+        public static class ConsoleIntermediateHandler
         {
             public static void Setup()
             {
