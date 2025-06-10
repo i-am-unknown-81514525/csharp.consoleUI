@@ -11,13 +11,13 @@ namespace ui.core
     {
         private static class WindowConsoleHandler
         {
-            [DllImport("libstdin_handler", SetLastError = true)]
+            [DllImport("libstdin_handler.dll", SetLastError = true)]
             private static extern int init();
 
-            [DllImport("libstdin_handler", SetLastError = true)]
+            [DllImport("libstdin_handler.dll", SetLastError = true)]
             private static extern byte read_stdin();
 
-            [DllImport("libstdin_handler", SetLastError = true)]
+            [DllImport("libstdin_handler.dll", SetLastError = true)]
             private static extern int reset();
 
             public static byte readStdin() => read_stdin();
