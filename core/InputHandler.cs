@@ -247,7 +247,9 @@ namespace ui.core
             if (!this._lockStatus.GetLockedHandler().Contains(handler))
             {
                 prev = LockStatus.NoLock;
-                throw new LockUnpermitChangeException();
+                if (handler.GetLockStatus() != LockStatus.NoLock)
+                    throw new LockUnpermitChangeException();
+                return;
             }
             else if (!this._lockStatus.GetIsShared())
             {
