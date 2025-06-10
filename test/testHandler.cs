@@ -30,7 +30,7 @@ namespace ui.test
             {
                 return;
             }
-            Console.Write($"\nLock {this.GetLockStatus()} -> {this.GetLockStatus()}\n");
+            Console.Write($"\nLock {this.GetLockStatus()} -> No Lock\n");
             this.SetLockStatus(LockStatus.NoLock);
             root.LockChangeAnnounce(this);
         }

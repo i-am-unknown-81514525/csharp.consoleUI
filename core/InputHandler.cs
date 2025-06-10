@@ -26,8 +26,8 @@ namespace ui.core
     // When many handler consider the data to be significant but not sure
     // (only shared lock would receive the info unless a handler take exclusive lock or all lock handler release their lock)
     {
-        private readonly bool _isShared = true;
-        private readonly List<InputHandler> _lockHandler = new List<InputHandler>();
+        private bool _isShared = true;
+        private List<InputHandler> _lockHandler = new List<InputHandler>();
 
         public SharedLock(IEnumerable<InputHandler> handlers = null)
         {
@@ -39,10 +39,10 @@ namespace ui.core
             }
         }
 
-        public SharedLock(InputHandler metadata, bool isExclusive = false)
+        public SharedLock(InputHandler handler, bool isExclusive = false)
         {
+            _lockHandler.Add(handler);
             this._isShared = !isExclusive;
-            this.AddMember(metadata);
         }
 
         public bool GetIsShared() => this._isShared;
@@ -61,6 +61,10 @@ namespace ui.core
         public bool DropMember(InputHandler handler)
         {
             int count = _lockHandler.RemoveAll(x => x == handler);
+            if (this.GetLockCount() == 0)
+            {
+                this._isShared = true;
+            }
             return count != 0;
         }
 
@@ -79,8 +83,12 @@ namespace ui.core
     public abstract class InputHandler
     {
         private LockStatus _lockStatus = LockStatus.NoLock;
-        internal List<byte> Buffer; // buffer should only be stored when a lock is acquired
+        internal List<byte> Buffer = new List<byte>(); // buffer should only be stored when a lock is acquired
         private bool _allowModifyStatus = false;
+
+        public InputHandler() {
+            this.Buffer = new List<byte>();
+        }
 
         public LockStatus GetLockStatus() => this._lockStatus;
 
@@ -283,6 +291,10 @@ namespace ui.core
                 handler.AddBuffer(value);
             }
             SharedLock lockValue = new SharedLock();
+            if (this._lockStatus != null)
+            {
+                lockValue = this._lockStatus;
+            }
             foreach (InputHandler handler in this._handlers)
             {
 
