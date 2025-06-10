@@ -20,8 +20,8 @@ namespace ui.core
             char final = (char)Buffer[Buffer.Count-1];
             if (
                 Buffer[0] != (byte)'\x1b' || // ESC not at initial
-                (final >64 && final < 91) || // a-z at final
-                (final > 96 || final < 123) // A-Z at final
+                (final > 64 && final < 91) || // a-z at final
+                (final > 96 && final < 123) // A-Z at final
             )
             {
                 this.SetLockStatus(LockStatus.NoLock);
