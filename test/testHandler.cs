@@ -42,12 +42,33 @@ namespace ui.test
         }
     }
 
+    internal class ANSIStdoutInputHandler : ANSIInputHandler
+    {
+        internal override void Handle(RootInputHandler root)
+        {
+            base.Handle(root);
+            if (this.GetLockStatus() == LockStatus.NoLock) // Lock Reset => Valid ANSI
+            {
+                string content = string.Concat(
+                    Buffer.Select(
+                        x=>x==(byte)'\x1b'?
+                            "[\\x1b]":
+                            ((char)x).ToString()
+                    )
+                );
+                Console.WriteLine(content);
+            }
+            return;
+        }
+    }
+
     public static class Test
     {
         public static Random rnd = new Random();
         public static void Setup()
         {
-            Global.InputHandler.Add(new RndLockInputHandler());
+            // Global.InputHandler.Add(new RndLockInputHandler());
+            Global.InputHandler.Add(new ANSIStdoutInputHandler());
             Global.InputHandler.Add(new StdoutInputHandler());
             Global.InputHandler.Add(new StdoutInputHandler());
             ConsoleHandler.ConsoleIntermediateHandler.Setup();
