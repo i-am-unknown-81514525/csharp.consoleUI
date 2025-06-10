@@ -37,13 +37,14 @@ namespace ui.test
 
         internal override LockStatus Validate()
         {
-            Random rnd = new Random();
-            return new LockStatus[3] { LockStatus.NoLock, LockStatus.SharedLock, LockStatus.ExclusiveLock }[rnd.Next(0, 3)]; 
+            
+            return new LockStatus[3] { LockStatus.NoLock, LockStatus.SharedLock, LockStatus.ExclusiveLock }[Test.rnd.Next(0, 3)]; 
         }
     }
 
     public static class Test
     {
+        public static Random rnd = new Random();
         public static void Setup()
         {
             Global.InputHandler.Add(new RndLockInputHandler());
