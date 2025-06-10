@@ -139,7 +139,7 @@ fn ansi_reset() -> () {
 }
 
 #[unsafe(no_mangle)]
-pub extern "cdecl" fn init() -> i32 {
+pub extern "stdcall" fn init() -> i32 {
     if cfg!(target_family = "windows") || cfg!(target_family = "unix") {
         return internal_init();
     }
@@ -147,7 +147,7 @@ pub extern "cdecl" fn init() -> i32 {
 }
 
 #[unsafe(no_mangle)]
-pub extern "cdecl" fn reset() -> i32 {
+pub extern "stdcall" fn reset() -> i32 {
     ansi_reset();
     if cfg!(target_family = "windows") || cfg!(target_family = "unix") {
         return internal_reset();
@@ -157,7 +157,7 @@ pub extern "cdecl" fn reset() -> i32 {
 }
 
 #[unsafe(no_mangle)]
-pub extern "cdecl" fn read_stdin() -> u8 {
+pub extern "stdcall" fn read_stdin() -> u8 {
     let mut stdin = io::stdin();
     let mut buffer = [0 as u8;1];
     stdin.read(&mut buffer).unwrap();
