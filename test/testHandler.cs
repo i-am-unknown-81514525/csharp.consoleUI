@@ -62,25 +62,50 @@ namespace ui.test
         }
     }
 
+    internal class ASCIIIntStdouInputHandler : InputHandler
+    {
+        internal override LockStatus Validate()
+        {
+            return LockStatus.NoLock;
+        }
+
+        internal override void Handle(RootInputHandler root)
+        {
+            if (Buffer.Count == 0)
+            {
+                return;
+            }
+            Console.Write($"{(int)this.Buffer[0]},");
+        }
+    }
+
     public static class Test
     {
         public static Random rnd = new Random();
         public static void Setup()
         {
             // Global.InputHandler.Add(new RndLockInputHandler());
+            ConsoleIntermediateHandler.ANSISetup();
             Global.InputHandler.Add(new ANSIStdoutInputHandler());
-            Global.InputHandler.Add(new StdoutInputHandler());
-            Global.InputHandler.Add(new StdoutInputHandler());
-            ConsoleHandler.ConsoleIntermediateHandler.Setup();
-            while (true)
-            {
-                byte result = ConsoleHandler.ConsoleIntermediateHandler.Read();
-                if (result == 3)
+            Global.InputHandler.Add(new ASCIIIntStdouInputHandler());
+            // Global.InputHandler.Add(new StdoutInputHandler());
+            // Global.InputHandler.Add(new StdoutInputHandler());
+            ConsoleIntermediateHandler.Setup();
+            try{
+                while (true)
                 {
-                    ConsoleHandler.ConsoleIntermediateHandler.Reset();
-                    return;
+                    byte result = ConsoleIntermediateHandler.Read();
+                    if (result == 3)
+                    {
+                        ConsoleIntermediateHandler.Reset();
+                        return;
+                    }
+                    Global.InputHandler.Dispatch(result);
                 }
-                Global.InputHandler.Dispatch(result);
+            } catch (Exception e)
+            {
+                ConsoleIntermediateHandler.Reset();
+                throw;
             }
         }
     }
