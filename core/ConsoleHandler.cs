@@ -85,6 +85,13 @@ namespace ui.core
                 }
             }
 
+            public static string ToANSI(string content, string control = "[", string special = "\x1b") => special + control + content;
+
+            public static void ANSISetup()
+            {
+                Console.Write($"{ToANSI("?1049h")}{ToANSI("5;5H")}{ToANSI("=19h")}{ToANSI("=7l")}{ToANSI("?25l")}{ToANSI("38;2;128;130;155m")}abc{ToANSI("0m")}{ToANSI("6n")}{ToANSI("?1004h")}{ToANSI("?9h")}{ToANSI("?1001h")}{ToANSI("?1000h")}{ToANSI("?1003h", "[", "\x1b")}{ToANSI("?25h")}{ToANSI("?40l")}{ToANSI("?3l")}{ToANSI("?1006h")}");
+            }
+
             public static byte Read()
             {
                 if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
