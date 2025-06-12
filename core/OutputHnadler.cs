@@ -30,7 +30,7 @@ namespace ui.core
 
         public void EventLoopPre() // Any handling required before the higher level abstraction
         {
-            this._size = new ConsoleSize(Console.BufferHeight, Console.BufferWidth);
+            _size = new ConsoleSize(Console.BufferHeight, Console.BufferWidth);
             ConsoleContent[,] newWindow = new ConsoleContent[Console.BufferHeight, Console.BufferWidth];
             for (int x = 0; x < ConsoleWindow.GetLength(0) && x < newWindow.GetLength(0); x++)
             {

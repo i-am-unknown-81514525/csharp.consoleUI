@@ -1,18 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using ui.core;
 using static ui.core.ConsoleHandler;
 
 namespace ui.test
 {
+    // ReSharper disable once UnusedMember.Global
     internal class StdoutInputHandler : InputHandler
     {
         internal override void Handle(RootInputHandler root)
         {
-            string value = Buffer.Aggregate("", (string prev, byte curr) => prev + (char)curr);
+            string value = "";
+            foreach (var b in Buffer) value += (char)b;
             Console.Write(value);
         }
 
@@ -22,35 +21,43 @@ namespace ui.test
         }
     }
 
+    // ReSharper disable once UnusedMember.Global
     internal class RndLockInputHandler : InputHandler
     {
         internal override void Handle(RootInputHandler root)
         {
-            if (this.GetLockStatus() == LockStatus.NoLock)
+            if (GetLockStatus() == LockStatus.NoLock)
             {
                 return;
             }
-            Console.Write($"\nLock {this.GetLockStatus()} -> No Lock\n");
-            this.SetLockStatus(LockStatus.NoLock);
+            Console.Write($"\nLock {GetLockStatus()} -> No Lock\n");
+            SetLockStatus(LockStatus.NoLock);
             root.LockChangeAnnounce(this);
         }
 
         internal override LockStatus Validate()
         {
             
-            return new LockStatus[3] { LockStatus.NoLock, LockStatus.SharedLock, LockStatus.ExclusiveLock }[Test.rnd.Next(0, 3)]; 
+            // ReSharper disable once RedundantExplicitArraySize
+            return new LockStatus[3]
+            {
+                LockStatus.NoLock,
+                LockStatus.SharedLock,
+                LockStatus.ExclusiveLock
+            }[Test.Rnd.Next(0, 3)];
         }
     }
 
+    // ReSharper disable once InconsistentNaming
     internal class ANSIStdoutInputHandler : ANSIInputHandler
     {
         internal override void Handle(RootInputHandler root)
         {
             base.Handle(root);
-            if (this.GetLockStatus() == LockStatus.NoLock && Buffer.Count > 1) // Lock Reset => Valid ANSI
+            if (isANSI) // Lock Reset => Valid ANSI
             {
                 string content = string.Concat(
-                    Buffer.Select(
+                    ANSIvalue.Select(
                         x=>x==(byte)'\x1b'?
                             "[\\x1b]":
                             ((char)x).ToString()
@@ -58,10 +65,12 @@ namespace ui.test
                 );
                 Console.WriteLine(content);
             }
+            // ReSharper disable once RedundantJumpStatement
             return;
         }
     }
 
+    // ReSharper disable once InconsistentNaming
     internal class ASCIIIntStdouInputHandler : InputHandler
     {
         internal override LockStatus Validate()
@@ -75,13 +84,13 @@ namespace ui.test
             {
                 return;
             }
-            Console.Write($"{(int)this.Buffer[0]},");
+            Console.Write($"{(int)Buffer[0]},");
         }
     }
 
     public static class Test
     {
-        public static Random rnd = new Random();
+        public static Random Rnd = new Random();
         public static void Setup()
         {
             // Global.InputHandler.Add(new RndLockInputHandler());
@@ -102,7 +111,7 @@ namespace ui.test
                     }
                     Global.InputHandler.Dispatch(result);
                 }
-            } catch (Exception e)
+            } catch (Exception)
             {
                 ConsoleIntermediateHandler.Reset();
                 throw;

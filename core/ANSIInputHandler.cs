@@ -4,6 +4,9 @@ namespace ui.core
 {
     public class ANSIInputHandler : InputHandler
     {
+        internal byte[] ANSIvalue;
+        internal bool isANSI;
+
         internal override LockStatus Validate()
         {
             if (
@@ -17,6 +20,8 @@ namespace ui.core
 
         internal override void Handle(RootInputHandler root)
         {
+            ANSIvalue = new byte[0];
+            isANSI = false;
             char final = (char)Buffer[Buffer.Count-1];
             if (
                 Buffer[0] != (byte)'\x1b' || // ESC not at initial
@@ -24,6 +29,8 @@ namespace ui.core
                 (final > 96 && final < 123) // A-Z at final
             )
             {
+                ANSIvalue = Buffer.ToArray();
+                isANSI = true;
                 this.SetLockStatus(LockStatus.NoLock);
                 root.LockChangeAnnounce(this);
             }
