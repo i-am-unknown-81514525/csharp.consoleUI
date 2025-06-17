@@ -234,14 +234,26 @@ namespace ui.core
 
         public void Add(InputHandler handler)
         {
-            if (_recursivePreventLock) { 
-                throw new InvalidOperationException("A handler cannot add a handler"); 
-            }
+            checkLock();
             if (handler == null)
             {
                 throw new InvalidOperationException("Cannot add handler: null");
             }
-            _handlers.Add(handler);
+            if (!_handlers.Contains(handler))
+                _handlers.Add(handler);
+        }
+
+        public void Remove(InputHandler handler)
+        {
+            checkLock();
+            if (handler == null)
+            {
+                throw new InvalidOperationException("Cannot remove handler: null");
+            }
+            if (_handlers.Contains(handler))
+                _handlers.Remove(handler);
+            else
+                throw new InvalidOperationException("Cannot remove handler as handler does't exist");
         }
 
         public void LockChangeAnnounce(InputHandler handler)
@@ -284,18 +296,23 @@ namespace ui.core
             }
         }
 
-        public void Dispatch(byte value)
+        internal void checkLock()
         {
             if (_recursivePreventLock)
             {
                 throw new InvalidOperationException("Cannot dispatch from inner handler");
             }
+        }
+
+        public void Dispatch(byte value)
+        {
+            checkLock();
             _hasLockChange = false; // This is not thread safe
             foreach (InputHandler handler in _handlers)
             {
                 handler.AddBuffer(value);
             }
-            InputHandler[] prevHandlers = {};
+            InputHandler[] prevHandlers = { };
             if (_lockStatus != null)
             {
                 SharedLock prev = _lockStatus;
