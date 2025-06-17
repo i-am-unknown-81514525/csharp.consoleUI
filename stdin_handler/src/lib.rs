@@ -2,7 +2,7 @@
 use nix::sys::termios::{SetArg, Termios, tcgetattr, cfmakeraw, tcsetattr, ControlFlags, InputFlags, LocalFlags, OutputFlags};
 #[cfg(target_family = "windows")]
 use win32console::console::{HandleType, WinConsole};
-use std::io;
+use std::io::{self, BufRead};
 use std::io::{Read, Write};
 
 #[cfg(target_family = "windows")]
@@ -162,6 +162,12 @@ pub extern "cdecl" fn read_stdin() -> u8 {
     let mut buffer = [0 as u8;1];
     stdin.read(&mut buffer).unwrap();
     buffer[0]
+}
+
+#[unsafe(no_mangle)]
+pub extern "cdecl" fn stdin_data_remain() -> bool {
+    let mut stdin = io::stdin().lock();
+    stdin.fill_buf().map(|b| !b.is_empty)? // Experimental API implemented from https://github.com/rust-lang/rust/pull/85815
 }
 
 
