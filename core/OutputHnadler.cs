@@ -29,9 +29,7 @@ namespace ui.core
             return this == (ConsoleSize)obj;
         }
 
-
-
-
+        public override int GetHashCode() => (this.Height << 16) + this.Width;
     }
 
     public struct ConsoleContent
