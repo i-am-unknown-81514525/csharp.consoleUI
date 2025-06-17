@@ -170,10 +170,12 @@ namespace ui.core
             {
                 status = Validate();
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 if (!InputConst.IgnoreHanlderValidateException) throw;
+#pragma warning disable CS0162 // Unreachable code detected
                 return LockStatus.NoLock;
+#pragma warning restore CS0162 // Unreachable code detected
             }
             _lockStatus = status;
             return status;
@@ -197,7 +199,7 @@ namespace ui.core
                 _allowModifyStatus = true;
                 Handle(root);
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 if (_lockStatus != LockStatus.NoLock)
                 {
@@ -307,7 +309,7 @@ namespace ui.core
                 {
                     handler.ValidateExternal();
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                     _recursivePreventLock = false;
                     throw;
@@ -357,7 +359,7 @@ namespace ui.core
                     {
                         handler.HandleExternal(this);
                     }
-                    catch (Exception e)
+                    catch (Exception)
                     {
                         _recursivePreventLock = false;
                         throw;
