@@ -35,21 +35,21 @@ namespace ui.core
                 return;
             foreach (InputHandler handler in handlers)
             {
-                this.AddMember(handler);
+                AddMember(handler);
             }
         }
 
         public SharedLock(InputHandler handler, bool isExclusive = false)
         {
             _lockHandler.Add(handler);
-            this._isShared = !isExclusive;
+            _isShared = !isExclusive;
         }
 
-        public bool GetIsShared() => this._isShared;
+        public bool GetIsShared() => _isShared;
 
         public bool AddMember(InputHandler handler)
         {
-            if (!this.GetIsShared())
+            if (!GetIsShared())
             {
                 return false;
             }
@@ -61,16 +61,16 @@ namespace ui.core
         public bool DropMember(InputHandler handler)
         {
             int count = _lockHandler.RemoveAll(x => x == handler);
-            if (this.GetLockCount() == 0)
+            if (GetLockCount() == 0)
             {
-                this._isShared = true;
+                _isShared = true;
             }
             return count != 0;
         }
 
         public InputHandler[] GetLockedHandler() => _lockHandler.ToArray();
 
-        public int GetLockCount() => this.GetLockedHandler().Length;
+        public int GetLockCount() => GetLockedHandler().Length;
     }
 
     public enum LockStatus : int
@@ -87,10 +87,10 @@ namespace ui.core
         private bool _allowModifyStatus = false;
 
         public InputHandler() {
-            this.Buffer = new List<byte>();
+            Buffer = new List<byte>();
         }
 
-        public LockStatus GetLockStatus() => this._lockStatus;
+        public LockStatus GetLockStatus() => _lockStatus;
 
         private void ResetBuffer()
         {
@@ -99,7 +99,7 @@ namespace ui.core
 
         public bool DropUnused()
         {
-            if (this._lockStatus == LockStatus.NoLock)
+            if (_lockStatus == LockStatus.NoLock)
             {
                 ResetBuffer();
                 return true;
@@ -116,25 +116,25 @@ namespace ui.core
         {
             if (lockStatus == null || lockStatus.GetLockCount() == 0)
             {
-                if (this._lockStatus != LockStatus.NoLock)
+                if (_lockStatus != LockStatus.NoLock)
                 {
                     throw new LockConflictException("Invalid lock status: the handler held a lock when parameter claim no lock");
                 }
                 return false; // No lock so no reset
             }
-            if (this._lockStatus == LockStatus.NoLock)
+            if (_lockStatus == LockStatus.NoLock)
             {
                 ResetBuffer(); // Someone held lock and it is not itself
                 return true;
             }
-            else if (this._lockStatus == LockStatus.SharedLock && !lockStatus.GetIsShared())
+            else if (_lockStatus == LockStatus.SharedLock && !lockStatus.GetIsShared())
             {
                 ResetBuffer();
-                this._lockStatus = LockStatus.NoLock;
+                _lockStatus = LockStatus.NoLock;
                 return true; // Itself held shared lock but someone took exclusive access
                              // Therefore the code should volunterarily give up access
             }
-            else if (this._lockStatus == LockStatus.SharedLock) //  implies: && lockStatus.GetIsShared()
+            else if (_lockStatus == LockStatus.SharedLock) //  implies: && lockStatus.GetIsShared()
             {
                 if (lockStatus.GetLockedHandler().Contains(this))
                 {
@@ -142,11 +142,11 @@ namespace ui.core
                 }
                 throw new LockConflictException("Invalid lock status: the handler held an shared lock when parameter claim the handler don't held the lock");
             }
-            else if (this._lockStatus == LockStatus.ExclusiveLock && lockStatus.GetIsShared())
+            else if (_lockStatus == LockStatus.ExclusiveLock && lockStatus.GetIsShared())
             {
                 throw new LockConflictException("Invalid lock status: the handler held an exclsuive lock when parameter claim only shared lock");
             }
-            else if (this._lockStatus == LockStatus.ExclusiveLock) //  implies:  && !lockStatus.GetIsShared()
+            else if (_lockStatus == LockStatus.ExclusiveLock) //  implies:  && !lockStatus.GetIsShared()
             {
                 if (lockStatus.GetLockedHandler().Contains(this))
                 {
@@ -155,7 +155,7 @@ namespace ui.core
                     return false;
                 }
                 ResetBuffer();
-                this._lockStatus = LockStatus.NoLock; // Exclusive lock held but handler at prioity take the exclusive lock first
+                _lockStatus = LockStatus.NoLock; // Exclusive lock held but handler at prioity take the exclusive lock first
                 return true;
             }
             throw new NotImplementedException("Unexpected case");
@@ -168,24 +168,24 @@ namespace ui.core
             LockStatus status;
             try
             {
-                status = this.Validate();
+                status = Validate();
             }
             catch (Exception e)
             {
                 if (!InputConst.IgnoreHanlderValidateException) throw;
                 return LockStatus.NoLock;
             }
-            this._lockStatus = status;
+            _lockStatus = status;
             return status;
         }
 
         internal void SetLockStatus(LockStatus status)
         {
-            if (!this._allowModifyStatus)
+            if (!_allowModifyStatus)
             {
                 throw new LockUnpermitChangeException();
             }
-            this._lockStatus = status;
+            _lockStatus = status;
         }
 
         internal abstract void Handle(RootInputHandler root);
@@ -194,20 +194,20 @@ namespace ui.core
         {
             try
             {
-                this._allowModifyStatus = true;
-                this.Handle(root);
+                _allowModifyStatus = true;
+                Handle(root);
             }
             catch (Exception e)
             {
-                if (this._lockStatus != LockStatus.NoLock)
+                if (_lockStatus != LockStatus.NoLock)
                 {
-                    this._lockStatus = LockStatus.NoLock;
+                    _lockStatus = LockStatus.NoLock;
                     root.LockChangeAnnounce(this);
                 }
-                this._allowModifyStatus = false;
+                _allowModifyStatus = false;
                 if (!InputConst.IgnoreHandlerHandleException) throw;
             }
-            this._allowModifyStatus = false;
+            _allowModifyStatus = false;
         }
     }
 
@@ -226,33 +226,33 @@ namespace ui.core
         {
             if (handlers != null)
             {
-                this._handlers = handlers.ToList();
+                _handlers = handlers.ToList();
             }
         }
 
         public void Add(InputHandler handler)
         {
-            if (this._recursivePreventLock) { 
+            if (_recursivePreventLock) { 
                 throw new InvalidOperationException("A handler cannot add a handler"); 
             }
             if (handler == null)
             {
                 throw new InvalidOperationException("Cannot add handler: null");
             }
-            this._handlers.Add(handler);
+            _handlers.Add(handler);
         }
 
         public void LockChangeAnnounce(InputHandler handler)
         {
             LockStatus prev = LockStatus.SharedLock; // Make assumption that it is shared first, then check both
-            if (!this._lockStatus.GetLockedHandler().Contains(handler))
+            if (!_lockStatus.GetLockedHandler().Contains(handler))
             {
                 prev = LockStatus.NoLock;
                 if (handler.GetLockStatus() != LockStatus.NoLock)
                     throw new LockUnpermitChangeException();
                 return;
             }
-            else if (!this._lockStatus.GetIsShared())
+            else if (!_lockStatus.GetIsShared())
             {
                 prev = LockStatus.ExclusiveLock;
             }
@@ -264,17 +264,17 @@ namespace ui.core
             if (current == LockStatus.ExclusiveLock) { } // Nothing since unchanged
             else if (current == LockStatus.SharedLock)
             {
-                this._lockStatus = new SharedLock(this._lockStatus.GetLockedHandler());
-                this._hasLockChange = true;
+                _lockStatus = new SharedLock(_lockStatus.GetLockedHandler());
+                _hasLockChange = true;
             }
             else if (current == LockStatus.NoLock)
             {
-                this._lockStatus.DropMember(handler);
-                if (this._lockStatus.GetLockCount() == 0)
+                _lockStatus.DropMember(handler);
+                if (_lockStatus.GetLockCount() == 0)
                 {
-                    this._lockStatus = new SharedLock(Array.Empty<InputHandler>());
+                    _lockStatus = new SharedLock(Array.Empty<InputHandler>());
                 }
-                this._hasLockChange = true;
+                _hasLockChange = true;
             }
             else
             {
@@ -284,35 +284,35 @@ namespace ui.core
 
         public void Dispatch(byte value)
         {
-            if (this._recursivePreventLock)
+            if (_recursivePreventLock)
             {
                 throw new InvalidOperationException("Cannot dispatch from inner handler");
             }
-            this._hasLockChange = false; // This is not thread safe
-            foreach (InputHandler handler in this._handlers)
+            _hasLockChange = false; // This is not thread safe
+            foreach (InputHandler handler in _handlers)
             {
                 handler.AddBuffer(value);
             }
             InputHandler[] prevHandlers = {};
-            if (this._lockStatus != null)
+            if (_lockStatus != null)
             {
-                SharedLock prev = this._lockStatus;
+                SharedLock prev = _lockStatus;
                 prevHandlers = prev.GetLockedHandler();
             }
             SharedLock lockValue = new SharedLock();
-            foreach (InputHandler handler in this._handlers)
+            foreach (InputHandler handler in _handlers)
             {
-                this._recursivePreventLock = true;
+                _recursivePreventLock = true;
                 try
                 {
                     handler.ValidateExternal();
                 }
                 catch (Exception e)
                 {
-                    this._recursivePreventLock = false;
+                    _recursivePreventLock = false;
                     throw;
                 }
-                this._recursivePreventLock = false;
+                _recursivePreventLock = false;
             }
             foreach (InputHandler handler in prevHandlers) // Previous handelr would be priotize
             {
@@ -329,7 +329,7 @@ namespace ui.core
             }
             if (lockValue.GetIsShared()) // if already exclusive => ignore
             {
-                foreach (InputHandler handler in this._handlers) // Then the normal order, the re-call of same handler doesn't matter
+                foreach (InputHandler handler in _handlers) // Then the normal order, the re-call of same handler doesn't matter
                 {
                     LockStatus status = handler.GetLockStatus();
                     if (status == LockStatus.ExclusiveLock)
@@ -343,36 +343,36 @@ namespace ui.core
                     }
                 }
             }
-            this._lockStatus = lockValue;
-            foreach (InputHandler handler in this._handlers)
+            _lockStatus = lockValue;
+            foreach (InputHandler handler in _handlers)
             {
                 handler.Reset(lockValue);
             }
-            foreach (InputHandler handler in this._handlers)
+            foreach (InputHandler handler in _handlers)
             {
                 if (lockValue.GetLockCount() == 0 || lockValue.GetLockedHandler().Contains(handler))
                 {
-                    this._recursivePreventLock = true;
+                    _recursivePreventLock = true;
                     try
                     {
                         handler.HandleExternal(this);
                     }
                     catch (Exception e)
                     {
-                        this._recursivePreventLock = false;
+                        _recursivePreventLock = false;
                         throw;
                     }
-                    this._recursivePreventLock = false;
+                    _recursivePreventLock = false;
                 }
             }
-            if (this._hasLockChange)
+            if (_hasLockChange)
             {
-                foreach (InputHandler handler in this._handlers)
+                foreach (InputHandler handler in _handlers)
                 {
                     handler.Reset(lockValue);
                 }
             }
-            foreach (InputHandler handler in this._handlers)
+            foreach (InputHandler handler in _handlers)
             {
                 handler.DropUnused();
             }

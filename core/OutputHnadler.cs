@@ -29,7 +29,7 @@ namespace ui.core
             return this == (ConsoleSize)obj;
         }
 
-        public override int GetHashCode() => (this.Height << 16) + this.Width;
+        public override int GetHashCode() => (Height << 16) + Width;
     }
 
     public struct ConsoleContent
@@ -83,7 +83,7 @@ namespace ui.core
             {
                 throw new InvalidOperationException("The minimal expected size is way too small");
             }
-            this._minSize = size;
+            _minSize = size;
         }
 
         public void SetSize(ConsoleSize size)
@@ -92,7 +92,7 @@ namespace ui.core
             {
                 throw new InvalidOperationException("The defined console size is too small");
             }
-            this.applyToNew((size.Height, size.Width));
+            applyToNew((size.Height, size.Width));
         }
 
         public void EventLoopPre() // Any handling required before the higher level abstraction
@@ -131,7 +131,7 @@ namespace ui.core
 
         public void EventLoopPost()
         {
-            Console.Write(this.GetContent());
+            Console.Write(GetContent());
         }
     }
 }

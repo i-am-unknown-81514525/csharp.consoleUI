@@ -31,7 +31,7 @@ namespace ui.core
             {
                 ANSIvalue = Buffer.ToArray();
                 isANSI = true;
-                this.SetLockStatus(LockStatus.NoLock);
+                SetLockStatus(LockStatus.NoLock);
                 root.LockChangeAnnounce(this);
             }
             return;
