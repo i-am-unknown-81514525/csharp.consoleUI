@@ -8,7 +8,7 @@ As this project is also my exam project, to avoid any violation of exam rules, a
 ---
 ### Build instruction
 1. Install .NET Framework SDK
-> If you are in Windows, install it from Visual Studio
+> If you are in Windows, install it from Visual Studio \
 > If you are in macOS/Linux, install `mono-complete` from mono
 2. Install Rust
 3. Run `sh build.sh` 
