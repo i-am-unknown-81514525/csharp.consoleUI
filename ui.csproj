@@ -64,6 +64,7 @@
     <Compile Include="input_handler\*.cs" />
     <Compile Include="*.cs" />
     <Compile Include="test\testHandler.cs" />
+    <Compile Include="input\*.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
