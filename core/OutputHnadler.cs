@@ -78,6 +78,16 @@ namespace ui.core
             }
         }
 
+        public void SetMin(ConsoleSize size)
+        {
+            ConsoleSize MIN_SIZE = new ConsoleSize(5, 10);
+            if (!(size < MIN_SIZE))
+            {
+                throw new InvalidOperationException("The minimal expected size is way too small");
+            }
+            this._minSize = size;
+        }
+
         public void SetSize(ConsoleSize size)
         {
             if (!(size > _minSize))
