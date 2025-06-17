@@ -167,7 +167,7 @@ pub extern "cdecl" fn read_stdin() -> u8 {
 #[unsafe(no_mangle)]
 pub extern "cdecl" fn stdin_data_remain() -> bool {
     let mut stdin = io::stdin().lock();
-    stdin.fill_buf().map(|b| !b.is_empty())? // Experimental API implemented from https://github.com/rust-lang/rust/pull/85815
+    stdin.fill_buf().map(|b| !b.is_empty()).unwrap_or(false) // Experimental API implemented from https://github.com/rust-lang/rust/pull/85815
 }
 
 
