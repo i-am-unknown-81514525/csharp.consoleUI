@@ -185,6 +185,7 @@ pub extern "cdecl" fn stdin_data_remain() -> bool {
 pub extern "cdecl" fn read_stdin_end()  -> *const c_char {
     let mut buf: Vec<u8> = vec![];
     while stdin_data_remain() {
+        println!("{:?}", stdin_data_remain());
         buf.push(read_stdin());
     }
     let c_string: CString = CString::new(buf.as_slice()).unwrap();
