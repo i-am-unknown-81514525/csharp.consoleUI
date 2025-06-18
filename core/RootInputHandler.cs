@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using static ui.core.ConsoleHandler.ConsoleIntermediateHandler;
+using static ui.core.ConsoleHandler;
 
 namespace ui.core
 {
@@ -199,7 +200,7 @@ namespace ui.core
 
         public bool Handle()
         {
-            if (!StdinDataRemain()) return false;
+            if (!ConsoleRawStdinHandler.StdinDataRemain()) return false;
             byte value = Read();
             if (value != (byte)'\x1b')
             {
@@ -208,13 +209,13 @@ namespace ui.core
             }
             bool handled = false;
             List<byte> buf = new List<byte> { value };
-            if (StdinDataRemain()) // Check possible ANSI?
+            if (ConsoleRawStdinHandler.StdinDataRemain()) // Check possible ANSI?
             {
                 byte v2 = Read();
                 buf.Add(v2);
-                if (v2 == (byte)'[' && StdinDataRemain())
+                if (v2 == (byte)'[' && ConsoleRawStdinHandler.StdinDataRemain())
                 {
-                    string remain = ReadStdinToEnd();
+                    string remain = ConsoleRawStdinHandler.ReadStdinToEnd();
                     buf = (buf.AsByteBuffer() + remain).AsList();
                     handled = _ansi_handlers
                                 .Select(handler => handler.Handle(buf.ToArray()))

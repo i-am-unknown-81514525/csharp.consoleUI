@@ -121,15 +121,17 @@ namespace ui.test
             // Global.InputHandler.Add(new StdoutInputHandler());
             ConsoleIntermediateHandler.Setup();
             ConsoleIntermediateHandler.ANSISetup();
+            ConsoleRawStdinHandler.Init();
             try
             {
                 while (true)
                 {
                     Global.InputHandler.Handle();
-                    if (exitHandler.GetExitStatus()) return;
+                    if (exitHandler.GetExitStatus()) break;
                     System.Threading.Thread.Sleep(10);
                 }
-            } catch (Exception)
+            }
+            catch (Exception)
             {
                 ConsoleIntermediateHandler.Reset();
                 throw;

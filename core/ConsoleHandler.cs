@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace ui.core
@@ -11,7 +12,8 @@ namespace ui.core
     public static class ConsoleHandler
     {
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
-        private struct InteropsString {
+        private struct InteropsString
+        {
             [MarshalAs(UnmanagedType.LPStr)] public string f1;
         }
         private static class WindowConsoleHandler
@@ -149,19 +151,70 @@ namespace ui.core
                 }
             }
 
-            public static bool StdinDataRemain()
+            // public static bool StdinDataRemain()
+            // {
+            //     System.Threading.Thread.Sleep(1);
+            //     if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            //     {
+            //         WindowConsoleHandler.StdinDataRemain();
+            //     }
+            //     else
+            //     {
+            //         PosixConsoleHandler.StdinDataRemain();
+            //     }
+            //     return Console.KeyAvailable;
+            // }
+
+            // public static string ReadStdinToEnd()
+            // {
+            //     List<byte> buf = new List<byte>();
+            //     while (StdinDataRemain())
+            //     {
+            //         buf.Add(Read());
+            //     }
+            //     return buf.AsByteBuffer().AsString();
+            //     // if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            //     // {
+            //     //     return WindowConsoleHandler.ReadStdinToEnd();
+            //     // }
+            //     // else
+            //     // {
+            //     //     return PosixConsoleHandler.ReadStdinToEnd();
+            //     // }
+            // }
+        }
+
+        public static class ConsoleRawStdinHandler
+        {
+            private static Queue<byte> buf = new Queue<byte>();
+            private static Thread t = new Thread(StdinPollWorker);
+            public static void StdinPollWorker()
             {
-                System.Threading.Thread.Sleep(1);
-                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                while (true)
                 {
-                    WindowConsoleHandler.StdinDataRemain();
+                    try
+                    {
+                        buf.Enqueue(ConsoleIntermediateHandler.Read());
+                    }
+                    catch (Exception)
+                    {
+                        throw;
+                    }
                 }
-                else
-                {
-                    PosixConsoleHandler.StdinDataRemain();
-                }
-                return Console.KeyAvailable;
             }
+
+            public static byte Read()
+            {
+                if (buf.Count == 0)
+                {
+                    throw new IndexOutOfRangeException("No byte in buffer");
+                }
+                return buf.Dequeue();
+            }
+
+            public static int GetSize() => buf.Count;
+
+            public static bool StdinDataRemain() => GetSize() > 0;
 
             public static string ReadStdinToEnd()
             {
@@ -171,14 +224,11 @@ namespace ui.core
                     buf.Add(Read());
                 }
                 return buf.AsByteBuffer().AsString();
-                // if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-                // {
-                //     return WindowConsoleHandler.ReadStdinToEnd();
-                // }
-                // else
-                // {
-                //     return PosixConsoleHandler.ReadStdinToEnd();
-                // }
+            }
+
+            public static void Init()
+            {
+                t.Start();
             }
         }
     }
