@@ -94,13 +94,14 @@ namespace ui.test
         public static void Setup()
         {
             // Global.InputHandler.Add(new RndLockInputHandler());
-            ConsoleIntermediateHandler.ANSISetup();
             Global.InputHandler.Add(new ANSIStdoutInputHandler());
             Global.InputHandler.Add(new ASCIIIntStdouInputHandler());
             // Global.InputHandler.Add(new StdoutInputHandler());
             // Global.InputHandler.Add(new StdoutInputHandler());
             ConsoleIntermediateHandler.Setup();
-            try{
+            ConsoleIntermediateHandler.ANSISetup();
+            try
+            {
                 while (true)
                 {
                     byte result = ConsoleIntermediateHandler.Read();

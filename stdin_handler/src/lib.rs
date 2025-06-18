@@ -170,14 +170,21 @@ pub extern "cdecl" fn stdin_data_remain() -> bool {
     stdin.fill_buf().map(|b| !b.is_empty()).unwrap_or(false) // Experimental API implemented from https://github.com/rust-lang/rust/pull/85815
 }
 
-
-// #[cfg(test)]
-// mod tests {
-//     use super::*;
-// 
-//     #[test]
-//     fn it_works() {
-//         let result = add(2, 2);
-//         assert_eq!(result, 4);
+// #[no_mangle]
+// pub extern fn print_string(text_pointer: *const c_char) {
+//     unsafe {
+//         let text: String = CStr::from_ptr(text_pointer).to_str().expect("Can not read string argument.").to_string();
+//         println!("{}", text);
 //     }
+// } // From https://stackoverflow.com/questions/66582380/pass-string-from-c-sharp-to-rust-using-ffi
+
+// #[unsafe(no_mangle)]
+// pub extern "cdecl" fn read_stdin_end() {
+//     let mut stdin = io::stdin().lock();
+//     let mut buf: Vec<u8>;
+//     let size = stdin.read_to_end(&stdin).unwrap();
 // }
+
+
+// https://notes.huy.rocks/en/string-ffi-rust.html
+// https://learn.microsoft.com/en-us/dotnet/framework/interop/default-marshalling-for-strings

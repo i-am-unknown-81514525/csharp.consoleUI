@@ -20,6 +20,9 @@ namespace ui.core
             [DllImport("libstdin_handler.dll", SetLastError = true, CallingConvention =CallingConvention.Cdecl)]
             private static extern int reset();
 
+            [DllImport("libstdin_handler.dll", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
+            private static extern bool stdin_data_remain();
+
             public static byte readStdin() => read_stdin();
 
             public static void Setup()
@@ -31,6 +34,8 @@ namespace ui.core
             {
                 reset();
             }
+
+            public static bool StdinDataRemain() => stdin_data_remain();
         }
 
         private static class PosixConsoleHandler
@@ -43,6 +48,9 @@ namespace ui.core
 
             [DllImport("libstdin_handler", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
             private static extern int reset();
+
+            [DllImport("libstdin_handler", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
+            private static extern bool stdin_data_remain();
 
             public static byte readStdin() => read_stdin();
 
@@ -69,6 +77,8 @@ namespace ui.core
             {
                 reset();
             }
+
+            public static bool StdinDataRemain() => stdin_data_remain();
         }
 
         public static class ConsoleIntermediateHandler
@@ -113,6 +123,18 @@ namespace ui.core
                 else
                 {
                     PosixConsoleHandler.Reset();
+                }
+            }
+
+            public static bool StdinDataRemain()
+            {
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                {
+                    WindowConsoleHandler.StdinDataRemain();
+                }
+                else
+                {
+                    PosixConsoleHandler.StdinDataRemain();
                 }
             }
         }
