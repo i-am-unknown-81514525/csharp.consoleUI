@@ -199,7 +199,7 @@ namespace ui.core
 
         public bool Handle()
         {
-            if (!StdinDataRemain()) { Console.Write("N");  return false;}
+            if (!StdinDataRemain()) return false;
             byte value = Read();
             if (value != (byte)'\x1b')
             {

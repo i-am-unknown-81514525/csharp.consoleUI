@@ -29,7 +29,7 @@ namespace ui.core
             private static extern bool stdin_data_remain();
 
             [DllImport("libstdin_handler.dll", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
-            private static extern InteropsString read_stdin_end();
+            private static extern string read_stdin_end();
 
             public static byte readStdin() => read_stdin();
 
@@ -47,8 +47,8 @@ namespace ui.core
 
             public static string ReadStdinToEnd()
             {
-                InteropsString src = read_stdin_end();
-                return src.f1;
+                string src = read_stdin_end();
+                return src;
             }
         }
 
@@ -67,7 +67,7 @@ namespace ui.core
             private static extern bool stdin_data_remain();
 
             [DllImport("libstdin_handler", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
-            private static extern InteropsString read_stdin_end();
+            private static extern string read_stdin_end();
 
             public static byte readStdin() => read_stdin();
 
@@ -99,8 +99,8 @@ namespace ui.core
 
             public static string ReadStdinToEnd()
             {
-                InteropsString src = read_stdin_end();
-                return src.f1;
+                string src = read_stdin_end();
+                return src;
             }
         }
 
@@ -151,26 +151,34 @@ namespace ui.core
 
             public static bool StdinDataRemain()
             {
+                System.Threading.Thread.Sleep(1);
                 if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
                 {
-                    return WindowConsoleHandler.StdinDataRemain();
+                    WindowConsoleHandler.StdinDataRemain();
                 }
                 else
                 {
-                    return PosixConsoleHandler.StdinDataRemain();
+                    PosixConsoleHandler.StdinDataRemain();
                 }
+                return Console.KeyAvailable;
             }
 
             public static string ReadStdinToEnd()
             {
-                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                List<byte> buf = new List<byte>();
+                while (StdinDataRemain())
                 {
-                    return WindowConsoleHandler.ReadStdinToEnd();
+                    buf.Add(Read());
                 }
-                else
-                {
-                    return PosixConsoleHandler.ReadStdinToEnd();
-                }
+                return buf.AsByteBuffer().AsString();
+                // if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                // {
+                //     return WindowConsoleHandler.ReadStdinToEnd();
+                // }
+                // else
+                // {
+                //     return PosixConsoleHandler.ReadStdinToEnd();
+                // }
             }
         }
     }
