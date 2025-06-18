@@ -4,6 +4,7 @@ use nix::sys::termios::{SetArg, Termios, tcgetattr, cfmakeraw, tcsetattr, Contro
 use win32console::console::{HandleType, WinConsole};
 use std::io::{self, BufRead};
 use std::io::{Read, Write};
+use std::ffi::{CString, c_char};
 
 #[cfg(target_family = "windows")]
 struct InputConsoleMode;
@@ -170,6 +171,8 @@ pub extern "cdecl" fn stdin_data_remain() -> bool {
     stdin.fill_buf().map(|b| !b.is_empty()).unwrap_or(false) // Experimental API implemented from https://github.com/rust-lang/rust/pull/85815
 }
 
+
+
 // #[no_mangle]
 // pub extern fn print_string(text_pointer: *const c_char) {
 //     unsafe {
@@ -178,12 +181,16 @@ pub extern "cdecl" fn stdin_data_remain() -> bool {
 //     }
 // } // From https://stackoverflow.com/questions/66582380/pass-string-from-c-sharp-to-rust-using-ffi
 
-// #[unsafe(no_mangle)]
-// pub extern "cdecl" fn read_stdin_end() {
-//     let mut stdin = io::stdin().lock();
-//     let mut buf: Vec<u8>;
-//     let size = stdin.read_to_end(&stdin).unwrap();
-// }
+#[unsafe(no_mangle)]
+pub extern "cdecl" fn read_stdin_end()  -> *const c_char {
+    let mut stdin = io::stdin().lock();
+    let mut buf: Vec<u8> = vec![];
+    let size = stdin.read_to_end(&mut buf).unwrap();
+    let c_string: CString = CString::new(buf.as_slice()).unwrap();
+    let ptr: *const c_char = c_string.as_ptr();
+    std::mem::forget(c_string);
+    ptr
+}
 
 
 // https://notes.huy.rocks/en/string-ffi-rust.html
