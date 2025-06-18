@@ -7,8 +7,13 @@ using System.Threading.Tasks;
 
 namespace ui.core
 {
+
     public static class ConsoleHandler
     {
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
+        private struct InteropsString {
+            [MarshalAs(UnmanagedType.LPStr)] public string f1;
+        }
         private static class WindowConsoleHandler
         {
             [DllImport("libstdin_handler.dll", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
@@ -17,11 +22,14 @@ namespace ui.core
             [DllImport("libstdin_handler.dll", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
             private static extern byte read_stdin();
 
-            [DllImport("libstdin_handler.dll", SetLastError = true, CallingConvention =CallingConvention.Cdecl)]
+            [DllImport("libstdin_handler.dll", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
             private static extern int reset();
 
             [DllImport("libstdin_handler.dll", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
             private static extern bool stdin_data_remain();
+
+            [DllImport("libstdin_handler.dll", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
+            private static extern InteropsString read_stdin_end();
 
             public static byte readStdin() => read_stdin();
 
@@ -36,6 +44,12 @@ namespace ui.core
             }
 
             public static bool StdinDataRemain() => stdin_data_remain();
+
+            public static string ReadStdinToEnd()
+            {
+                InteropsString src = read_stdin_end();
+                return src.f1;
+            }
         }
 
         private static class PosixConsoleHandler
@@ -51,6 +65,9 @@ namespace ui.core
 
             [DllImport("libstdin_handler", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
             private static extern bool stdin_data_remain();
+
+            [DllImport("libstdin_handler", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
+            private static extern InteropsString read_stdin_end();
 
             public static byte readStdin() => read_stdin();
 
@@ -79,6 +96,12 @@ namespace ui.core
             }
 
             public static bool StdinDataRemain() => stdin_data_remain();
+
+            public static string ReadStdinToEnd()
+            {
+                InteropsString src = read_stdin_end();
+                return src.f1;
+            }
         }
 
         public static class ConsoleIntermediateHandler
@@ -135,6 +158,18 @@ namespace ui.core
                 else
                 {
                     return PosixConsoleHandler.StdinDataRemain();
+                }
+            }
+
+            public static string ReadStdinToEnd()
+            {
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                {
+                    return WindowConsoleHandler.ReadStdinToEnd();
+                }
+                else
+                {
+                    return PosixConsoleHandler.ReadStdinToEnd();
                 }
             }
         }

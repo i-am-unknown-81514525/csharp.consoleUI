@@ -2,6 +2,7 @@ namespace ui
 {
     public enum KeyCode : byte
     {
+        INTERRUPT = 3,
         TAB = 9,
         NEWLINE = 13,
         SPACE = 32,

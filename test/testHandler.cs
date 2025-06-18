@@ -21,6 +21,29 @@ namespace ui.test
         }
     }
 
+    internal class ExitHandler : InputHandler
+    {
+        private bool exit = false;
+
+        internal override void Handle(RootInputHandler root)
+        {
+            if (GetLockStatus() > LockStatus.NoLock)
+            {
+                exit = true;
+                this.SetLockStatus(LockStatus.NoLock);
+                root.LockChangeAnnounce(this);
+            }
+        }
+
+        internal override LockStatus Validate()
+        {
+            if (Buffer.Count > 0 && Buffer[0] == (byte)KeyCode.INTERRUPT) return LockStatus.ExclusiveLock;
+            return LockStatus.NoLock;
+        }
+
+        public bool GetExitStatus() => exit;
+    }
+
     // ReSharper disable once UnusedMember.Global
     internal class RndLockInputHandler : InputHandler
     {
@@ -37,7 +60,7 @@ namespace ui.test
 
         internal override LockStatus Validate()
         {
-            
+
             // ReSharper disable once RedundantExplicitArraySize
             return new LockStatus[3]
             {
@@ -51,22 +74,18 @@ namespace ui.test
     // ReSharper disable once InconsistentNaming
     internal class ANSIStdoutInputHandler : ANSIInputHandler
     {
-        internal override void Handle(RootInputHandler root)
+
+        public override bool Handle(byte[] buf)
         {
-            base.Handle(root);
-            if (isANSI) // Lock Reset => Valid ANSI
-            {
-                string content = string.Concat(
-                    ANSIvalue.Select(
-                        x=>x==(byte)'\x1b'?
-                            "[\\x1b]":
+            string content = string.Concat(
+                    buf.Select(
+                        x => x == (byte)'\x1b' ?
+                            "[\\x1b]" :
                             ((char)x).ToString()
                     )
                 );
-                Console.WriteLine(content);
-            }
-            // ReSharper disable once RedundantJumpStatement
-            return;
+            Console.WriteLine(content);
+            return false;
         }
     }
 
@@ -94,6 +113,8 @@ namespace ui.test
         public static void Setup()
         {
             // Global.InputHandler.Add(new RndLockInputHandler());
+            ExitHandler exitHandler = new ExitHandler();
+            Global.InputHandler.Add(exitHandler);
             Global.InputHandler.Add(new ANSIStdoutInputHandler());
             Global.InputHandler.Add(new ASCIIIntStdouInputHandler());
             // Global.InputHandler.Add(new StdoutInputHandler());
@@ -104,13 +125,8 @@ namespace ui.test
             {
                 while (true)
                 {
-                    byte result = ConsoleIntermediateHandler.Read();
-                    if (result == 3)
-                    {
-                        ConsoleIntermediateHandler.Reset();
-                        return;
-                    }
-                    Global.InputHandler.Dispatch(result);
+                    Global.InputHandler.Handle();
+                    if (exitHandler.GetExitStatus()) return;
                 }
             } catch (Exception)
             {
