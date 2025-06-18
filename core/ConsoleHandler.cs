@@ -130,11 +130,11 @@ namespace ui.core
             {
                 if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
                 {
-                    WindowConsoleHandler.StdinDataRemain();
+                    return WindowConsoleHandler.StdinDataRemain();
                 }
                 else
                 {
-                    PosixConsoleHandler.StdinDataRemain();
+                    return PosixConsoleHandler.StdinDataRemain();
                 }
             }
         }
