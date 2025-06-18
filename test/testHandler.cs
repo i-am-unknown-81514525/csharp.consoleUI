@@ -127,6 +127,7 @@ namespace ui.test
                 {
                     Global.InputHandler.Handle();
                     if (exitHandler.GetExitStatus()) return;
+                    System.Threading.Thread.Sleep(10);
                 }
             } catch (Exception)
             {

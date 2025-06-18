@@ -76,7 +76,7 @@ namespace ui.core
         SharedLock = 1,
         ExclusiveLock = 2
     }
-    
+
     public class RootInputHandler
     // This code assuming that the code call from abstract function `Validate` and `Handle` in `InputHandler`
     // might have malicious intend, therefore it should attempt to defense against it.
@@ -199,7 +199,7 @@ namespace ui.core
 
         public bool Handle()
         {
-            if (!StdinDataRemain()) return false;
+            if (!StdinDataRemain()) { Console.Write("N");  return false;}
             byte value = Read();
             if (value != (byte)'\x1b')
             {
