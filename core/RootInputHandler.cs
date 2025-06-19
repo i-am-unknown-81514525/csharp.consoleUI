@@ -222,32 +222,35 @@ namespace ui.core
                 {
                     string remain = ReadStdinToEnd();
                     buf = (buf.AsByteBuffer() + remain).AsList();
-                    List<byte> inner_buf = new List<byte>();
-                    foreach (byte b in buf)
-                    {
-                        if (b == (byte)'\x1b')
-                        {
-                            bool result = false;
-                            if (inner_buf.Count > 2 && inner_buf[1] == (byte)'[')
-                                result = ANSIDispatch(inner_buf);
-                            if (!result)
-                                unhandled_buf = (unhandled_buf.AsByteBuffer() + inner_buf.AsByteBuffer()).AsList();
-                            inner_buf = new List<byte>();
-                        }
-                        inner_buf.Add(b);
-                    }
-                    bool r1 = false;
-                    if (inner_buf.Count > 2 && inner_buf[1] == (byte)'[')
-                        r1 = ANSIDispatch(inner_buf);
-                    if (!r1)
-                        unhandled_buf = (unhandled_buf.AsByteBuffer() + inner_buf.AsByteBuffer()).AsList();
-                        inner_buf = new List<byte>();
                 }
             );
             bool done = t.Wait(20);
             if (!done)
             {
                 unhandled_buf = buf;
+            }
+            else
+            {
+                List<byte> inner_buf = new List<byte>();
+                foreach (byte b in buf)
+                {
+                    if (b == (byte)'\x1b')
+                    {
+                        bool result = false;
+                        if (inner_buf.Count > 2 && inner_buf[1] == (byte)'[')
+                            result = ANSIDispatch(inner_buf);
+                        if (!result)
+                            unhandled_buf = (unhandled_buf.AsByteBuffer() + inner_buf.AsByteBuffer()).AsList();
+                        inner_buf = new List<byte>();
+                    }
+                    inner_buf.Add(b);
+                }
+                bool r1 = false;
+                if (inner_buf.Count > 2 && inner_buf[1] == (byte)'[')
+                    r1 = ANSIDispatch(inner_buf);
+                if (!r1)
+                    unhandled_buf = (unhandled_buf.AsByteBuffer() + inner_buf.AsByteBuffer()).AsList();
+                    inner_buf = new List<byte>();
             }
             foreach (byte v in unhandled_buf)
             {
