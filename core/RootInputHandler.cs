@@ -236,9 +236,15 @@ namespace ui.core
                         }
                         inner_buf.Add(b);
                     }
+                    bool r1 = false;
+                    if (inner_buf.Count > 2 && inner_buf[1] == (byte)'[')
+                        r1 = ANSIDispatch(inner_buf);
+                    if (!r1)
+                        unhandled_buf = (unhandled_buf.AsByteBuffer() + inner_buf.AsByteBuffer()).AsList();
+                        inner_buf = new List<byte>();
                 }
             );
-            bool done = t.Wait(200);
+            bool done = t.Wait(20);
             if (!done)
             {
                 unhandled_buf = buf;
