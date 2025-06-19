@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Text.RegularExpressions;
 using static ui.core.ConsoleHandler.ConsoleIntermediateHandler;
 
@@ -197,6 +198,15 @@ namespace ui.core
             }
         }
 
+        private bool ANSIDispatch(List<byte> buf)
+        {
+            return _ansi_handlers
+                    .Select(handler => handler.Handle(buf.ToArray()))
+                    .ToArray() // Make sure all handler is ran, before checking if handled by one of the handler
+                               // As there might be other handler need to run actions
+                    .Any(x => x);
+        }
+
         public bool Handle()
         {
             if (!StdinDataRemain()) return false;
@@ -206,26 +216,34 @@ namespace ui.core
                 LocalDispatch(value);
                 return true;
             }
-            bool handled = false;
             List<byte> buf = new List<byte> { value };
-            if (StdinDataRemain()) // Check possible ANSI?
-            {
-                byte v2 = Read();
-                buf.Add(v2);
-                if (v2 == (byte)'[' && StdinDataRemain())
+            List<byte> unhandled_buf = new List<byte> { };
+            Task t = Task.Run(() =>
                 {
                     string remain = ReadStdinToEnd();
                     buf = (buf.AsByteBuffer() + remain).AsList();
-                    handled = _ansi_handlers
-                                .Select(handler => handler.Handle(buf.ToArray()))
-                                .ToArray() // Make sure all handler is ran, before checking if handled by one of the handler
-                                           // As there might be other handler need to run actions
-                                .Any(x=>x);
-
+                    List<byte> inner_buf = new List<byte>();
+                    foreach (byte b in buf)
+                    {
+                        if (b == (byte)'\x1b')
+                        {
+                            bool result = false;
+                            if (inner_buf.Count > 2 && inner_buf[1] == (byte)'[')
+                                result = ANSIDispatch(inner_buf);
+                            if (!result)
+                                unhandled_buf = (unhandled_buf.AsByteBuffer() + inner_buf.AsByteBuffer()).AsList();
+                            inner_buf = new List<byte>();
+                        }
+                        inner_buf.Add(b);
+                    }
                 }
+            );
+            bool done = t.Wait(200);
+            if (!done)
+            {
+                unhandled_buf = buf;
             }
-            if (handled) return true;
-            foreach (byte v in buf)
+            foreach (byte v in unhandled_buf)
             {
                 LocalDispatch(v);
             }

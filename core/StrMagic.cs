@@ -31,6 +31,9 @@ namespace ui.core
             return new ByteBuffer((byte[])buf.Clone());
         }
 
+        public int Length { get => buf.Length; }
+        public int Count { get => buf.Length; }
+
         public static ByteBuffer operator +(ByteBuffer curr, IEnumerable<char> other)
         {
             return curr + other.Select(x => (byte)x);
