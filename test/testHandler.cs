@@ -126,10 +126,12 @@ namespace ui.test
                 while (true)
                 {
                     Global.InputHandler.Handle();
-                    if (exitHandler.GetExitStatus()) return;
+                    if (exitHandler.GetExitStatus()) break;
                     System.Threading.Thread.Sleep(10);
                 }
-            } catch (Exception)
+                ConsoleIntermediateHandler.Reset();
+            }
+            catch (Exception)
             {
                 ConsoleIntermediateHandler.Reset();
                 throw;

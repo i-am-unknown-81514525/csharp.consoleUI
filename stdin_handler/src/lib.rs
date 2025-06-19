@@ -2,6 +2,7 @@
 use nix::sys::termios::{SetArg, Termios, tcgetattr, cfmakeraw, tcsetattr, ControlFlags, InputFlags, LocalFlags, OutputFlags};
 #[cfg(target_family = "windows")]
 use win32console::console::{HandleType, WinConsole};
+use std::fs::File;
 use std::io::{self, BufRead};
 use std::io::{Read, Write};
 use std::ffi::{CString, c_char};
@@ -191,12 +192,30 @@ pub extern "cdecl" fn stdin_data_remain() -> bool {
 //     }
 // } // From https://stackoverflow.com/questions/66582380/pass-string-from-c-sharp-to-rust-using-ffi
 
+const IS_DEBUG: bool = true;
+
 #[unsafe(no_mangle)]
 pub extern "cdecl" fn read_stdin_end()  -> *const c_char {
     let mut buf: Vec<u8> = vec![];
     if stdin_data_remain() {
         buf = (*io::stdin().lock().fill_buf().unwrap()).to_vec();
-        io::stdin().lock().consume(buf.iter().count());
+        if (IS_DEBUG) {
+            let mut file = std::fs::OpenOptions::new() // https://stackoverflow.com/a/30684735
+                .write(true)
+                .append(true)
+                .create(true)
+                .open("read-log")
+                .unwrap();
+
+            if let Err(e) = writeln!(file, "{:?}", buf.iter().map(|v| v.to_string()).collect::<Vec<String>>().join(" ")) {
+                eprintln!("Couldn't write to file: {}", e);
+            }
+        }
+        if buf[0] == '\x1b' as u8 && buf.len() == 1 { // 
+            io::stdin().lock().consume(buf.len() - 1); // ??? Somehow this work and don't question this
+        } else {
+            io::stdin().lock().consume(buf.len());
+        }
     }
     let c_string: CString = CString::new(buf.as_slice()).unwrap();
     let ptr: *const c_char = c_string.as_ptr();
