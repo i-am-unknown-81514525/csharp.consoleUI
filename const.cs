@@ -5,7 +5,7 @@ namespace ui
         INTERRUPT = 3,
         TAB = 9,
         NEWLINE = 13,
-        ESC = 27.
+        ESC = 27,
         SPACE = 32,
         BACKSPACE = 127,
         INSERT = 245, // SPECIAL: \x1b[2~

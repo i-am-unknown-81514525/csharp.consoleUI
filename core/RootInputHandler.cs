@@ -256,7 +256,7 @@ namespace ui.core
             return true;
         }
 
-        private void LocalDispatch(byte value)
+        public void LocalDispatch(byte value)
         {
             checkLock();
             _hasLockChange = false; // This is not thread safe
