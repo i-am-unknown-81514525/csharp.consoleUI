@@ -154,31 +154,31 @@ namespace ui.core
                 System.Threading.Thread.Sleep(1);
                 if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
                 {
-                    WindowConsoleHandler.StdinDataRemain();
+                    return WindowConsoleHandler.StdinDataRemain();
                 }
                 else
                 {
-                    PosixConsoleHandler.StdinDataRemain();
+                    return PosixConsoleHandler.StdinDataRemain();
                 }
-                return Console.KeyAvailable;
+                // return Console.KeyAvailable;
             }
 
             public static string ReadStdinToEnd()
             {
-                List<byte> buf = new List<byte>();
-                while (StdinDataRemain())
+                // List<byte> buf = new List<byte>();
+                // while (StdinDataRemain())
+                // {
+                //     buf.Add(Read());
+                // }
+                // return buf.AsByteBuffer().AsString();
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
                 {
-                    buf.Add(Read());
+                    return WindowConsoleHandler.ReadStdinToEnd();
                 }
-                return buf.AsByteBuffer().AsString();
-                // if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-                // {
-                //     return WindowConsoleHandler.ReadStdinToEnd();
-                // }
-                // else
-                // {
-                //     return PosixConsoleHandler.ReadStdinToEnd();
-                // }
+                else
+                {
+                    return PosixConsoleHandler.ReadStdinToEnd();
+                }
             }
         }
     }

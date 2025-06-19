@@ -84,8 +84,8 @@ namespace ui.test
                             ((char)x).ToString()
                     )
                 );
-            Console.WriteLine(content);
-            return false;
+            Console.Write(content);
+            return true;
         }
     }
 

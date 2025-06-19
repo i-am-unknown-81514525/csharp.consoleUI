@@ -184,8 +184,9 @@ pub extern "cdecl" fn stdin_data_remain() -> bool {
 #[unsafe(no_mangle)]
 pub extern "cdecl" fn read_stdin_end()  -> *const c_char {
     let mut buf: Vec<u8> = vec![];
-    while stdin_data_remain() {
-        buf.push(read_stdin());
+    if stdin_data_remain() {
+        buf = (*io::stdin().lock().fill_buf().unwrap()).to_vec();
+        io::stdin().lock().consume(buf.iter().count());
     }
     let c_string: CString = CString::new(buf.as_slice()).unwrap();
     let ptr: *const c_char = c_string.as_ptr();

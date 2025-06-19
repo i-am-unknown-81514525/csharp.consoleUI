@@ -220,7 +220,7 @@ namespace ui.core
                                 .Select(handler => handler.Handle(buf.ToArray()))
                                 .ToArray() // Make sure all handler is ran, before checking if handled by one of the handler
                                            // As there might be other handler need to run actions
-                                .Any();
+                                .Any(x=>x);
 
                 }
             }
