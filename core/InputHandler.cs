@@ -12,6 +12,7 @@ namespace ui.core
 
     public abstract class InputHandler
     {
+        private LockStatus _prevLockStatus = LockStatus.NoLock;
         private LockStatus _lockStatus = LockStatus.NoLock;
         internal List<byte> Buffer = new List<byte>(); // buffer should only be stored when a lock is acquired
         private bool _allowModifyStatus = false;
@@ -21,6 +22,7 @@ namespace ui.core
         }
 
         public LockStatus GetLockStatus() => _lockStatus;
+        internal LockStatus GetPrevLockStatus() => _prevLockStatus;
 
         private void ResetBuffer()
         {
@@ -117,6 +119,7 @@ namespace ui.core
             {
                 throw new LockUnpermitChangeException();
             }
+            _prevLockStatus = _lockStatus;
             _lockStatus = status;
         }
 

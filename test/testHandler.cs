@@ -44,6 +44,30 @@ namespace ui.test
         public bool GetExitStatus() => exit;
     }
 
+    internal class InputTriggerHandler : InputHandler
+    {
+        private bool enableInput = false;
+
+        internal override void Handle(RootInputHandler root)
+        {
+            enableInput = false;
+            if (GetLockStatus() > LockStatus.NoLock)
+            {
+                enableInput = true;
+                this.SetLockStatus(LockStatus.NoLock);
+                root.LockChangeAnnounce(this);
+            }
+        }
+
+        internal override LockStatus Validate()
+        {
+            if (Buffer.Count > 0 && Buffer[0] == (byte)'i') return LockStatus.SharedLock;
+            return LockStatus.NoLock;
+        }
+
+        public bool GetTriggerStatus() => enableInput;
+    }
+
     // ReSharper disable once UnusedMember.Global
     internal class RndLockInputHandler : InputHandler
     {

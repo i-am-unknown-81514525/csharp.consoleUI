@@ -75,7 +75,7 @@ namespace ui.core
     {
         NoLock = 0,
         SharedLock = 1,
-        ExclusiveLock = 2
+        ExclusiveLock = 32767
     }
 
     public class RootInputHandler
@@ -152,30 +152,19 @@ namespace ui.core
 
         public void LockChangeAnnounce(InputHandler handler)
         {
-            LockStatus prev = LockStatus.SharedLock; // Make assumption that it is shared first, then check both
-            if (!_lockStatus.GetLockedHandler().Contains(handler))
-            {
-                prev = LockStatus.NoLock;
-                if (handler.GetLockStatus() != LockStatus.NoLock)
-                    throw new LockUnpermitChangeException();
-                return;
-            }
-            else if (!_lockStatus.GetIsShared())
-            {
-                prev = LockStatus.ExclusiveLock;
-            }
+            LockStatus prev = handler.GetPrevLockStatus();
             LockStatus current = handler.GetLockStatus();
             if (current > prev)
             {
                 throw new LockUnpermitChangeException("The new lock level cannot be greater than het current level");
             }
-            if (current == LockStatus.ExclusiveLock) { } // Nothing since unchanged
-            else if (current == LockStatus.SharedLock)
+            if (current == prev)
             {
-                _lockStatus = new SharedLock(_lockStatus.GetLockedHandler());
-                _hasLockChange = true;
+                return;
             }
-            else if (current == LockStatus.NoLock)
+            _lockStatus = new SharedLock(_lockStatus.GetLockedHandler());
+            _hasLockChange = true;
+            if (current == LockStatus.NoLock)
             {
                 _lockStatus.DropMember(handler);
                 if (_lockStatus.GetLockCount() == 0)
