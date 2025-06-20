@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using ui.core;
 
@@ -44,7 +45,7 @@ namespace ui.input
 
         internal virtual void Handle(byte value)
         {
-            if (!Enum.IsDefined(typeof(Keycode), value))
+            if (!Enum.IsDefined(typeof(KeyCode), value))
             {
                 onDefault(value);
                 return;
@@ -165,27 +166,27 @@ namespace ui.input
 
     public class MultiLineInputFieldHandler : InputFieldHandler
     {
-        internal (int row, int column) loc = (0, 0);
-        internal (int row, int column) vir_loc = (0, 0); // Suggestive location in multiline tranversal, which might not be valid
+        internal (uint row, uint column) loc = (0, 0);
+        internal (uint row, uint column) vir_loc = (0, 0); // Suggestive location in multiline tranversal, which might not be valid
 
-        internal int to1D((int row, int column) loc)
+        internal uint to1D((uint row, uint column) loc)
         {
             string[] op = content.Split('\n');
-            int idx = 0;
-            for (int i = 0; i < loc.row; i++)
+            uint idx = 0;
+            for (uint i = 0; i < loc.row; i++)
             {
-                idx += op[i].Length + 1;
+                idx += (uint)op[i].Length + 1;
             }
             idx += loc.column;
             return idx;
         }
-        internal (int row, int column) to1D(int idx)
+        internal (uint row, uint column) to2D(uint idx)
         {
-            int row = 0;
-            int column = 0;
-            for (int i = 0; i < idx; i++)
+            uint row = 0;
+            uint column = 0;
+            for (uint i = 0; i < idx; i++)
             {
-                byte value = content[i];
+                byte value = (byte)content[(int)i];
                 if (value == '\n')
                 {
                     row++;
@@ -199,27 +200,27 @@ namespace ui.input
             return (row, column);
         }
 
-        internal (int row, int column) Correct((int row, int column) loc)
+        internal (uint row, uint column) Correct((uint row, uint column) loc)
         {
             string[] strArr = content.Split('\n');
-            int row = loc.row;
-            int col = loc.column;
+            uint row = loc.row;
+            uint col = loc.column;
             if (row < 0) row = 0;
             if (col < 0) col = 0;
             if (row >= strArr.Length)
             {
                 if (strArr.Length > 0)
-                    row = strArr.Length - 1;
+                    row = (uint)strArr.Length - 1;
                 else
-                    row = strArr.Length;
+                    row = (uint)strArr.Length;
             }
             string data = strArr[row];
             if (col >= data.Length)
             {
                 if (data.Length > 0)
-                    col = data.Length - 1;
+                    col = (uint)data.Length - 1;
                 else
-                    col = data.Length;
+                    col = (uint)data.Length;
             }
             return (row, col);
         }
