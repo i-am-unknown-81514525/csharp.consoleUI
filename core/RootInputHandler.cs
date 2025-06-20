@@ -207,8 +207,18 @@ namespace ui.core
                     .Any(x => x);
         }
 
+        internal void MultiDispatch(List<byte> data)
+        {
+            foreach (byte v in data)
+            {
+                LocalDispatch(v);
+            }
+        }
+
         public bool Handle()
         {
+
+
             if (!StdinDataRemain()) return false;
             byte value = Read();
             if (value != (byte)'\x1b')
@@ -228,34 +238,30 @@ namespace ui.core
             if (!done)
             {
                 unhandled_buf = buf;
+                MultiDispatch(unhandled_buf);
+                return true;
             }
-            else
+            List<byte> inner_buf = new List<byte>();
+            foreach (byte b in buf)
             {
-                List<byte> inner_buf = new List<byte>();
-                foreach (byte b in buf)
+                if (b == (byte)'\x1b')
                 {
-                    if (b == (byte)'\x1b')
-                    {
-                        bool result = false;
-                        if (inner_buf.Count > 2 && inner_buf[1] == (byte)'[')
-                            result = ANSIDispatch(inner_buf);
-                        if (!result)
-                            unhandled_buf = (unhandled_buf.AsByteBuffer() + inner_buf.AsByteBuffer()).AsList();
-                        inner_buf = new List<byte>();
-                    }
-                    inner_buf.Add(b);
-                }
-                bool r1 = false;
-                if (inner_buf.Count > 2 && inner_buf[1] == (byte)'[')
-                    r1 = ANSIDispatch(inner_buf);
-                if (!r1)
-                    unhandled_buf = (unhandled_buf.AsByteBuffer() + inner_buf.AsByteBuffer()).AsList();
+                    bool result = false;
+                    if (inner_buf.Count > 2 && inner_buf[1] == (byte)'[')
+                        result = ANSIDispatch(inner_buf);
+                    if (!result)
+                        unhandled_buf = (unhandled_buf.AsByteBuffer() + inner_buf.AsByteBuffer()).AsList();
                     inner_buf = new List<byte>();
+                }
+                inner_buf.Add(b);
             }
-            foreach (byte v in unhandled_buf)
-            {
-                LocalDispatch(v);
-            }
+            bool r1 = false;
+            if (inner_buf.Count > 2 && inner_buf[1] == (byte)'[')
+                r1 = ANSIDispatch(inner_buf);
+            if (!r1)
+                unhandled_buf = (unhandled_buf.AsByteBuffer() + inner_buf.AsByteBuffer()).AsList();
+            inner_buf = new List<byte>();
+            MultiDispatch(unhandled_buf);
             return true;
         }
 
