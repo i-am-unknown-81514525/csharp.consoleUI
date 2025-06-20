@@ -2,10 +2,13 @@
 use nix::sys::termios::{SetArg, Termios, tcgetattr, cfmakeraw, tcsetattr, ControlFlags, InputFlags, LocalFlags, OutputFlags};
 #[cfg(target_family = "windows")]
 use win32console::console::{HandleType, WinConsole};
-// use std::fs::File;
+use std::fs::File;
 use std::io::{self, BufRead};
 use std::io::{Read, Write};
 use std::ffi::{CString, c_char};
+
+
+const IS_DEBUG: bool = false;
 
 #[cfg(target_family = "windows")]
 struct InputConsoleMode;
@@ -163,6 +166,18 @@ pub extern "cdecl" fn read_stdin() -> u8 {
     let mut stdin = io::stdin();
     let mut buffer = [0 as u8;1];
     stdin.read(&mut buffer).unwrap();
+    if IS_DEBUG {
+        let mut file = std::fs::OpenOptions::new() // https://stackoverflow.com/a/30684735
+            .write(true)
+            .append(true)
+            .create(true)
+            .open("read-log")
+            .unwrap();
+
+        if let Err(e) = writeln!(file, "{:?} {:?}", buffer[0].to_string(), " single") {
+            eprintln!("Couldn't write to file: {}", e);
+        }
+    }
     buffer[0]
 }
 
@@ -192,29 +207,52 @@ pub extern "cdecl" fn stdin_data_remain() -> bool {
 //     }
 // } // From https://stackoverflow.com/questions/66582380/pass-string-from-c-sharp-to-rust-using-ffi
 
-// const IS_DEBUG: bool = true;
+
+// #[unsafe(no_mangle)]
+// pub extern "cdecl" fn read_stdin_end(consume_less: bool)  -> *const c_char {
+//     let mut buf: Vec<u8> = vec![];
+//     if stdin_data_remain() {
+//         buf = (*io::stdin().lock().fill_buf().unwrap()).to_vec();
+//         if IS_DEBUG {
+//             let mut file = std::fs::OpenOptions::new() // https://stackoverflow.com/a/30684735
+//                 .write(true)
+//                 .append(true)
+//                 .create(true)
+//                 .open("read-log")
+//                 .unwrap();
+
+//             if let Err(e) = writeln!(file, "{:?} {:?}", buf.iter().map(|v| v.to_string()).collect::<Vec<String>>().join(" "), " multi") {
+//                 eprintln!("Couldn't write to file: {}", e);
+//             }
+//         }
+//         if consume_less { // 
+//             io::stdin().lock().consume(buf.len() - 1); // ??? Somehow this work and don't question this
+//         } else {
+//             io::stdin().lock().consume(buf.len());
+//         }
+//     }
+//     let c_string: CString = CString::new(buf.as_slice()).unwrap();
+//     let ptr: *const c_char = c_string.as_ptr();
+//     std::mem::forget(c_string);
+//     ptr
+// }
 
 #[unsafe(no_mangle)]
 pub extern "cdecl" fn read_stdin_end()  -> *const c_char {
     let mut buf: Vec<u8> = vec![];
     if stdin_data_remain() {
         buf = (*io::stdin().lock().fill_buf().unwrap()).to_vec();
-        // if (IS_DEBUG) {
-        //     let mut file = std::fs::OpenOptions::new() // https://stackoverflow.com/a/30684735
-        //         .write(true)
-        //         .append(true)
-        //         .create(true)
-        //         .open("read-log")
-        //         .unwrap();
+        if IS_DEBUG {
+            let mut file = std::fs::OpenOptions::new() // https://stackoverflow.com/a/30684735
+                .write(true)
+                .append(true)
+                .create(true)
+                .open("read-log")
+                .unwrap();
 
-        //     if let Err(e) = writeln!(file, "{:?}", buf.iter().map(|v| v.to_string()).collect::<Vec<String>>().join(" ")) {
-        //         eprintln!("Couldn't write to file: {}", e);
-        //     }
-        // }
-        if buf[0] == '\x1b' as u8 && buf.len() == 1 { // 
-            io::stdin().lock().consume(buf.len() - 1); // ??? Somehow this work and don't question this
-        } else {
-            io::stdin().lock().consume(buf.len());
+            if let Err(e) = writeln!(file, "{:?} {:?}", buf.iter().map(|v| v.to_string()).collect::<Vec<String>>().join(" "), " multi") {
+                eprintln!("Couldn't write to file: {}", e);
+            }
         }
     }
     let c_string: CString = CString::new(buf.as_slice()).unwrap();
@@ -223,6 +261,10 @@ pub extern "cdecl" fn read_stdin_end()  -> *const c_char {
     ptr
 }
 
+#[unsafe(no_mangle)]
+pub extern "cdecl" fn consume(amount: u32)  -> () {
+    io::stdin().lock().consume(amount as usize)
+}
 
 // https://notes.huy.rocks/en/string-ffi-rust.html
 // https://learn.microsoft.com/en-us/dotnet/framework/interop/default-marshalling-for-strings

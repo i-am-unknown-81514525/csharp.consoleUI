@@ -228,14 +228,9 @@ namespace ui.core
             }
             List<byte> buf = new List<byte> { value };
             List<byte> unhandled_buf = new List<byte> { };
-            Task t = Task.Run(() =>
-                {
-                    string remain = ReadStdinToEnd();
-                    buf = (buf.AsByteBuffer() + remain).AsList();
-                }
-            );
-            bool done = t.Wait(20);
-            if (!done)
+            string remain = ReadStdinToEnd();
+            buf = (buf.AsByteBuffer() + remain).AsList();
+            if (remain.Length == 0)
             {
                 unhandled_buf = buf;
                 MultiDispatch(unhandled_buf);

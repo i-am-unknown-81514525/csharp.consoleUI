@@ -10,10 +10,6 @@ namespace ui.core
 
     public static class ConsoleHandler
     {
-        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
-        private struct InteropsString {
-            [MarshalAs(UnmanagedType.LPStr)] public string f1;
-        }
         private static class WindowConsoleHandler
         {
             [DllImport("libstdin_handler.dll", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
@@ -30,6 +26,9 @@ namespace ui.core
 
             [DllImport("libstdin_handler.dll", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
             private static extern string read_stdin_end();
+
+            [DllImport("libstdin_handler", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
+            private static extern void consume(uint amount);
 
             public static byte readStdin() => read_stdin();
 
@@ -50,6 +49,11 @@ namespace ui.core
                 string src = read_stdin_end();
                 return src;
             }
+
+            internal static void Consume(uint size)
+            {
+                consume(size);
+            }
         }
 
         private static class PosixConsoleHandler
@@ -68,6 +72,9 @@ namespace ui.core
 
             [DllImport("libstdin_handler", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
             private static extern string read_stdin_end();
+
+            [DllImport("libstdin_handler", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
+            private static extern void consume(uint amount);
 
             public static byte readStdin() => read_stdin();
 
@@ -102,10 +109,17 @@ namespace ui.core
                 string src = read_stdin_end();
                 return src;
             }
+
+            internal static void Consume(uint size)
+            {
+                consume(size);
+            }
         }
 
         public static class ConsoleIntermediateHandler
         {
+
+
             public static void Setup()
             {
                 if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
@@ -151,34 +165,51 @@ namespace ui.core
 
             public static bool StdinDataRemain()
             {
-                System.Threading.Thread.Sleep(1);
-                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-                {
-                    return WindowConsoleHandler.StdinDataRemain();
-                }
-                else
-                {
-                    return PosixConsoleHandler.StdinDataRemain();
-                }
-                // return Console.KeyAvailable;
+                Task<bool> task = Task<bool>.Run(
+                    () =>
+                    {
+                        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                        {
+                            return WindowConsoleHandler.StdinDataRemain();
+                        }
+                        else
+                        {
+                            return PosixConsoleHandler.StdinDataRemain();
+                        }
+                    }
+                );
+                bool result = task.Wait(5);
+                return result && task.Result;
             }
 
             public static string ReadStdinToEnd()
             {
-                // List<byte> buf = new List<byte>();
-                // while (StdinDataRemain())
-                // {
-                //     buf.Add(Read());
-                // }
-                // return buf.AsByteBuffer().AsString();
-                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                Task<string> task = Task<string>.Run(
+                    () =>
+                    {
+                        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                        {
+                            return WindowConsoleHandler.ReadStdinToEnd();
+                        }
+                        else
+                        {
+                            return PosixConsoleHandler.ReadStdinToEnd();
+                        }
+                    }
+                );
+                bool result = task.Wait(10);
+                if (result)
                 {
-                    return WindowConsoleHandler.ReadStdinToEnd();
+                    if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                        {
+                            WindowConsoleHandler.Consume((uint)task.Result.Length);
+                        }
+                        else
+                        {
+                            PosixConsoleHandler.Consume((uint)task.Result.Length);
+                        }
                 }
-                else
-                {
-                    return PosixConsoleHandler.ReadStdinToEnd();
-                }
+                return result ? task.Result : "";
             }
         }
     }
