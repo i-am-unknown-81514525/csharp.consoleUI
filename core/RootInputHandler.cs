@@ -164,18 +164,10 @@ namespace ui.core
             }
             _lockStatus = new SharedLock(_lockStatus.GetLockedHandler());
             _hasLockChange = true;
-            if (current == LockStatus.NoLock)
+            _lockStatus.DropMember(handler);
+            if (_lockStatus.GetLockCount() == 0)
             {
-                _lockStatus.DropMember(handler);
-                if (_lockStatus.GetLockCount() == 0)
-                {
-                    _lockStatus = new SharedLock(Array.Empty<InputHandler>());
-                }
-                _hasLockChange = true;
-            }
-            else
-            {
-                throw new InvalidOperationException("Unexpected case");
+                _lockStatus = new SharedLock(Array.Empty<InputHandler>());
             }
         }
 
