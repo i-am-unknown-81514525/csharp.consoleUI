@@ -3,15 +3,15 @@ using ui.core;
 
 namespace ui.input
 {
-    public abstract class InputFieldHandler : InputHandler
+    public class InputFieldHandler : InputHandler
     {
-        private uint cursor = 0; // Position the place/delete // -1 for position to backspace
-        private uint size = 0;
+        internal uint cursor = 0; // Position the place/delete // -1 for position to backspace
+        internal uint size = 0;
         private bool isActive = false;
 
         internal byte? currBuf = null;
 
-        private string content = "";
+        internal string content = "";
 
         internal byte GetBuf()
         {
@@ -37,48 +37,58 @@ namespace ui.input
             }
         }
 
+        internal virtual void onDefault(byte value)
+        {
+            content += (char)value;
+        }
+
         internal virtual void Handle(byte value)
         {
-            switch (value)
+            if (!Enum.IsDefined(typeof(Keycode), value))
             {
-                case (byte)KeyCode.ARR_LEFT:
+                onDefault(value);
+                return;
+            }
+            switch ((KeyCode)value)
+            {
+                case KeyCode.ARR_LEFT:
                     onArrLeft();
                     break;
-                case (byte)KeyCode.ARR_RIGHT:
+                case KeyCode.ARR_RIGHT:
                     onArrRight();
                     break;
-                case (byte)KeyCode.ARR_UP:
+                case KeyCode.ARR_UP:
                     onArrUp();
                     break;
-                case (byte)KeyCode.ARR_DOWN:
+                case KeyCode.ARR_DOWN:
                     onArrDown();
                     break;
-                case (byte)KeyCode.INSERT:
+                case KeyCode.INSERT:
                     onInsertToggle();
                     break;
-                case (byte)KeyCode.SPECIAL_FOCUS:
+                case KeyCode.SPECIAL_FOCUS:
                     onApplicationFocus();
                     break;
-                case (byte)KeyCode.SPECIAL_UNFOCUS:
+                case KeyCode.SPECIAL_UNFOCUS:
                     onApplicationUnfocus();
                     break;
-                case (byte)KeyCode.BACKSPACE:
+                case KeyCode.BACKSPACE:
                     onBackspace();
                     break;
-                case (byte)KeyCode.DEL:
+                case KeyCode.DEL:
                     onDelete();
                     break;
-                case (byte)KeyCode.PG_UP:
+                case KeyCode.PG_UP:
                     onPgUp();
                     break;
-                case (byte)KeyCode.PG_DOWN:
+                case KeyCode.PG_DOWN:
                     onPgDown();
                     break;
                 default:
-                    content += (char)value;
+                    onDefault(value);
                     break;
-                
-            }   
+
+            }
         }
         internal virtual void onArrLeft()
         {
@@ -147,9 +157,106 @@ namespace ui.input
         {
             return (
                 isActive ?
-                LockStatus.SharedLock: // Reserve Exclusive Lock for ANSI, not lock against the handler when active
+                LockStatus.SharedLock : // Reserve Exclusive Lock for ANSI, not lock against the handler when active
                 LockStatus.NoLock
-            ); 
+            );
         }
+    }
+
+    public class MultiLineInputFieldHandler : InputFieldHandler
+    {
+        internal (int row, int column) loc = (0, 0);
+        internal (int row, int column) vir_loc = (0, 0); // Suggestive location in multiline tranversal, which might not be valid
+
+        internal int to1D((int row, int column) loc)
+        {
+            string[] op = content.Split('\n');
+            int idx = 0;
+            for (int i = 0; i < loc.row; i++)
+            {
+                idx += op[i].Length + 1;
+            }
+            idx += loc.column;
+            return idx;
+        }
+        internal (int row, int column) to1D(int idx)
+        {
+            int row = 0;
+            int column = 0;
+            for (int i = 0; i < idx; i++)
+            {
+                byte value = content[i];
+                if (value == '\n')
+                {
+                    row++;
+                    column = 0;
+                }
+                else
+                {
+                    column++;
+                }
+            }
+            return (row, column);
+        }
+
+        internal (int row, int column) Correct((int row, int column) loc)
+        {
+            string[] strArr = content.Split('\n');
+            int row = loc.row;
+            int col = loc.column;
+            if (row < 0) row = 0;
+            if (col < 0) col = 0;
+            if (row >= strArr.Length)
+            {
+                if (strArr.Length > 0)
+                    row = strArr.Length - 1;
+                else
+                    row = strArr.Length;
+            }
+            string data = strArr[row];
+            if (col >= data.Length)
+            {
+                if (data.Length > 0)
+                    col = data.Length - 1;
+                else
+                    col = data.Length;
+            }
+            return (row, col);
+        }
+
+        internal override void Handle(byte value)
+        {
+            base.Handle(value);
+            loc = to2D(cursor);
+        }
+
+        internal override void onArrUp()
+        {
+            if (vir_loc.row > 0)
+                vir_loc = (vir_loc.row - 1, vir_loc.column);
+            loc = Correct(vir_loc);
+        }
+
+        internal override void onArrDown()
+        {
+            if (vir_loc.row < content.Split('\n').Length - 1)
+                vir_loc = (vir_loc.row + 1, vir_loc.column);
+            loc = Correct(vir_loc);
+        }
+
+        internal override void onArrLeft()
+        {
+            base.onArrLeft();
+            loc = to2D(cursor);
+            vir_loc = to2D(cursor);
+        }
+
+        internal override void onArrRight()
+        {
+            base.onArrRight();
+            loc = to2D(cursor);
+            vir_loc = to2D(cursor);
+        }
+        
     }
 }
