@@ -4,10 +4,11 @@ namespace ui.core
 {
     public struct ConsoleSize
     {
-        public readonly int Height;
-        public readonly int Width;
 
-        public ConsoleSize(int height, int width)
+        public readonly int Width; // x
+        public readonly int Height; // y
+
+        public ConsoleSize(int width, int height)
         {
             if (height < 0 || width < 0) throw new InvalidOperationException("Cannot set negative size");
             Height = height;
@@ -45,26 +46,35 @@ namespace ui.core
 
     public class ConsoleCanva
     {
-        private ConsoleSize _size;
+        private ConsoleSize _size = new ConsoleSize(60, 40);
 
         private ConsoleSize _minSize = new ConsoleSize(60, 40);
         public ConsoleContent[,] ConsoleWindow = new ConsoleContent[120, 80];
 
         private ConsoleContent[,] previous = null;
 
-        internal void applyToNew((int height, int width) size)
+        internal void applyToNew((int width, int height) size)
         {
-            ConsoleContent[,] newWindow = new ConsoleContent[size.height, size.width];
+            ConsoleContent[,] newWindow = new ConsoleContent[size.width, size.height];
             for (int x = 0; x < previous.GetLength(0) && x < newWindow.GetLength(0); x++)
             {
                 for (int y = 0; y < previous.GetLength(1) && y < newWindow.GetLength(1); y++)
                 {
                     newWindow[x, y] = previous[x, y];
                 }
+                for (int y = previous.GetLength(1); y < newWindow.GetLength(1); y++)
+                {
+                    newWindow[x, y] = new ConsoleContent
+                    {
+                        content = " ",
+                        ansiPrefix = "",
+                        ansiPostfix = ""
+                    };
+                }
             }
             for (int x = previous.GetLength(0); x < newWindow.GetLength(0); x++)
             {
-                for (int y = previous.GetLength(1); y < newWindow.GetLength(1); y++)
+                for (int y = 0; y < newWindow.GetLength(1); y++)
                 {
                     newWindow[x, y] = new ConsoleContent
                     {
@@ -92,14 +102,14 @@ namespace ui.core
             {
                 throw new InvalidOperationException("The defined console size is too small");
             }
-            applyToNew((size.Height, size.Width));
+            applyToNew((size.Width, size.Height));
         }
 
         public void EventLoopPre() // Any handling required before the higher level abstraction
         {
-            _size = new ConsoleSize(Console.BufferHeight, Console.BufferWidth);
+            _size = new ConsoleSize(Console.BufferWidth, Console.BufferHeight);
             previous = ConsoleWindow;
-            applyToNew((Console.BufferHeight, Console.BufferWidth));
+            applyToNew((Console.BufferWidth, Console.BufferHeight));
         }
 
         internal string GetContent()
@@ -127,6 +137,11 @@ namespace ui.core
                 }
             }
             return prefix + outputBuffer + postfix;
+        }
+
+        public ConsoleSize GetConsoleSize()
+        {
+            return this._size;
         }
 
         public void EventLoopPost()
