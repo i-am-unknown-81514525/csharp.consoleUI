@@ -48,15 +48,25 @@ namespace ui.components
 
         public (uint x, uint y) GetChildAllocatedSize(BaseComponent component)
         {
-            if (childsMapping.Count(x => x.component == component) == 0)
+            if (!Contains(component))
             {
-                throw new InvalidOperationException("The parent doesn't have this direct challenge");
+                throw new InvalidOperationException("The parent doesn't have this direct child");
             }
             (uint _, uint _2, uint allocX, uint allocY) = childsMapping.Where(x => x.component == component).First().location;
             return (allocX, allocY);
         }
 
-        public void UpdateAllocSize()
+        public bool Contains(BaseComponent component)
+        {
+            return childsMapping.Select(x=>x.component).Count(x=>x==component) > 0;
+        }
+
+        public int IndexOf(BaseComponent component)
+        {
+            return childsMapping.Select(x=>x.component).ToList().IndexOf(component);
+        }
+
+        public bool UpdateAllocSize()
         {
             (uint x, uint y) old = allocSize;
             if (root == null)
@@ -71,34 +81,97 @@ namespace ui.components
             if (old != allocSize)
             {
                 SetHasUpdate();
+                return true;
             }
+            return false;
+        }
+
+        internal abstract void onResize();
+
+        internal void setSize(BaseComponent component, (uint x, uint y, uint allocX, uint allocY) loc)
+        {
+            if (!Contains(component))
+            {
+                childsMapping.Add((component, loc));
+                SetHasUpdate();
+            }
+            else
+            {
+                int idx = IndexOf(component);
+                if (loc != childsMapping[idx].location)
+                    SetHasUpdate();
+                childsMapping[idx] = (component, loc);
+            }
+        }
+
+        internal void Remove(BaseComponent component)
+        {
+            if (!Contains(component))
+            {
+                throw new InvalidOperationException("The component is not the direct child of the current component and cannot be removed");
+            }
+            int idx = IndexOf(component);
+            childsMapping.RemoveAt(idx);
+        }
+
+        internal virtual (bool isAdd, (BaseComponent, (uint, uint, uint, uint)) data) onAddHandler((BaseComponent, (uint, uint, uint, uint)) child)
+        {
+            return (true, child);
+        }
+
+        public bool AddChildComponent(BaseComponent component, (uint x, uint y, uint allocX, uint allocY) loc)
+        {
+            (bool isAdd, (BaseComponent, (uint, uint, uint, uint)) data) = onAddHandler((component, loc));
+            if (!isAdd)
+            {
+                return false;
+            }
+            childsMapping.Add(data);
+            SetHasUpdate();
+            return true;
         }
 
         public virtual ConsoleContent[,] Render()
         {
+            CheckLock();
+            bool hasResize = UpdateAllocSize();
+            if (hasResize)
+            {
+                onResize();
+            }
             if (!GetHasUpdate())
             {
                 return (ConsoleContent[,])contentPlace.Clone();
             }
             ConsoleContent[,] newArr = new ConsoleContent[allocSize.x, allocSize.y];
-            foreach ((BaseComponent component, (uint x, uint y, uint allocX, uint allocY) meta) compLoc in childsMapping)
+            _lock = true;
+            try
             {
-                newArr = CopyTo(
-                    changeSize(
-                        compLoc.component.Render(),
-                        (compLoc.meta.allocX, compLoc.meta.allocY),
-                        new ConsoleContent
-                        {
-                            content = " ",
-                            ansiPrefix = "",
-                            ansiPostfix = ""
-                        }
-                    ),
-                    newArr,
-                    (compLoc.meta.x, compLoc.meta.y))
-                ;
+                foreach ((BaseComponent component, (uint x, uint y, uint allocX, uint allocY) meta) compLoc in childsMapping)
+                {
+                    newArr = CopyTo(
+                        changeSize(
+                            compLoc.component.Render(),
+                            (compLoc.meta.allocX, compLoc.meta.allocY),
+                            new ConsoleContent
+                            {
+                                content = " ",
+                                ansiPrefix = "",
+                                ansiPostfix = ""
+                            }
+                        ),
+                        newArr,
+                        (compLoc.meta.x, compLoc.meta.y))
+                    ;
+                }
+                _lock = false;
+                return newArr;
             }
-            return newArr;
+            catch
+            {
+                _lock = false;
+                throw;
+            }
         }
 
     }
