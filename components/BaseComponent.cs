@@ -19,8 +19,9 @@ namespace ui.components
         private BaseComponent root;
 
         private (uint x, uint y) allocSize;
-        private List<(BaseComponent component, (uint x, uint y, uint allocX, uint allocY) location)> childsMapping =
-                new List<(BaseComponent, (uint, uint, uint, uint))>();
+        private List<(BaseComponent component, (uint x, uint y, uint allocX, uint allocY) location, int prioity)> childsMapping =
+                new List<(BaseComponent, (uint, uint, uint, uint), int)>(); // Lower value -> earlier to render = lower prioity (being override by higher value)
+                // The component writer decide itself override on other or other overide on itself by call order
 
         internal ConsoleContent[,] contentPlace = new ConsoleContent[0, 0];
 
@@ -43,6 +44,20 @@ namespace ui.components
             if (_lock)
             {
                 throw new UnpermitHierarchyChangeException("Cannot call parent change function from child");
+            }
+        }
+
+        internal virtual void onClick(ConsoleLocation pressLocation)
+        {
+            foreach (var compLoc in childsMapping.OrderByDescending(x => x.prioity))
+            {
+                (uint lx, uint ly) = (compLoc.location.x, compLoc.location.y);
+                (uint hx, uint hy) = (lx + compLoc.location.allocX, ly + compLoc.location.allocY);
+                if (lx <= pressLocation.x && pressLocation.x <= lx && ly <= pressLocation.y && pressLocation.y <= hy)
+                {
+                    compLoc.component.onClick(pressLocation);
+                    return;
+                }
             }
         }
 
@@ -88,19 +103,21 @@ namespace ui.components
 
         internal abstract void onResize();
 
-        internal void setSize(BaseComponent component, (uint x, uint y, uint allocX, uint allocY) loc)
+        internal void setSize(BaseComponent component, (uint x, uint y, uint allocX, uint allocY) loc, int? prioity=null)
         {
             if (!Contains(component))
             {
-                childsMapping.Add((component, loc));
+                if (prioity == null) prioity = 0;
+                childsMapping.Add((component, loc, (int)prioity));
                 SetHasUpdate();
             }
             else
             {
                 int idx = IndexOf(component);
-                if (loc != childsMapping[idx].location)
+                if (prioity == null) prioity = childsMapping[idx].prioity;
+                if (loc != childsMapping[idx].location || prioity != childsMapping[idx].prioity)
                     SetHasUpdate();
-                childsMapping[idx] = (component, loc);
+                childsMapping[idx] = (component, loc, (int)prioity);
             }
         }
 
@@ -114,14 +131,14 @@ namespace ui.components
             childsMapping.RemoveAt(idx);
         }
 
-        internal virtual (bool isAdd, (BaseComponent, (uint, uint, uint, uint)) data) onAddHandler((BaseComponent, (uint, uint, uint, uint)) child)
+        internal virtual (bool isAdd, (BaseComponent, (uint, uint, uint, uint), int) data) onAddHandler((BaseComponent, (uint, uint, uint, uint), int) child)
         {
             return (true, child);
         }
 
-        public bool AddChildComponent(BaseComponent component, (uint x, uint y, uint allocX, uint allocY) loc)
+        public bool AddChildComponent(BaseComponent component, (uint x, uint y, uint allocX, uint allocY) loc, int prioity)
         {
-            (bool isAdd, (BaseComponent, (uint, uint, uint, uint)) data) = onAddHandler((component, loc));
+            (bool isAdd, (BaseComponent, (uint, uint, uint, uint), int) data) = onAddHandler((component, loc, prioity));
             if (!isAdd)
             {
                 return false;
@@ -130,6 +147,8 @@ namespace ui.components
             SetHasUpdate();
             return true;
         }
+        
+
 
         public virtual ConsoleContent[,] Render()
         {
@@ -147,7 +166,10 @@ namespace ui.components
             _lock = true;
             try
             {
-                foreach ((BaseComponent component, (uint x, uint y, uint allocX, uint allocY) meta) compLoc in childsMapping)
+                foreach (
+                    (BaseComponent component, (uint x, uint y, uint allocX, uint allocY) meta, int prioity) compLoc
+                    in childsMapping.OrderBy(x => x.prioity)
+                )
                 {
                     newArr = CopyTo(
                         changeSize(
