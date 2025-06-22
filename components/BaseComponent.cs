@@ -85,7 +85,7 @@ namespace ui.components
                 onActive();
                 return true;
             }
-            catch (DeactiveIgnoreNotice e)
+            catch (DeactiveIgnoreNotice)
             {
                 return false;
             }
