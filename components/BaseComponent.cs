@@ -16,16 +16,16 @@ namespace ui.components
 
     public abstract class BaseComponent
     {
-        private BaseComponent root;
+        private BaseComponent root = null;
 
-        private (uint x, uint y) allocSize;
+        private (uint x, uint y) allocSize = (0, 0);
         private List<(BaseComponent component, (uint x, uint y, uint allocX, uint allocY) location, int prioity)> childsMapping =
                 new List<(BaseComponent, (uint, uint, uint, uint), int)>(); // Lower value -> earlier to render = lower prioity (being override by higher value)
                 // The component writer decide itself override on other or other overide on itself by call order
 
         internal ConsoleContent[,] contentPlace = new ConsoleContent[0, 0];
 
-        private bool _localHasUpdate = false;
+        private bool _localHasUpdate = true;
 
         private bool _lock = false; // Any active change called to upper level class would enable this lock
 
@@ -45,6 +45,24 @@ namespace ui.components
             {
                 throw new UnpermitHierarchyChangeException("Cannot call parent change function from child");
             }
+        }
+
+        public BaseComponent getParent()
+        {
+            return root;
+        }
+
+        public void setParent(BaseComponent component)
+        {
+            if (component == null)
+            {
+                throw new InvalidOperationException("Cannot set parent to empty");
+            }
+            if (root != null)
+            {
+                throw new InvalidOperationException("A parent already exist for the component, cannot modify");
+            }
+            root = component;
         }
 
         internal virtual void onClick(ConsoleLocation pressLocation)
