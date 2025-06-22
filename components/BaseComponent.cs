@@ -200,12 +200,7 @@ namespace ui.components
                         changeSize(
                             compLoc.component.RenderExternal(),
                             (compLoc.meta.allocX, compLoc.meta.allocY),
-                            new ConsoleContent
-                            {
-                                content = " ",
-                                ansiPrefix = "",
-                                ansiPostfix = ""
-                            }
+                            ConsoleContent.getDefault()
                         ),
                         newArr,
                         (compLoc.meta.x, compLoc.meta.y))

@@ -9,8 +9,16 @@ namespace ui.core
         public string ansiPostfix { get; set; }
 
         public new string ToString() => (ansiPrefix ?? "") + content.ToString() + (ansiPostfix ?? "");
-        
 
+        public static ConsoleContent getDefault()
+        {
+            return new ConsoleContent
+                        {
+                            content = " ",
+                            ansiPrefix = "",
+                            ansiPostfix = ""
+                        };
+        }
     }
 
     public class ConsoleCanva
@@ -33,24 +41,14 @@ namespace ui.core
                 }
                 for (int y = previous.GetLength(1); y < newWindow.GetLength(1); y++)
                 {
-                    newWindow[x, y] = new ConsoleContent
-                    {
-                        content = " ",
-                        ansiPrefix = "",
-                        ansiPostfix = ""
-                    };
+                    newWindow[x, y] = ConsoleContent.getDefault();
                 }
             }
             for (int x = previous.GetLength(0); x < newWindow.GetLength(0); x++)
             {
                 for (int y = 0; y < newWindow.GetLength(1); y++)
                 {
-                    newWindow[x, y] = new ConsoleContent
-                    {
-                        content = " ",
-                        ansiPrefix = "",
-                        ansiPostfix = ""
-                    };
+                    newWindow[x, y] = ConsoleContent.getDefault();
                 }
             }
         }
