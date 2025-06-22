@@ -13,6 +13,8 @@ namespace ui.components
         public UnpermitHierarchyChangeException(string message) : base(message) {}
         public UnpermitHierarchyChangeException() : base() {}
     }
+    
+    public class DeactiveIgnoreNotice : Exception { }
 
     public abstract class BaseComponent
     {
@@ -21,13 +23,75 @@ namespace ui.components
         private (uint x, uint y) allocSize = (0, 0);
         private List<(BaseComponent component, (uint x, uint y, uint allocX, uint allocY) location, int prioity)> childsMapping =
                 new List<(BaseComponent, (uint, uint, uint, uint), int)>(); // Lower value -> earlier to render = lower prioity (being override by higher value)
-                // The component writer decide itself override on other or other overide on itself by call order
+                                                                            // The component writer decide itself override on other or other overide on itself by call order
 
         internal ConsoleContent[,] contentPlace = new ConsoleContent[0, 0];
 
         private bool _localHasUpdate = true;
 
         private bool _lock = false; // Any active change called to upper level class would enable this lock
+
+        private bool _isActive = false;
+
+        private bool _deactive_recurr_lock = false;
+
+        public bool getIsActive() => _isActive;
+
+        public bool getContainsActive()
+        {
+            return getIsActive() || childsMapping.Select(x => x.component.getContainsActive()).Any();
+        }
+
+        public void DeactiveAll()
+        {
+            if (_deactive_recurr_lock) return;
+            _deactive_recurr_lock = true;
+            try
+            {
+                if (getIsActive())
+                {
+                    _isActive = false;
+                }
+                else if (getContainsActive())
+                {
+                    foreach (BaseComponent comp in childsMapping.Select(x => x.component).ToList())
+                    {
+                        comp.DeactiveAll();
+                    }
+                }
+                else
+                {
+                    if (root != null)
+                    {
+                        root.DeactiveAll();
+                    }
+                }
+                _deactive_recurr_lock = false;
+            }
+            catch
+            {
+                _deactive_recurr_lock = false;
+                throw;
+            }
+        }
+
+        internal bool setActive()
+        {
+            try
+            {
+                DeactiveAll();
+                _isActive = true;
+                _localHasUpdate = true;
+                onActive();
+                return true;
+            }
+            catch (DeactiveIgnoreNotice e)
+            {
+                return false;
+            }
+        }
+
+        internal virtual void onActive() { }
 
         public bool GetHasUpdate()
         {
@@ -65,7 +129,7 @@ namespace ui.components
             root = component;
         }
 
-        internal virtual void onClick(ConsoleLocation pressLocation)
+        internal bool ClickPropagationHandler(ConsoleLocation pressLocation)
         {
             foreach (var compLoc in childsMapping.OrderByDescending(x => x.prioity))
             {
@@ -74,9 +138,17 @@ namespace ui.components
                 if (lx <= pressLocation.x && pressLocation.x <= lx && ly <= pressLocation.y && pressLocation.y <= hy)
                 {
                     compLoc.component.onClick(pressLocation);
-                    return;
+                    return true;
                 }
             }
+            return false;
+        }
+
+        internal virtual void onClick(ConsoleLocation pressLocation)
+        {
+            bool isPropagate = ClickPropagationHandler(pressLocation);
+            if (!isPropagate)
+                setActive();
         }
 
         public (uint x, uint y) GetChildAllocatedSize(BaseComponent component)
@@ -91,12 +163,12 @@ namespace ui.components
 
         public bool Contains(BaseComponent component)
         {
-            return childsMapping.Select(x=>x.component).Count(x=>x==component) > 0;
+            return childsMapping.Select(x => x.component).Count(x => x == component) > 0;
         }
 
         public int IndexOf(BaseComponent component)
         {
-            return childsMapping.Select(x=>x.component).ToList().IndexOf(component);
+            return childsMapping.Select(x => x.component).ToList().IndexOf(component);
         }
 
         public bool UpdateAllocSize()
@@ -122,7 +194,7 @@ namespace ui.components
 
         internal abstract void onResize();
 
-        internal void setSize(BaseComponent component, (uint x, uint y, uint allocX, uint allocY) loc, int? prioity=null)
+        internal void setSize(BaseComponent component, (uint x, uint y, uint allocX, uint allocY) loc, int? prioity = null)
         {
             if (!Contains(component))
             {
