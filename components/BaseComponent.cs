@@ -83,6 +83,7 @@ namespace ui.components
 
         public bool UpdateAllocSize()
         {
+            CheckLock();
             (uint x, uint y) old = allocSize;
             if (root == null)
             {
@@ -138,6 +139,7 @@ namespace ui.components
 
         public bool AddChildComponent(BaseComponent component, (uint x, uint y, uint allocX, uint allocY) loc, int prioity)
         {
+            CheckLock();
             (bool isAdd, (BaseComponent, (uint, uint, uint, uint), int) data) = onAddHandler((component, loc, prioity));
             if (!isAdd)
             {
