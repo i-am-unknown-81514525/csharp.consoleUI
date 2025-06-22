@@ -149,20 +149,25 @@ namespace ui.components
             SetHasUpdate();
             return true;
         }
-        
 
+        public ConsoleContent[,] RenderExternal()
+        {
+            CheckLock();
+            if (!GetHasUpdate())
+            {
+                return (ConsoleContent[,])contentPlace.Clone();
+            }
+            _localHasUpdate = false;
+            return Render();
+        }
 
-        public virtual ConsoleContent[,] Render()
+        internal virtual ConsoleContent[,] Render()
         {
             CheckLock();
             bool hasResize = UpdateAllocSize();
             if (hasResize)
             {
                 onResize();
-            }
-            if (!GetHasUpdate())
-            {
-                return (ConsoleContent[,])contentPlace.Clone();
             }
             ConsoleContent[,] newArr = new ConsoleContent[allocSize.x, allocSize.y];
             _lock = true;
@@ -175,7 +180,7 @@ namespace ui.components
                 {
                     newArr = CopyTo(
                         changeSize(
-                            compLoc.component.Render(),
+                            compLoc.component.RenderExternal(),
                             (compLoc.meta.allocX, compLoc.meta.allocY),
                             new ConsoleContent
                             {
