@@ -10,10 +10,10 @@ namespace ui.components
 
     public class UnpermitHierarchyChangeException : InvalidOperationException
     {
-        public UnpermitHierarchyChangeException(string message) : base(message) {}
-        public UnpermitHierarchyChangeException() : base() {}
+        public UnpermitHierarchyChangeException(string message) : base(message) { }
+        public UnpermitHierarchyChangeException() : base() { }
     }
-    
+
     public class DeactiveIgnoreNotice : Exception { }
 
     public abstract class BaseComponent
@@ -27,6 +27,8 @@ namespace ui.components
 
         internal ConsoleContent[,] contentPlace = new ConsoleContent[0, 0];
 
+        internal bool noParent = false;
+
         private bool _localHasUpdate = true;
 
         private bool _lock = false; // Any active change called to upper level class would enable this lock
@@ -35,11 +37,23 @@ namespace ui.components
 
         private bool _deactive_recurr_lock = false;
 
+        private bool _frame_recurr_lock = false;
+
         public bool getIsActive() => _isActive;
 
         public bool getContainsActive()
         {
             return getIsActive() || childsMapping.Select(x => x.component.getContainsActive()).Any();
+        }
+
+        internal List<(BaseComponent component, (uint x, uint y, uint allocX, uint allocY) location, int prioity)> GetMapping()
+        {
+            return childsMapping.ToList();
+        }
+
+        public (uint x, uint y) GetAllocSize()
+        {
+            return allocSize;
         }
 
         public void DeactiveAll()
@@ -93,6 +107,27 @@ namespace ui.components
 
         internal virtual void onActive() { }
 
+        internal virtual void onFrame() { }
+
+        public void onFrameExternal()
+        {
+            if (_frame_recurr_lock) return;
+            try
+            {
+                _frame_recurr_lock = true;
+                onFrame();
+                if (childsMapping != null)
+                    foreach (var compLoc in childsMapping)
+                        compLoc.component.onFrameExternal();
+                _frame_recurr_lock = false;
+            }
+            catch
+            {
+                _frame_recurr_lock = false;
+                throw;
+            }
+        }
+
         public bool GetHasUpdate()
         {
             return _localHasUpdate || childsMapping.Any(x => x.component.GetHasUpdate());
@@ -126,6 +161,10 @@ namespace ui.components
             {
                 throw new InvalidOperationException("A parent already exist for the component, cannot modify");
             }
+            if (noParent)
+            {
+                throw new InvalidOperationException("The component reject having a parent");
+            }
             root = component;
         }
 
@@ -142,6 +181,22 @@ namespace ui.components
                 }
             }
             return false;
+        }
+
+        internal virtual void onHover(ConsoleLocation location) { }
+
+        public virtual void onHoverExternal(ConsoleLocation location)
+        {
+            onHover(location);
+            foreach (var compLoc in childsMapping.OrderByDescending(x => x.prioity))
+            {
+                (uint lx, uint ly) = (compLoc.location.x, compLoc.location.y);
+                (uint hx, uint hy) = (lx + compLoc.location.allocX, ly + compLoc.location.allocY);
+                if (lx <= location.x && location.x <= lx && ly <= location.y && location.y <= hy)
+                {
+                    compLoc.component.onHover(location);
+                }
+            }
         }
 
         internal virtual void onClick(ConsoleLocation pressLocation)
@@ -287,6 +342,5 @@ namespace ui.components
                 throw;
             }
         }
-
     }
 }

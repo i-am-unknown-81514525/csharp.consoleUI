@@ -67,6 +67,7 @@
     <Compile Include="input\*.cs" />
     <Compile Include="components\*.cs"/>
     <Compile Include="utils\*.cs"/>
+    <Compile Include="math\*.cs"/>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
