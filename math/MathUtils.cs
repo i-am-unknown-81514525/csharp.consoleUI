@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Numerics;
 
 namespace ui.math
 {
@@ -30,6 +31,20 @@ namespace ui.math
             while (num2 != 0)
             {
                 long temp = num2;
+                num2 = num1 % num2;
+                num1 = temp;
+            }
+
+            return num1;
+        }
+
+        public static BigInteger factorize(BigInteger num1, BigInteger num2)
+        {
+            if (num1 < 0) num1 = -num1;
+            if (num2 < 0) num2 = -num2;
+            while (num2 != 0)
+            {
+                BigInteger temp = num2;
                 num2 = num1 % num2;
                 num1 = temp;
             }

@@ -1,11 +1,16 @@
 using System;
 using System.Runtime.CompilerServices;
+using System.Numerics;
 
 namespace ui.math
 {
+
+    public static class FracConfig {
+        public static int iterationLimit = 64;
+    }
     public class Fraction
     {
-        public readonly long numerator, denominator;
+        public readonly BigInteger numerator, denominator;
 
         public Fraction(long numerator, long denominator)
         {
@@ -14,10 +19,60 @@ namespace ui.math
             this.denominator = denominator / value;
         }
 
+        public Fraction(BigInteger numerator, long denominator)
+        {
+            BigInteger value = MathUtils.factorize(numerator, (BigInteger)denominator);
+            this.numerator = numerator / value;
+            this.denominator = denominator / value;
+        }
+
+        public Fraction(long numerator, BigInteger denominator)
+        {
+            BigInteger value = MathUtils.factorize((BigInteger)numerator, denominator);
+            this.numerator = numerator / value;
+            this.denominator = denominator / value;
+        }
+
+        public Fraction(BigInteger numerator, BigInteger denominator)
+        {
+            BigInteger value = MathUtils.factorize(numerator, denominator);
+            this.numerator = numerator / value;
+            this.denominator = denominator / value;
+        }
+
         public Fraction(long value)
         {
             this.numerator = value;
             this.denominator = 1;
+        }
+
+        public Fraction(double value)
+        {
+            // -5.12 -> -5/1, -0.12 -> -10/2, -0.24 -> -20/4, -0.48 
+            // -40/8, -0.96 -> -80/16, -1.92 => -81/16, -0.92, -162/32, -1.84 => -163/32, -0.84
+            // -> -326/64, -1.68 => -327/64, -0.68 -> -654/128, -1.36 => -655/128, -0.36 -> -1310/256, -0.72
+            // -2620/512, -1.44 => -2621/512, -0.44 -> -5242/1024, -0.88 -> -10484/2048, -1.76 => -10485/2048, -0.76
+            numerator = (BigInteger)value;
+            denominator = 1;
+            double remain = value % 1;
+            int it = 0;
+            while (remain != 0 && it < FracConfig.iterationLimit)
+            {
+                remain *= 2;
+                numerator <<= 1;
+                denominator <<= 1;
+                if (remain >= 1)
+                {
+                    remain -= 1;
+                    numerator += 1;
+                }
+                if (remain <= -1)
+                {
+                    remain += 1;
+                    numerator -= 1;
+                }
+                it += 1;
+            }
         }
 
         public static implicit operator double(Fraction fraction)
@@ -32,18 +87,18 @@ namespace ui.math
 
         public Fraction simplify()
         {
-            long value = MathUtils.factorize(numerator, denominator);
+            BigInteger value = MathUtils.factorize(numerator, denominator);
             return new Fraction(numerator / value, denominator / value);
         }
 
         public Fraction Add(Fraction other)
         {
             // 3/4 + 5/8 = (3*8+5*4)/8*4, = 44/32 = 11/8 
-            long v1 = MathUtils.factorize(this.denominator, other.denominator);
-            long denominator = this.denominator / v1 * other.denominator;
-            long leftNum = denominator / this.denominator * this.numerator;
-            long rightNum = denominator / other.denominator * other.numerator;
-            long numerator = leftNum + rightNum;
+            BigInteger v1 = MathUtils.factorize(this.denominator, other.denominator);
+            BigInteger denominator = this.denominator / v1 * other.denominator;
+            BigInteger leftNum = denominator / this.denominator * this.numerator;
+            BigInteger rightNum = denominator / other.denominator * other.numerator;
+            BigInteger numerator = leftNum + rightNum;
             return new Fraction(numerator, denominator);
         }
 
@@ -70,12 +125,12 @@ namespace ui.math
 
         public Fraction Multiply(Fraction other)
         {
-            long v1 = MathUtils.factorize(this.numerator, other.denominator);
-            long v2 = MathUtils.factorize(other.numerator, this.denominator);
+            BigInteger v1 = MathUtils.factorize(this.numerator, other.denominator);
+            BigInteger v2 = MathUtils.factorize(other.numerator, this.denominator);
             Fraction left = new Fraction(this.numerator / v1, this.denominator / v2);
             Fraction right = new Fraction(other.numerator / v2, other.denominator / v1);
-            long numerator = left.numerator * right.numerator;
-            long denominator = left.denominator * right.denominator;
+            BigInteger numerator = left.numerator * right.numerator;
+            BigInteger denominator = left.denominator * right.denominator;
             return new Fraction(numerator, denominator);
         }
 
@@ -84,10 +139,30 @@ namespace ui.math
             return Multiply(other.Invert());
         }
 
+        public bool isBigInteger()
+        {
+            BigInteger v1 = MathUtils.factorize(numerator, denominator);
+            return denominator == v1 || denominator == -v1 || numerator == 0;
+        }
+
+        public bool TryBigInteger(out BigInteger value)
+        {
+            value = 0;
+            if (!isBigInteger())
+                return false;
+            BigInteger v1 = MathUtils.factorize(numerator, denominator);
+            BigInteger num = numerator / v1;
+            BigInteger deno = denominator / v1;
+            value = num * deno; // deno for sign
+            return true;
+        }
+
         public bool isLong()
         {
-            long v1 = MathUtils.factorize(numerator, denominator);
-            return denominator == v1 || denominator == -v1 || numerator == 0;
+            bool stats = TryBigInteger(out BigInteger value);
+            if (!stats)
+                return false;
+            return value >= long.MinValue && value <= long.MaxValue;
         }
 
         public bool TryLong(out long value)
@@ -95,16 +170,14 @@ namespace ui.math
             value = 0;
             if (!isLong())
                 return false;
-            long v1 = MathUtils.factorize(numerator, denominator);
-            long num = numerator / v1;
-            long deno = denominator / v1;
-            value = num * deno; // deno for sign
+            TryBigInteger(out BigInteger v1);
+            value = (long)v1;
             return true;
         }
 
         public bool isInteger()
         {
-            bool stats = TryLong(out long value);
+            bool stats = TryBigInteger(out BigInteger value);
             if (!stats)
                 return false;
             return value >= int.MinValue && value <= int.MaxValue;
@@ -115,7 +188,7 @@ namespace ui.math
             value = 0;
             if (!isInteger())
                 return false;
-            TryLong(out long v1);
+            TryBigInteger(out BigInteger v1);
             value = (int)v1;
             return true;
         }

@@ -57,6 +57,7 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
+    <Reference Include="System.Numerics"/>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -64,6 +65,7 @@
     <Compile Include="input_handler\*.cs" />
     <Compile Include="*.cs" />
     <Compile Include="test\testHandler.cs" />
+    <Compile Include="test\prototype.cs" />
     <Compile Include="input\*.cs" />
     <Compile Include="components\*.cs"/>
     <Compile Include="utils\*.cs"/>
