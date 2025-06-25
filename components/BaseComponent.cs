@@ -235,6 +235,7 @@ namespace ui.components
 
         public virtual void onHoverExternal(ConsoleLocation location)
         {
+            CheckLock();
             onHover(location);
             foreach (var compLoc in childsMapping.OrderByDescending(x => x.prioity))
             {
@@ -242,7 +243,16 @@ namespace ui.components
                 (uint hx, uint hy) = (lx + compLoc.location.allocX, ly + compLoc.location.allocY);
                 if (lx <= location.x && location.x <= lx && ly <= location.y && location.y <= hy)
                 {
-                    compLoc.component.onHover(location);
+                    _lock = true;
+                    try
+                    {
+                        compLoc.component.onHover(location);
+                        _lock = false;
+                    }
+                    catch
+                    {
+                        _lock = false;
+                    }
                 }
             }
         }
