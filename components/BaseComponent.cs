@@ -36,12 +36,17 @@ namespace ui.components
         private bool _isActive = false; // There must only 0 or 1 components in the whole tree is active
                                         // This applied as a suggestion, where if a component is active, other component shouldn't have any of their input handler hold lock
                                         // This doesn't guarentee to applied and the code doesn't force such behaviour
-                                        // But instead just a guideline to follow by the coder
+                                        // But instead just a guideline to follow by the developer
                                         // A component active status can be deactive by DeactiveAll()
                                         // But can be countered by returning `false` on `onDeactive`
                                         // (Prioity: ignore _isActive -> DeactiveIgnoreNotice -> DeactiveAll)
 
         private bool _deactive_recurr_lock = false;
+        private bool _active_lock = false; // When onDeactive, calling setActive would have the unintend side-effect, 
+                                           // where _isActive would is still depend on onDeactive return result, not the calling of onActive
+                                           // Or under undiscover side effect (UB)
+                                           // Therefore the usage of such is restricted with apporiate error message
+                                           // To ask the developer to return false instead.
 
         private bool _frame_recurr_lock = false;
 
@@ -73,10 +78,22 @@ namespace ui.components
             {
                 return true;
             }
-            if (onDeactive())
+            try
             {
-                _isActive = false;
-                return true;
+                _active_lock = true;
+                if (onDeactive())
+                {
+                    _localHasUpdate = true;
+                    _isActive = false;
+                    _active_lock = false;
+                    return true;
+                }
+                _active_lock = false;
+            }
+            catch
+            {
+                _active_lock = false;
+                throw;
             }
             return false;
         }
@@ -118,6 +135,10 @@ namespace ui.components
 
         internal bool setActive()
         {
+            if (_active_lock)
+            {
+                throw new InvalidOperationException("Cannot setActive when running onDeactive handler, return false instead.");
+            }
             try
             {
                 DeactiveAll();
