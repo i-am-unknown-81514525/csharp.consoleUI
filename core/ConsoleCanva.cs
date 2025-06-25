@@ -72,6 +72,17 @@ namespace ui.core
             applyToNew((size.Width, size.Height));
         }
 
+        public void SetEmpty()
+        {
+            for (int x = 0; x < ConsoleWindow.GetLength(0); x++)
+            {
+                for (int y = 0; y < ConsoleWindow.GetLength(1); y++)
+                {
+                    ConsoleWindow[x, y] = ConsoleContent.getDefault();
+                }
+            }
+        }
+
         public void EventLoopPre() // Any handling required before the higher level abstraction
         {
             _size = new ConsoleSize(Console.BufferWidth, Console.BufferHeight);
