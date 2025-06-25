@@ -139,10 +139,12 @@ namespace ui.core
                     _lockStatus = LockStatus.NoLock;
                     root.LockChangeAnnounce(this);
                 }
-                _allowModifyStatus = false;
                 if (!InputConst.IgnoreHandlerHandleException) throw;
             }
-            _allowModifyStatus = false;
+            finally
+            {
+                _allowModifyStatus = false;
+            }
         }
     }
 

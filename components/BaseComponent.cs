@@ -85,15 +85,12 @@ namespace ui.components
                 {
                     _localHasUpdate = true;
                     _isActive = false;
-                    _active_lock = false;
                     return true;
                 }
-                _active_lock = false;
             }
-            catch
+            finally
             {
                 _active_lock = false;
-                throw;
             }
             return false;
         }
@@ -124,12 +121,10 @@ namespace ui.components
                         root.DeactiveAll();
                     }
                 }
-                _deactive_recurr_lock = false;
             }
-            catch
+            finally
             {
                 _deactive_recurr_lock = false;
-                throw;
             }
         }
 
@@ -167,12 +162,10 @@ namespace ui.components
                 if (childsMapping != null)
                     foreach (var compLoc in childsMapping)
                         compLoc.component.onFrameExternal();
-                _frame_recurr_lock = false;
             }
-            catch
+            finally
             {
                 _frame_recurr_lock = false;
-                throw;
             }
         }
 
@@ -248,9 +241,8 @@ namespace ui.components
                     try
                     {
                         compLoc.component.onHover(location);
-                        _lock = false;
                     }
-                    catch
+                    finally
                     {
                         _lock = false;
                     }
@@ -392,13 +384,11 @@ namespace ui.components
                         (compLoc.meta.x, compLoc.meta.y))
                     ;
                 }
-                _lock = false;
                 return newArr;
             }
-            catch
+            finally
             {
                 _lock = false;
-                throw;
             }
         }
     }
