@@ -201,6 +201,7 @@ namespace ui.components
 
         public void setParent(BaseComponent component)
         {
+            CheckLock();
             if (component == null)
             {
                 throw new InvalidOperationException("Cannot set parent to empty");
