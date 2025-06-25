@@ -14,7 +14,7 @@ namespace ui.components
         public UnpermitHierarchyChangeException() : base() { }
     }
 
-    public class DeactiveIgnoreNotice : Exception { }
+    internal class DeactiveIgnoreNotice : Exception { }
 
     public abstract class BaseComponent
     {
@@ -33,7 +33,13 @@ namespace ui.components
 
         private bool _lock = false; // Any active change called to upper level class would enable this lock
 
-        private bool _isActive = false;
+        private bool _isActive = false; // There must only 0 or 1 components in the whole tree is active
+                                        // This applied as a suggestion, where if a component is active, other component shouldn't have any of their input handler hold lock
+                                        // This doesn't guarentee to applied and the code doesn't force such behaviour
+                                        // But instead just a guideline to follow by the coder
+                                        // A component active status can be deactive by DeactiveAll()
+                                        // But can be countered by returning `false` on `onDeactive`
+                                        // (Prioity: ignore _isActive -> DeactiveIgnoreNotice -> DeactiveAll)
 
         private bool _deactive_recurr_lock = false;
 
@@ -56,6 +62,25 @@ namespace ui.components
             return allocSize;
         }
 
+        public virtual bool onDeactive()
+        {
+            return true;
+        }
+
+        internal bool setDeactive()
+        {
+            if (!getIsActive())
+            {
+                return true;
+            }
+            if (onDeactive())
+            {
+                _isActive = false;
+                return true;
+            }
+            return false;
+        }
+
         public void DeactiveAll()
         {
             if (_deactive_recurr_lock) return;
@@ -64,7 +89,9 @@ namespace ui.components
             {
                 if (getIsActive())
                 {
-                    _isActive = false;
+                    if (!setDeactive())
+                        throw new DeactiveIgnoreNotice();
+                    
                 }
                 else if (getContainsActive())
                 {
