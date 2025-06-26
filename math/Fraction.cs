@@ -254,6 +254,10 @@ namespace ui.math
 
         public string ToString()
         {
+            if (denominator == 0)
+            {
+                return $"{numerator.ToString()}";
+            }
             return $"{numerator.ToString()}/{denominator.ToString()}";
         }
     }
