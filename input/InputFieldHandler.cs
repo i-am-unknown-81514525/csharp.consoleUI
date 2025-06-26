@@ -7,7 +7,7 @@ namespace ui.input
     public class InputFieldHandler : InputHandler
     {
         internal uint cursor = 0; // Position the place/delete // -1 for position to backspace
-        internal uint size = 0;
+
         private bool isActive = false;
 
         internal byte? currBuf = null;
@@ -19,6 +19,11 @@ namespace ui.input
             byte value = Buffer[0];
             Buffer.RemoveAt(0);
             return value;
+        }
+
+        internal uint size
+        {
+            get => (uint)content.Length;
         }
 
         internal override void Handle(RootInputHandler root)
@@ -159,6 +164,8 @@ namespace ui.input
         {
             this.isActive = isActive;
         }
+
+        public bool GetActiveStatus() => isActive;
 
         internal override LockStatus Validate()
         {

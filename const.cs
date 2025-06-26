@@ -16,9 +16,9 @@ namespace ui
         DEL = 249, // SPECIAL: \x1b[3~
         SPECIAL_UNFOCUS = 250, // SPECIAL: \x1b[O
         SPECIAL_FOCUS = 251, // SPECIAL: \x1b[I
-        ARR_UP = 252, // SPECIAL: \x1b[A
-        ARR_DOWN = 253, // SPECIAL: \x1b[B
-        ARR_LEFT = 254, // SPECIAL: \x1b[C
-        ARR_RIGHT = 255 // SPECIAL: \x1b[D
+        ARR_UP = 252, // SPECIAL: \x1b[A, \x1bOA
+        ARR_DOWN = 253, // SPECIAL: \x1b[B, \x1bOB
+        ARR_RIGHT = 254, // SPECIAL: \x1b[C, \x1bOC
+        ARR_LEFT = 255 // SPECIAL: \x1b[D, \x1bOD
     }
 }

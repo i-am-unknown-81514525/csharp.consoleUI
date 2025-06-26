@@ -9,6 +9,15 @@ namespace ui.test
 {
     public class ValueFieldHandler : InputFieldHandler
     {
+        internal bool componentStatus = true;
+
+        internal void SetComponentStatus(bool status)
+        {
+            componentStatus = status;
+        }
+
+        internal bool GetComponentStatus() => componentStatus;
+
         internal override void onDefault(byte value)
         {
             base.onDefault(value);
@@ -17,7 +26,7 @@ namespace ui.test
 
         internal override void onEnter()
         {
-
+            componentStatus = false;
             Prototype.Next(content);
         }
 
@@ -29,14 +38,24 @@ namespace ui.test
             Prototype.Set(content);
             Prototype.WriteTable();
         }
+
+        internal override LockStatus Validate()
+        {
+            if (GetComponentStatus() && !GetActiveStatus() && (Buffer[0] == 'i' || Buffer[0] == 'i'))
+            {
+                SetActiveStatus(true);
+                return LockStatus.ExclusiveLock;
+            }
+            return base.Validate();
+        }
     }
 
-    internal class ANSISkipHandler : ANSIInputHandler
+    internal class NornalANSISkipHandler : ANSIInputHandler
     {
 
         public override bool Handle(byte[] buf)
         {
-            return true;
+            return buf[1] == '[';
         }
     }
 
@@ -193,7 +212,7 @@ namespace ui.test
             Global.InputHandler.Add(keyCodeHandler);
             handler = new ValueFieldHandler();
             Global.InputHandler.Add(handler);
-            Global.InputHandler.Add(new ANSISkipHandler());
+            Global.InputHandler.Add(new NornalANSISkipHandler());
             handler.SetActiveStatus(true);
             ConsoleHandler.ConsoleIntermediateHandler.Setup();
             ConsoleHandler.ConsoleIntermediateHandler.ANSISetup();
