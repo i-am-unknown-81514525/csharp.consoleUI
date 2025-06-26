@@ -40,7 +40,7 @@ namespace ui.input
 
         internal virtual void onDefault(byte value)
         {
-            content += (char)value;
+            content += content.Substring(0,(int)cursor) + (char)value + (cursor < content.Length - 1?content.Substring((int)cursor, content.Length - (int)cursor): "");
             cursor += 1;
         }
 

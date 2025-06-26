@@ -14,13 +14,19 @@ namespace ui.test
             base.onDefault(value);
             Prototype.Set(content);
             File.AppendAllText("log-loc", $"recv {value}\n");
-            Prototype.WriteTable();
         }
 
         internal override void onEnter()
         {
 
             Prototype.Next(content);
+        }
+
+        internal override void Handle(byte value)
+        {
+            base.Handle(value);
+            Prototype.Set(content);
+            Prototype.WriteTable();
         }
     }
 
