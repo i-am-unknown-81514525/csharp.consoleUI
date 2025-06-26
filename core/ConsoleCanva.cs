@@ -179,12 +179,13 @@ namespace ui.core
         ConsoleContent[,] data = new ConsoleContent[text.Length, 1];
         for (int i = 0; i < text.Length; i++)
         {
-            data[i, 0] = new ConsoleContent()
-            {
-                content = text[i].ToString(),
-                ansiPrefix = ansiPrefix,
-                ansiPostfix = ansiPostfix
-            };
+                data[i, 0] = new ConsoleContent()
+                {
+                    content = text[i].ToString(),
+                    ansiPrefix = ansiPrefix,
+                    ansiPostfix = ansiPostfix,
+                    isContent = true
+                };
         }
 
         return data;
@@ -201,6 +202,7 @@ namespace ui.core
                 content = text[i].ToString(),
                 ansiPrefix = ansiPrefix,
                 ansiPostfix = ansiPostfix,
+                isContent = true
             };
         }
 

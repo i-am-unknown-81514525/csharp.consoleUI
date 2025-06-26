@@ -268,6 +268,7 @@ namespace ui.core
                     _recursivePreventLock = false;
                     throw;
                 }
+                
                 _recursivePreventLock = false;
             }
             foreach (InputHandler handler in prevHandlers) // Previous handelr would be priotize

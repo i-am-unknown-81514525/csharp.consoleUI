@@ -69,7 +69,7 @@ namespace ui.test
                 for (int y = 0; y < height; y++)
                 {
                     int n = (x - 6) / 8;
-                    Console.Write($"{n} {y},");
+                    // Console.Write($"{n} {y},");
                     File.AppendAllText("log-loc", $"{n} {y}\n");
                     string ansiPrefix = "";
                     string ansiPostfix = "";
@@ -85,7 +85,7 @@ namespace ui.test
             }
             for (int y = 0; y < height; y++)
             {
-                int x = 6 + (8 * table.GetLength(0) - 1);
+                int x = 6 + (8 * (table.GetLength(0) - 1));
                 string ansiPrefix = "";
                 string ansiPostfix = "";
                 if (((uint)table.GetLength(0) - 1, (uint)y) == loc)
@@ -183,6 +183,7 @@ namespace ui.test
                     Global.InputHandler.Handle();
                     if (exitHandler.GetExitStatus()) break;
                     HandleNext();
+                    Prototype.WriteTable();
                     System.Threading.Thread.Sleep(10);
                 }
             }
