@@ -13,7 +13,6 @@ namespace ui.test
         {
             base.onDefault(value);
             Prototype.Set(content);
-            File.AppendAllText("log-loc", $"recv {value}\n");
         }
 
         internal override void onEnter()
@@ -24,7 +23,9 @@ namespace ui.test
 
         internal override void Handle(byte value)
         {
+            uint pre = cursor;
             base.Handle(value);
+            File.AppendAllText("log-loc", $"recv {value}, pre {pre}, cursor {cursor}, content {content}\n");
             Prototype.Set(content);
             Prototype.WriteTable();
         }
@@ -76,7 +77,7 @@ namespace ui.test
                 {
                     int n = (x - 6) / 8;
                     // Console.Write($"{n} {y},");
-                    File.AppendAllText("log-loc", $"{n} {y}\n");
+                    // File.AppendAllText("log-loc", $"{n} {y}\n");
                     string ansiPrefix = "";
                     string ansiPostfix = "";
                     if (((uint)n, (uint)y) == loc)
@@ -98,6 +99,11 @@ namespace ui.test
                 {
                     ansiPrefix = "\x1b[30;47m";
                     ansiPostfix = "\x1b[37;40m";
+                }
+                if (y == 0)
+                {
+                    ConsoleCanva.WriteStringOnCanva(Global.consoleCanva, $"      ", (x, y));
+                    continue;
                 }
                 ConsoleCanva.WriteStringOnCanva(Global.consoleCanva, $"<=", (x, y));
                 ConsoleCanva.WriteStringOnCanva(Global.consoleCanva, (strTable[strTable.GetLength(0) - 1, y] ?? "").PadRight(3).Substring(0, 3), (x + 2, y), ansiPrefix, ansiPostfix);
@@ -130,7 +136,7 @@ namespace ui.test
                     table[loc.varLoc, loc.constLoc] = frac;
                     uint varLoc = loc.varLoc + 1;
                     uint constLoc = loc.constLoc;
-                    if (varLoc >= table.GetLength(0))
+                    if (varLoc >= table.GetLength(0) || (varLoc >= table.GetLength(0) - 1 && constLoc == 0))
                     {
                         varLoc = 0;
                         constLoc += 1;
@@ -148,6 +154,16 @@ namespace ui.test
             handler = new ValueFieldHandler();
             handler.SetActiveStatus(true);
             Global.InputHandler.Add(handler);
+        }
+
+        public static Fraction[] getObjFrac(Fraction[,] src)
+        {
+            Fraction[] obj = new Fraction[src.GetLength(0) - 1];
+            for (int i = 0; i < src.GetLength(0) - 1; i++)
+            {
+                obj[i] = src[i, 0];
+            }
+            return obj;
         }
 
         public static void Start()
@@ -181,6 +197,8 @@ namespace ui.test
             handler.SetActiveStatus(true);
             ConsoleHandler.ConsoleIntermediateHandler.Setup();
             ConsoleHandler.ConsoleIntermediateHandler.ANSISetup();
+            table[table.GetLength(0) - 1, 0] = new Fraction(0);
+            strTable[strTable.GetLength(0) - 1, 0] = "0";
             WriteTable();
             try
             {
@@ -197,6 +215,99 @@ namespace ui.test
             {
                 ConsoleHandler.ConsoleIntermediateHandler.Reset();
             }
+            Fraction[,] newTable = new Fraction[table.GetLength(0)+table.GetLength(1)-1, table.GetLength(1)];
+            for (int c = 0; c < table.GetLength(0) - 1; c++)
+            {
+                newTable[c, 0] = table[c, 0].asOpposeSign();
+            }
+            for (int c = table.GetLength(0) - 1; c < table.GetLength(0)+table.GetLength(1)-1; c++)
+            {
+                newTable[c, 0] = new Fraction(0);
+            }
+            for (int c = 1; c < table.GetLength(1); c++)
+            {
+                for (int v = 0; v < table.GetLength(0) - 1; v++)
+                {
+                    newTable[v, c] = table[v, c];
+                }
+                for (int v = table.GetLength(0) - 1; v < table.GetLength(0) + table.GetLength(1) - 2; v++)
+                {
+                    newTable[v, c] = new Fraction(0);
+                    if (v - (table.GetLength(0) - 1) == c - 1)
+                    {
+                        newTable[v, c] = new Fraction(1);
+                    }
+                }
+                newTable[table.GetLength(0) + table.GetLength(1) - 2, c] = table[table.GetLength(0) - 1, c];
+            }
+
+            while (getObjFrac(newTable).Min() < new Fraction(0))
+            {
+                Fraction frac = getObjFrac(newTable).Min();
+                int i = Array.IndexOf(getObjFrac(newTable), frac);
+                (int j, Fraction rhsV, Fraction fracPivot) = Enumerable.Range(1, table.GetLength(1) - 1)
+                        .Select(idx => (idx, newTable[newTable.GetLength(0) - 1, idx] / newTable[i, idx], newTable[i, idx]))
+                        .Where(x => x.Item2 > new Fraction(0))
+                        .OrderBy(x => x.Item2)
+                        .First();
+                Console.WriteLine($"{i} ({frac.ToString()}), {j}({fracPivot.ToString()})");
+                Fraction mul = fracPivot.Invert();
+                for (int x = 0; x < newTable.GetLength(0); x++)
+                {
+                    newTable[x, j] = newTable[x, j] * mul;
+                }
+                for (int y = 0; y < newTable.GetLength(1); y++)
+                {
+                    if (y == j) continue;
+                    Fraction subMul = newTable[i, y];
+                    for (int x = 0; x < newTable.GetLength(0); x++)
+                    {
+                        newTable[x, y] -= subMul * newTable[x, j];
+                    }
+                }
+            }
+            Console.WriteLine($"P = {newTable[newTable.GetLength(0) - 1, 0].ToString()}");
+            for (int x = 0; x < newTable.GetLength(0) - 1; x++)
+            {
+                int count1 = 0;
+                Fraction frac = newTable[x, 1];
+                Fraction rhs = newTable[x, newTable.GetLength(1) - 1];
+                for (int y = 1; y < newTable.GetLength(1); y++)
+                {
+                    if (newTable[x, y] == 1)
+                    {
+                        count1++;
+                        frac = newTable[x, y];
+                        rhs = newTable[newTable.GetLength(0) - 1, y];
+                    }
+                    else if (newTable[x, y] == 0)
+                    {
+
+                    }
+                    else
+                    {
+                        count1 += 2;
+                    }
+                }
+                string name = $"x_{x}";
+                if (x >= table.GetLength(0) - 1)
+                {
+                    name = $"s_{x - (table.GetLength(0) - 1)}";
+                }
+                if (count1 == 1)
+                {
+                    Console.WriteLine($"{name} = {rhs.ToString()}");
+                }
+                else if (count1 == 0)
+                {
+                    Console.WriteLine($"{name} = ?");
+                }
+                else
+                {
+                    Console.WriteLine($"{name} = 0");
+                }
+            }
+
         }
 
         public static void Setup()

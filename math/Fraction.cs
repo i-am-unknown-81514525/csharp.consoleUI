@@ -8,7 +8,7 @@ namespace ui.math
     public static class FracConfig {
         public static int iterationLimit = 64;
     }
-    public class Fraction
+    public class Fraction : IComparable<Fraction>
     {
         public readonly BigInteger numerator, denominator;
 
@@ -208,12 +208,17 @@ namespace ui.math
 
         public static bool operator ==(Fraction left, Fraction right)
         {
+            if (right is null) return false;
             Fraction simLeft = left.simplify();
             Fraction simRight = right.simplify();
             return simLeft.numerator == simRight.numerator && simLeft.denominator == simRight.denominator;
         }
 
         public static bool operator !=(Fraction left, Fraction right) => !(left == right);
+        public static bool operator <(Fraction left, Fraction right) => left.numerator * right.denominator < right.numerator * left.denominator;
+        public static bool operator <=(Fraction left, Fraction right) => left < right || left == right;
+        public static bool operator >(Fraction left, Fraction right) => !(left <= right);
+        public static bool operator >=(Fraction left, Fraction right) => !(left < right);
 
         public override bool Equals(object obj)
         {
@@ -229,6 +234,27 @@ namespace ui.math
             int c3 = (int)(denominator / v % v);
             int c4 = (int)(denominator % v);
             return c1 ^ c2 ^ c3 ^ c4;
+        }
+
+        public int CompareTo(Fraction right)
+        {
+            if (this is null && right is null) return 0;
+            if (this is null) return -1;
+            if (right is null) return 1;
+            if (this < right)
+            {
+                return -1;
+            }
+            if (this == right)
+            {
+                return 0;
+            }
+            return 1;
+        }
+
+        public string ToString()
+        {
+            return $"{numerator.ToString()}/{denominator.ToString()}";
         }
     }
 }

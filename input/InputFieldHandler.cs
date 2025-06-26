@@ -40,7 +40,9 @@ namespace ui.input
 
         internal virtual void onDefault(byte value)
         {
-            content += content.Substring(0,(int)cursor) + (char)value + (cursor < content.Length - 1?content.Substring((int)cursor, content.Length - (int)cursor): "");
+            List<byte> byteArr = content.AsByteBuffer().AsList();
+            byteArr.Insert((int)cursor, value);
+            content = byteArr.AsByteBuffer().AsString();
             cursor += 1;
         }
 
