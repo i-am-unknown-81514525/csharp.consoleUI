@@ -21,7 +21,7 @@ namespace ui.input
             return value;
         }
 
-        internal override void Validate(RootInputHandler root)
+        internal override void Handle(RootInputHandler root)
         {
             if (Buffer.Count == 0) return;
             currBuf = GetBuf();

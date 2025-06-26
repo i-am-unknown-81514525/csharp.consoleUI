@@ -22,7 +22,19 @@ namespace ui.core
             { "\x1b[A", KeyCode.ARR_UP },
             { "\x1b[B", KeyCode.ARR_DOWN },
             { "\x1b[C", KeyCode.ARR_LEFT },
-            { "\x1b[D", KeyCode.ARR_RIGHT }
+            { "\x1b[D", KeyCode.ARR_RIGHT },
+            //{ "\u001b[2~", KeyCode.INSERT },
+            //{ "\u001b[5~", KeyCode.PG_UP },
+            //{ "\u001b[6~" , KeyCode.PG_DOWN },
+            //{ "\u001b[H" , KeyCode.HOME },
+            //{ "\u001b[F", KeyCode.END },
+            //{ "\u001b[3~", KeyCode.ESC },
+            //{ "\u001b[O", KeyCode.SPECIAL_UNFOCUS },
+            //{ "\u001b[I", KeyCode.SPECIAL_FOCUS },
+            //{ "\u001b[A", KeyCode.ARR_UP },
+            //{ "\u001b[B", KeyCode.ARR_DOWN },
+            //{ "\u001b[C", KeyCode.ARR_LEFT },
+            //{ "\u001b[D", KeyCode.ARR_RIGHT },
         };
         public override bool Handle(byte[] buf)
         {
