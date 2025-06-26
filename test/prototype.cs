@@ -1,5 +1,5 @@
 using System;
-using ui;
+using System.Linq;
 using ui.math;
 using ui.core;
 using ui.input;
@@ -24,6 +24,15 @@ namespace ui.test
         }
     }
 
+    internal class ANSISkipHandler : ANSIInputHandler
+    {
+
+        public override bool Handle(byte[] buf)
+        {
+            return true;
+        }
+    }
+
     public static class Prototype
     {
         public static uint varCount = 1;
@@ -37,6 +46,8 @@ namespace ui.test
         public static ValueFieldHandler handler = null;
 
         public static bool isComplete = false;
+        public static bool handleNext = false;
+        public static string contentNext = "";
 
         public static void WriteTable()
         {
@@ -95,6 +106,15 @@ namespace ui.test
 
         public static void Next(string value)
         {
+            handleNext = true;
+            contentNext = value;
+        }
+
+        public static void HandleNext()
+        {
+            if (!handleNext) return;
+            string value = contentNext;
+            handleNext = false;
             if (handler != null)
             {
                 Global.InputHandler.Remove(handler);
@@ -151,6 +171,7 @@ namespace ui.test
             Global.InputHandler.Add(keyCodeHandler);
             handler = new ValueFieldHandler();
             Global.InputHandler.Add(handler);
+            Global.InputHandler.Add(new ANSISkipHandler());
             handler.SetActiveStatus(true);
             ConsoleHandler.ConsoleIntermediateHandler.Setup();
             ConsoleHandler.ConsoleIntermediateHandler.ANSISetup();
@@ -161,6 +182,7 @@ namespace ui.test
                 {
                     Global.InputHandler.Handle();
                     if (exitHandler.GetExitStatus()) break;
+                    HandleNext();
                     System.Threading.Thread.Sleep(10);
                 }
             }
