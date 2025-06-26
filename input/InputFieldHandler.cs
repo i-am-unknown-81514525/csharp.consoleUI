@@ -21,7 +21,7 @@ namespace ui.input
             return value;
         }
 
-        internal override void Handle(RootInputHandler root)
+        internal override void Validate(RootInputHandler root)
         {
             if (Buffer.Count == 0) return;
             currBuf = GetBuf();
@@ -41,6 +41,7 @@ namespace ui.input
         internal virtual void onDefault(byte value)
         {
             content += (char)value;
+            cursor += 1;
         }
 
         internal virtual void Handle(byte value)
@@ -84,6 +85,9 @@ namespace ui.input
                     break;
                 case KeyCode.PG_DOWN:
                     onPgDown();
+                    break;
+                case KeyCode.NEWLINE:
+                    onEnter();
                     break;
                 default:
                     onDefault(value);
@@ -161,6 +165,13 @@ namespace ui.input
                 LockStatus.SharedLock : // Reserve Exclusive Lock for ANSI, not lock against the handler when active
                 LockStatus.NoLock
             );
+        }
+
+
+        internal virtual void onEnter()
+        {
+            content += "\n";
+            cursor += 1;
         }
     }
 

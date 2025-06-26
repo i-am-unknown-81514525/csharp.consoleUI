@@ -7,17 +7,18 @@ namespace ui.core
         public string content { get; set; }
         public string ansiPrefix { get; set; }
         public string ansiPostfix { get; set; }
-
+        public bool isContent { get; set; }
         public new string ToString() => (ansiPrefix ?? "") + content.ToString() + (ansiPostfix ?? "");
 
         public static ConsoleContent getDefault()
         {
             return new ConsoleContent
-                        {
-                            content = " ",
-                            ansiPrefix = "",
-                            ansiPostfix = ""
-                        };
+            {
+                content = " ",
+                ansiPrefix = "",
+                ansiPostfix = "",
+                isContent = false
+            };
         }
     }
 
@@ -126,5 +127,84 @@ namespace ui.core
         {
             Console.Write(GetContent());
         }
+
+        public static ConsoleCanva OverwriteOnCanva(ConsoleCanva canva, ConsoleContent[,] data, (int x, int y) topLeft, bool force = true) { // When force, it would write to the content that fit instead of raising error
+
+        int minX = topLeft.x;
+        int minY = topLeft.y;
+        int maxX = topLeft.x + data.GetLength(0);
+        int maxY = topLeft.y + data.GetLength(1);
+        if (force) {
+            if (maxX > canva.ConsoleWindow.GetLength(0)) {
+                maxX = canva.ConsoleWindow.GetLength(0);
+            }
+            if (maxY > canva.ConsoleWindow.GetLength(1)) {
+                maxY = canva.ConsoleWindow.GetLength(1);
+            }
+            if (minX < 0) minX = 0;
+            if (minY < 0) minY = 0;
+        } else {
+            if (maxX > canva.ConsoleWindow.GetLength(0)) {
+                throw new InvalidOperationException($"To write on canva, with offsetX={topLeft.x} and sizeX={data.GetLength(0)} => maxX={maxX} but limX={canva.ConsoleWindow.GetLength(0)}");
+            }
+            if (maxY > canva.ConsoleWindow.GetLength(1)) {
+                throw new InvalidOperationException($"To write on canva, with offsetX={topLeft.y} and sizeX={data.GetLength(1)} => maxX={maxY} but limX={canva.ConsoleWindow.GetLength(1)}");
+            }
+            if (minX < 0) throw new InvalidOperationException($"To write on canva, minX={minX} but limX=0");
+            if (minY < 0) throw new InvalidOperationException($"To write on canva, minY={minY} but limY=0");
+        }
+
+        for (int x = minX; x < maxX; x++) {
+            for (int y = minY; y < maxY; y++) {
+                if (data[x - minX, y - minY].isContent)
+                {
+                    ConsoleContent content = data[x - minX, y - minY];
+
+                    canva.ConsoleWindow[x, y] = content;
+                }
+            }
+        }
+
+        return canva;
+    }
+
+    public static ConsoleCanva WriteStringOnCanva(ConsoleCanva canva, string text, (int x, int y) topLeft, string ansiPrefix = "", string ansiPostfix = "") {
+        if (string.IsNullOrEmpty(text)) return canva;
+        return OverwriteOnCanva(canva, getContentArr(text, ansiPrefix, ansiPostfix), topLeft, true);
+    }
+
+    public static ConsoleContent[,] getContentArr(string text, string ansiPrefix = "", string ansiPostfix = "")
+    {
+        if (string.IsNullOrEmpty(text)) text = "";
+        ConsoleContent[,] data = new ConsoleContent[text.Length, 1];
+        for (int i = 0; i < text.Length; i++)
+        {
+            data[i, 0] = new ConsoleContent()
+            {
+                content = text[i].ToString(),
+                ansiPrefix = ansiPrefix,
+                ansiPostfix = ansiPostfix
+            };
+        }
+
+        return data;
+    }
+
+    public static ConsoleContent[] getContentArr1D(string text, string ansiPrefix = "", string ansiPostfix = "")
+    {
+        if (string.IsNullOrEmpty(text)) text = "";
+        ConsoleContent[] data = new ConsoleContent[text.Length];
+        for (int i = 0; i < text.Length; i++)
+        {
+            data[i] = new ConsoleContent()
+            {
+                content = text[i].ToString(),
+                ansiPrefix = ansiPrefix,
+                ansiPostfix = ansiPostfix,
+            };
+        }
+
+        return data;
+    }
     }
 }
