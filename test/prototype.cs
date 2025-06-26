@@ -124,12 +124,12 @@ namespace ui.test
                     table[loc.varLoc, loc.constLoc] = frac;
                     uint varLoc = loc.varLoc + 1;
                     uint constLoc = loc.constLoc;
-                    if (varLoc >= table.GetLength(0) + 1)
+                    if (varLoc >= table.GetLength(0))
                     {
                         varLoc = 0;
                         constLoc += 1;
                     }
-                    if (constLoc >= table.GetLength(1) + 1)
+                    if (constLoc >= table.GetLength(1))
                     {
                         constLoc = 0;
                         isComplete = true;
