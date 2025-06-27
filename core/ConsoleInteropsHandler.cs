@@ -165,51 +165,67 @@ namespace ui.core
 
             public static bool StdinDataRemain()
             {
-                Task<bool> task = Task<bool>.Run(
-                    () =>
-                    {
-                        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-                        {
-                            return WindowConsoleHandler.StdinDataRemain();
-                        }
-                        else
-                        {
-                            return PosixConsoleHandler.StdinDataRemain();
-                        }
-                    }
-                );
-                bool result = task.Wait(5);
-                return result && task.Result;
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                {
+                    return WindowConsoleHandler.StdinDataRemain();
+                }
+                else
+                {
+                    return PosixConsoleHandler.StdinDataRemain();
+                }
+                // Task<bool> task = Task<bool>.Run(
+                //     () =>
+                //     {
+                //         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                //         {
+                //             return WindowConsoleHandler.StdinDataRemain();
+                //         }
+                //         else
+                //         {
+                //             return PosixConsoleHandler.StdinDataRemain();
+                //         }
+                //     }
+                // );
+                // bool result = task.Wait(5);
+                // return result && task.Result;
             }
 
             public static string ReadStdinToEnd()
             {
-                Task<string> task = Task<string>.Run(
-                    () =>
-                    {
-                        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-                        {
-                            return WindowConsoleHandler.ReadStdinToEnd();
-                        }
-                        else
-                        {
-                            return PosixConsoleHandler.ReadStdinToEnd();
-                        }
-                    }
-                );
-                bool result = task.Wait(10);
-                if (result)
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
                 {
-                    if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-                        {
-                            WindowConsoleHandler.Consume((uint)task.Result.Length);
-                        }
-                        else
-                        {
-                            PosixConsoleHandler.Consume((uint)task.Result.Length);
-                        }
+                    return WindowConsoleHandler.ReadStdinToEnd();
                 }
-                return result ? task.Result : "";
+                else
+                {
+                    return PosixConsoleHandler.ReadStdinToEnd();
+                }
+                // Task<string> task = Task<string>.Run(
+                //     () =>
+                //     {
+                //         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                //         {
+                //             return WindowConsoleHandler.ReadStdinToEnd();
+                //         }
+                //         else
+                //         {
+                //             return PosixConsoleHandler.ReadStdinToEnd();
+                //         }
+                //     }
+                // );
+                // bool result = task.Wait(10);
+                // if (result)
+                // {
+                //     if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                //         {
+                //             WindowConsoleHandler.Consume((uint)task.Result.Length);
+                //         }
+                //         else
+                //         {
+                //             PosixConsoleHandler.Consume((uint)task.Result.Length);
+                //         }
+                // }
+                // return result ? task.Result : "";
             }
         }
     }

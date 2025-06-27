@@ -2,13 +2,16 @@
 use nix::sys::termios::{SetArg, Termios, tcgetattr, cfmakeraw, tcsetattr, ControlFlags, InputFlags, LocalFlags, OutputFlags};
 #[cfg(target_family = "windows")]
 use win32console::console::{HandleType, WinConsole};
-use std::fs::File;
+// use std::fs::File;
 use std::io::{self, BufRead};
 use std::io::{Read, Write};
 use std::ffi::{CString, c_char};
+use std::thread;
+use std::time::Duration;
+use crossbeam_channel::{bounded};
 
 
-const IS_DEBUG: bool = false;
+// const IS_DEBUG: bool = false;
 
 #[cfg(target_family = "windows")]
 struct InputConsoleMode;
@@ -166,65 +169,87 @@ pub extern "cdecl" fn read_stdin() -> u8 {
     let mut stdin = io::stdin();
     let mut buffer = [0 as u8;1];
     stdin.read(&mut buffer).unwrap();
-    if IS_DEBUG {
-        let mut file = std::fs::OpenOptions::new() // https://stackoverflow.com/a/30684735
-            .write(true)
-            .append(true)
-            .create(true)
-            .open("read-log")
-            .unwrap();
-
-        if let Err(e) = writeln!(file, "{:?} {:?}", buffer[0].to_string(), " single") {
-            eprintln!("Couldn't write to file: {}", e);
-        }
-    }
     buffer[0]
 }
 
+
+
 #[unsafe(no_mangle)]
 pub extern "cdecl" fn stdin_data_remain() -> bool {
-    let mut stdin = io::stdin().lock();
-    let mut v1 = stdin.fill_buf()
-                        .map(
-                            |b| !b.is_empty()
-                        )
-                        .unwrap_or(false); // Experimental API implemented from https://github.com/rust-lang/rust/pull/85815
-    drop(stdin);
-    if v1 {
-        let buf = (*io::stdin().lock().fill_buf().unwrap()).to_vec();
-        v1 = buf.iter().count() > 0;
+    let (s, r) = bounded::<bool>(1);
+    
+    thread::spawn(move || {
+        let mut stdin = io::stdin().lock();
+        let mut v1 = stdin.fill_buf()
+                            .map(
+                                |b| !b.is_empty()
+                            )
+                            .unwrap_or(false); // Experimental API implemented from https://github.com/rust-lang/rust/pull/85815
+        drop(stdin);
+        if v1 {
+            let buf = (*io::stdin().lock().fill_buf().unwrap()).to_vec();
+            v1 = buf.iter().count() > 0;
+        }
+        let _ = s.send(v1); // ignore error
+    });
+    return match r.recv_timeout(Duration::from_micros(10)) {
+        Ok(r) => r,
+        Err(_) => false,
     }
-    v1
 }
 
 
+#[unsafe(no_mangle)]
+pub extern "cdecl" fn read_stdin_end()  -> *const c_char {
+    let mut buf: Vec<u8> = vec![];
+    if stdin_data_remain() {
+        let (s, r) = bounded::<Vec<u8>>(1);
+        thread::spawn(move || {
+            let _ = s.send((*io::stdin().lock().fill_buf().unwrap()).to_vec());
+        });
+        match r.recv_timeout(Duration::from_micros(25)) {
+            Ok(b) => buf = b,
+            Err(_) => {}
+        }
+    }
+    if buf.len() > 0 {
+        consume(buf.len() as u32);
+    }
+    let filtered: Vec<u8> = buf.iter().map(|x| *x).filter(|v| (*v)!=0).collect();
+    let c_string: CString = CString::new(filtered.as_slice()).unwrap();
+    let ptr: *const c_char = c_string.as_ptr();
+    std::mem::forget(c_string);
+    ptr
+}
 
-// #[no_mangle]
-// pub extern fn print_string(text_pointer: *const c_char) {
-//     unsafe {
-//         let text: String = CStr::from_ptr(text_pointer).to_str().expect("Can not read string argument.").to_string();
-//         println!("{}", text);
+#[unsafe(no_mangle)]
+pub extern "cdecl" fn consume(amount: u32)  -> () {
+    io::stdin().lock().consume(amount as usize)
+}
+
+
+// Old:
+// #[unsafe(no_mangle)]
+// pub extern "cdecl" fn stdin_data_remain() -> bool {
+//     let mut stdin = io::stdin().lock();
+//     let mut v1 = stdin.fill_buf()
+//                         .map(
+//                             |b| !b.is_empty()
+//                         )
+//                         .unwrap_or(false); // Experimental API implemented from https://github.com/rust-lang/rust/pull/85815
+//     drop(stdin);
+//     if v1 {
+//         let buf = (*io::stdin().lock().fill_buf().unwrap()).to_vec();
+//         v1 = buf.iter().count() > 0;
 //     }
-// } // From https://stackoverflow.com/questions/66582380/pass-string-from-c-sharp-to-rust-using-ffi
-
+//     v1
+// }
 
 // #[unsafe(no_mangle)]
 // pub extern "cdecl" fn read_stdin_end(consume_less: bool)  -> *const c_char {
 //     let mut buf: Vec<u8> = vec![];
 //     if stdin_data_remain() {
 //         buf = (*io::stdin().lock().fill_buf().unwrap()).to_vec();
-//         if IS_DEBUG {
-//             let mut file = std::fs::OpenOptions::new() // https://stackoverflow.com/a/30684735
-//                 .write(true)
-//                 .append(true)
-//                 .create(true)
-//                 .open("read-log")
-//                 .unwrap();
-
-//             if let Err(e) = writeln!(file, "{:?} {:?}", buf.iter().map(|v| v.to_string()).collect::<Vec<String>>().join(" "), " multi") {
-//                 eprintln!("Couldn't write to file: {}", e);
-//             }
-//         }
 //         if consume_less { // 
 //             io::stdin().lock().consume(buf.len() - 1); // ??? Somehow this work and don't question this
 //         } else {
@@ -237,34 +262,27 @@ pub extern "cdecl" fn stdin_data_remain() -> bool {
 //     ptr
 // }
 
-#[unsafe(no_mangle)]
-pub extern "cdecl" fn read_stdin_end()  -> *const c_char {
-    let mut buf: Vec<u8> = vec![];
-    if stdin_data_remain() {
-        buf = (*io::stdin().lock().fill_buf().unwrap()).to_vec();
-        if IS_DEBUG {
-            let mut file = std::fs::OpenOptions::new() // https://stackoverflow.com/a/30684735
-                .write(true)
-                .append(true)
-                .create(true)
-                .open("read-log")
-                .unwrap();
-
-            if let Err(e) = writeln!(file, "{:?} {:?}", buf.iter().map(|v| v.to_string()).collect::<Vec<String>>().join(" "), " multi") {
-                eprintln!("Couldn't write to file: {}", e);
-            }
-        }
-    }
-    let c_string: CString = CString::new(buf.as_slice()).unwrap();
-    let ptr: *const c_char = c_string.as_ptr();
-    std::mem::forget(c_string);
-    ptr
-}
-
-#[unsafe(no_mangle)]
-pub extern "cdecl" fn consume(amount: u32)  -> () {
-    io::stdin().lock().consume(amount as usize)
-}
-
+// Ref:
 // https://notes.huy.rocks/en/string-ffi-rust.html
 // https://learn.microsoft.com/en-us/dotnet/framework/interop/default-marshalling-for-strings
+
+// #[no_mangle]
+// pub extern fn print_string(text_pointer: *const c_char) {
+//     unsafe {
+//         let text: String = CStr::from_ptr(text_pointer).to_str().expect("Can not read string argument.").to_string();
+//         println!("{}", text);
+//     }
+// } // From https://stackoverflow.com/questions/66582380/pass-string-from-c-sharp-to-rust-using-ffi
+
+// if IS_DEBUG {
+//     let mut file = std::fs::OpenOptions::new() // https://stackoverflow.com/a/30684735
+//         .write(true)
+//         .append(true)
+//         .create(true)
+//         .open("read-log")
+//         .unwrap();
+
+//     if let Err(e) = writeln!(file, "{:?} {:?}", buf.iter().map(|v| v.to_string()).collect::<Vec<String>>().join(" "), " multi") {
+//         eprintln!("Couldn't write to file: {}", e);
+//     }
+// }
