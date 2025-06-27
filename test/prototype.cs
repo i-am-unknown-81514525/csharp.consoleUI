@@ -188,18 +188,18 @@ namespace ui.test
         public static void Start()
         {
             Console.Write("Variable count: ");
-            varCount = uint.Parse(Console.ReadLine());
-            if (varCount >= 10)
+            bool v1 = uint.TryParse(Console.ReadLine(), out varCount);
+            if (varCount >= 10 || !v1 || varCount == 0)
             {
-                Console.Write("Variable count must be < 10");
+                Console.WriteLine("Variable count must be valid integer, 0 < 0 < 10");
                 Start();
                 return;
             }
             Console.Write("Constraint count: ");
-            constraintCount = uint.Parse(Console.ReadLine());
-            if (varCount >= 10)
+            v1 = uint.TryParse(Console.ReadLine(), out constraintCount);
+            if (varCount >= 10 || !v1 || varCount == 0)
             {
-                Console.Write("Variable count must be < 10");
+                Console.WriteLine("Variable count must be < 10must be valid integer, 0 < 0 < 10");
                 Start();
                 return;
             }
