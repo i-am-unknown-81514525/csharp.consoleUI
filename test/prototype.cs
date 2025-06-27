@@ -223,11 +223,15 @@ namespace ui.test
             {
                 while (!isComplete)
                 {
-                    Global.InputHandler.Handle();
+                    bool status = Global.InputHandler.Handle();
+                    if (!status)
+                    {
+                        System.Threading.Thread.Sleep(1);
+                        continue;
+                    }
                     if (exitHandler.GetExitStatus()) break;
                     HandleNext();
                     Prototype.WriteTable();
-                    System.Threading.Thread.Sleep(10);
                 }
             }
             finally

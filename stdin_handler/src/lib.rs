@@ -6,12 +6,15 @@ use win32console::console::{HandleType, WinConsole};
 use std::io::{self, BufRead};
 use std::io::{Read, Write};
 use std::ffi::{CString, c_char};
+use core::sync::atomic::{AtomicBool, Ordering};
 use std::thread;
 use std::time::Duration;
 use crossbeam_channel::{bounded};
 
 
 // const IS_DEBUG: bool = false;
+static REMAIN_LOCK: AtomicBool = AtomicBool::new(false);
+static READ_END_LOCK: AtomicBool = AtomicBool::new(false);
 
 #[cfg(target_family = "windows")]
 struct InputConsoleMode;
@@ -177,7 +180,10 @@ pub extern "cdecl" fn read_stdin() -> u8 {
 #[unsafe(no_mangle)]
 pub extern "cdecl" fn stdin_data_remain() -> bool {
     let (s, r) = bounded::<bool>(1);
-    
+    if REMAIN_LOCK.load(Ordering::Relaxed) {
+        return false;
+    }
+    REMAIN_LOCK.store(true, Ordering::Relaxed);
     thread::spawn(move || {
         let mut stdin = io::stdin().lock();
         let mut v1 = stdin.fill_buf()
@@ -190,24 +196,28 @@ pub extern "cdecl" fn stdin_data_remain() -> bool {
             let buf = (*io::stdin().lock().fill_buf().unwrap()).to_vec();
             v1 = buf.iter().count() > 0;
         }
+        REMAIN_LOCK.store(false, Ordering::Relaxed);
         let _ = s.send(v1); // ignore error
     });
-    return match r.recv_timeout(Duration::from_micros(10)) {
+    let result: bool = match r.recv_timeout(Duration::from_micros(400)) {
         Ok(r) => r,
         Err(_) => false,
-    }
+    };
+    result
 }
 
 
 #[unsafe(no_mangle)]
 pub extern "cdecl" fn read_stdin_end()  -> *const c_char {
     let mut buf: Vec<u8> = vec![];
-    if stdin_data_remain() {
+    if !READ_END_LOCK.load(Ordering::Relaxed) && stdin_data_remain() {
         let (s, r) = bounded::<Vec<u8>>(1);
+        READ_END_LOCK.store(true, Ordering::Relaxed);
         thread::spawn(move || {
             let _ = s.send((*io::stdin().lock().fill_buf().unwrap()).to_vec());
+            READ_END_LOCK.store(false, Ordering::Relaxed);
         });
-        match r.recv_timeout(Duration::from_micros(25)) {
+        match r.recv_timeout(Duration::from_micros(1000)) {
             Ok(b) => buf = b,
             Err(_) => {}
         }

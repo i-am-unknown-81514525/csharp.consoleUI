@@ -8,12 +8,13 @@ namespace ui.math
     public static class FracConfig {
         public static int iterationLimit = 64;
     }
-    public class Fraction : IComparable<Fraction>
+    public struct Fraction : IComparable<Fraction>
     {
         public readonly BigInteger numerator, denominator;
 
         public Fraction(long numerator, long denominator)
         {
+            if (denominator == 0) throw new DivideByZeroException("Denominator cannot be 0");
             long value = MathUtils.factorize(numerator, denominator);
             this.numerator = numerator / value;
             this.denominator = denominator / value;
@@ -21,6 +22,7 @@ namespace ui.math
 
         public Fraction(BigInteger numerator, long denominator)
         {
+            if (denominator == 0) throw new DivideByZeroException("Denominator cannot be 0");
             BigInteger value = MathUtils.factorize(numerator, (BigInteger)denominator);
             this.numerator = numerator / value;
             this.denominator = denominator / value;
@@ -28,6 +30,7 @@ namespace ui.math
 
         public Fraction(long numerator, BigInteger denominator)
         {
+            if (denominator == 0) throw new DivideByZeroException("Denominator cannot be 0");
             BigInteger value = MathUtils.factorize((BigInteger)numerator, denominator);
             this.numerator = numerator / value;
             this.denominator = denominator / value;
@@ -35,6 +38,7 @@ namespace ui.math
 
         public Fraction(BigInteger numerator, BigInteger denominator)
         {
+            if (denominator == 0) throw new DivideByZeroException("Denominator cannot be 0");
             BigInteger value = MathUtils.factorize(numerator, denominator);
             this.numerator = numerator / value;
             this.denominator = denominator / value;
@@ -42,8 +46,8 @@ namespace ui.math
 
         public Fraction(long value)
         {
-            this.numerator = value;
-            this.denominator = 1;
+            numerator = value;
+            denominator = 1;
         }
 
         public Fraction(double value)
@@ -213,7 +217,7 @@ namespace ui.math
 
         public static bool operator ==(Fraction left, Fraction right)
         {
-            if (right is null) return false;
+            // if (right is null) return false;
             Fraction simLeft = left.simplify();
             Fraction simRight = right.simplify();
             return simLeft.numerator == simRight.numerator && simLeft.denominator == simRight.denominator;
@@ -243,9 +247,9 @@ namespace ui.math
 
         public int CompareTo(Fraction right)
         {
-            if (this is null && right is null) return 0;
-            if (this is null) return -1;
-            if (right is null) return 1;
+            // if (this is null && right is null) return 0;
+            // if (this is null) return -1;
+            // if (right is null) return 1;
             if (this < right)
             {
                 return -1;
@@ -257,7 +261,7 @@ namespace ui.math
             return 1;
         }
 
-        public string ToString()
+        public override string ToString()
         {
             if (denominator == 1)
             {
