@@ -265,8 +265,9 @@ namespace ui.test
                 Fraction frac = getObjFrac(newTable).Min();
                 int i = Array.IndexOf(getObjFrac(newTable), frac);
                 (int j, Fraction rhsV, Fraction fracPivot) = Enumerable.Range(1, table.GetLength(1) - 1)
+                        .Where(idx => newTable[i, idx] != new Fraction(0))
                         .Select(idx => (idx, newTable[newTable.GetLength(0) - 1, idx] / newTable[i, idx], newTable[i, idx]))
-                        .Where(x => x.Item2 > new Fraction(0))
+                        .Where(x => x.Item2 >= new Fraction(0))
                         .OrderBy(x => x.Item2)
                         .First();
                 Console.WriteLine($"{i} ({frac.ToString()}), {j}({fracPivot.ToString()})");

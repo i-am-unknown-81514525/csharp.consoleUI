@@ -87,7 +87,12 @@ namespace ui.math
 
         public Fraction simplify()
         {
+            
             BigInteger value = MathUtils.factorize(numerator, denominator);
+            if (numerator < 0 && denominator < 0)
+            {
+                value *= -1;
+            }
             return new Fraction(numerator / value, denominator / value);
         }
 
@@ -254,7 +259,7 @@ namespace ui.math
 
         public string ToString()
         {
-            if (denominator == 0)
+            if (denominator == 1)
             {
                 return $"{numerator.ToString()}";
             }
