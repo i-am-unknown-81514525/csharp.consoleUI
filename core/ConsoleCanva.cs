@@ -52,6 +52,7 @@ namespace ui.core
                     newWindow[x, y] = ConsoleContent.getDefault();
                 }
             }
+            ConsoleWindow = newWindow;
         }
 
         public void SetMin(ConsoleSize size)
@@ -98,7 +99,7 @@ namespace ui.core
                 ConsoleHandler.ConsoleIntermediateHandler.ToANSI("0m") + // Reset colour
                 ConsoleHandler.ConsoleIntermediateHandler.ToANSI("?25l") + // Hide cursor
                                                                            //ConsoleHandler.ConsoleIntermediateHandler.ToANSI("2J") + // Clear screen and move cursor to top left (Window ANSI.sys)
-                                                                           //ConsoleHandler.ConsoleIntermediateHandler.ToANSI("3J") + // CLearn screen and delete all lines saved in the scrollback buffer (xterm alive)
+                                                                           //ConsoleHandler.ConsoleIntermediateHandler.ToANSI("3J") + // Clear screen and delete all lines saved in the scrollback buffer (xterm alive)
                 ConsoleHandler.ConsoleIntermediateHandler.ToANSI("1;39m") + // Set colour to default (according to ANSI)
                 ConsoleHandler.ConsoleIntermediateHandler.ToANSI("0;0H") // Move cursor to 0,0 (top left)
             );
@@ -109,7 +110,7 @@ namespace ui.core
             string outputBuffer = "";
             for (int y = 1; y <= ConsoleWindow.GetLength(1); y++)
             {
-                outputBuffer += ConsoleHandler.ConsoleIntermediateHandler.ToANSI($"{y + 1};0H");
+                outputBuffer += ConsoleHandler.ConsoleIntermediateHandler.ToANSI($"{y};0H");
                 for (int x = 1; x <= ConsoleWindow.GetLength(0); x++)
                 {
                     outputBuffer += ConsoleWindow[x - 1, y - 1].ToString();

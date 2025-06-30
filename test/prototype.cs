@@ -75,6 +75,7 @@ namespace ui.test
         public static bool handleNext = false;
         public static string contentNext = "";
 
+
         public static void WriteTable()
         {
             ConsoleCanva canva = Global.consoleCanva;
@@ -331,6 +332,7 @@ namespace ui.test
                     Console.WriteLine($"{name} = 0");
                 }
             }
+            Console.ReadKey();
 
         }
 
