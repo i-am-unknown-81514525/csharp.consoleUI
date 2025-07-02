@@ -13,32 +13,38 @@ jobs:
   os_matrix:
     strategy:
       matrix:
-        os_arch: [ubuntu-latest-aarch, ubuntu-latest-x86, windows-latest-x86, macos-x86, macos-arm64, windows-latest-arm64-preview]
+        osKind: [windows, macos, linux]
+        arch: [x86_64, aarch64]
         include:
-          - os_arch: windows-latest-x86
+          - osKind: windows
             os: windows-latest
             ext: dll
-            toolchain: x86_64-pc-windows-gnu
-          - os_arch: windows-latest-arm64-preview
-            os: windows-11-arm
-            ext: dll
-            toolchain: aarch64-pc-windows-gnullvm
-          - os_arch: ubuntu-latest-aarch
-            os: ubuntu-latest
-            ext: so
-            toolchain: aarch64-unknown-linux-gnu
-          - os_arch: ubuntu-latest-x86
-            os: ubuntu-latest
-            ext: so
-            toolchain: x86_64-unknown-windows-gnu
-          - os_arch: macos-x86
-            os: macos-13
-            ext: dylib
-            toolchain: x86_64-apple-darwin
-          - os_arch: macos-arm64
+          - osKind: macos
             os: macos-latest
             ext: dylib
+          - osKind: linux
+            os: ubuntu-latest
+            ext: so
+          - osKind: windows
+            arch: aarch64
+            toolchain: aarch64-pc-windows-gnullvm
+            os: windows-11-arm
+          - osKind: macos
+            arch: x86_64
+            toolchain: x86_64-apple-darwin
+            os: macos-latest
+          - osKind: windows
+            arch: x86_64
+            toolchain: x86_64-pc-windows-gnu
+          - osKind: macos
+            arch: aarch64
             toolchain: aarch64-apple-darwin
+          - osKind: linux
+            arch: x86_64
+            toolchain: x86_64-unknown-linux-gnu
+          - osKind: linux
+            arch: aarch64
+            toolchain: aarch64-unknown-linux-gnu
       fail-fast: false
     runs-on: ${{ matrix.os }}
     steps:
@@ -58,7 +64,7 @@ jobs:
     - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
-        name: rust-${{ matrix.os_arch }}-${{ matrix.ext }}
+        name: rust-${{ matrix.osKind }}-${{ matrix.arch }}
         path: ./stdin_handler/target/release/libstdin_handler.${{ matrix.ext }}
 
 
