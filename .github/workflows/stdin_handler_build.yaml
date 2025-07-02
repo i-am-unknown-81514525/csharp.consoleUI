@@ -13,12 +13,16 @@ jobs:
   os_matrix:
     strategy:
       matrix:
-        os_arch: [ubuntu-latest-aarch, ubuntu-latest-x86, windows-latest, macos-x86, macos-arm64]
+        os_arch: [ubuntu-latest-aarch, ubuntu-latest-x86, windows-latest-x86, macos-x86, macos-arm64, windows-latest-arm64-preview]
         include:
-          - os_arch: windows-latest
+          - os_arch: windows-latest-x86
             os: windows-latest
             ext: dll
             toolchain: x86_64-pc-windows-gnu
+          - os_arch: windows-latest-arm64-preview
+            os: windows-11-arm
+            ext: dll
+            toolchain: aarch64-pc-windows-gnullvm
           - os_arch: ubuntu-latest-aarch
             os: ubuntu-latest
             ext: so
@@ -54,7 +58,7 @@ jobs:
     - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
-        name: libstdin_handler-${{ matrix.os_arch }}-${{ matrix.ext }}
+        name: rust-${{ matrix.os_arch }}-${{ matrix.ext }}
         path: ./stdin_handler/target/release/libstdin_handler.${{ matrix.ext }}
 
 
