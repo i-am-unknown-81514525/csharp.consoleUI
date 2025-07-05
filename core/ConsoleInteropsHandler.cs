@@ -81,9 +81,11 @@ namespace ui.core
             private static void addPath(string name)
             {
                 string content = Environment.GetEnvironmentVariable(name);
-                if (content == null) content = "";
                 string path = Environment.CurrentDirectory;
-                content += $":{path}";
+                if (content == null)
+                    content = path;
+                else
+                    content += $":{path}";
                 Environment.SetEnvironmentVariable(name, content);
             }
 
