@@ -1,0 +1,123 @@
+name: Build and package full application
+
+on:
+  workflow_dispatch:
+
+jobs:
+  rust_build_matrix:
+    strategy:
+      matrix:
+        osKind: [windows, macos, linux]
+        arch: [x86_64, aarch64]
+        include:
+          - osKind: windows
+            os: windows-latest
+            ext: dll
+          - osKind: macos
+            os: macos-latest
+            ext: dylib
+          - osKind: linux
+            os: ubuntu-latest
+            ext: so
+          - osKind: windows
+            arch: aarch64
+            toolchain: aarch64-pc-windows-gnullvm
+            os: windows-latest
+          - osKind: macos
+            arch: x86_64
+            toolchain: x86_64-apple-darwin
+            os: macos-latest
+          - osKind: windows
+            arch: x86_64
+            toolchain: x86_64-pc-windows-gnu
+          - osKind: macos
+            arch: aarch64
+            toolchain: aarch64-apple-darwin
+          - osKind: linux
+            arch: x86_64
+            toolchain: x86_64-unknown-linux-gnu
+          - osKind: linux
+            arch: aarch64
+            toolchain: aarch64-unknown-linux-gnu
+      fail-fast: false
+    runs-on: ${{ matrix.os }}
+    steps:
+    - uses: actions/checkout@v3
+    - name: Install Rust toolchain
+      uses: actions-rs/toolchain@v1
+      with:
+        target: ${{ matrix.toolchain }}
+        toolchain: stable
+        override: true
+    - name: Build Release
+      working-directory: ./stdin_handler
+      run: cargo build --release
+    - name: Rename file
+      if: ${{ matrix.ext == 'dll' }}
+      working-directory: ./stdin_handler
+      run: "cp target/release/stdin_handler.dll target/release/libstdin_handler.dll"
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: rust-${{ matrix.osKind }}-${{ matrix.arch }}
+        path: ./stdin_handler/target/release/libstdin_handler.${{ matrix.ext }}
+  dotnet_build_matrix:
+    strategy:
+      matrix:
+        arch: [x64, ARM64, any]
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Install mono
+      working-directory: ./.github_build
+      run: sh mono_install.sh
+    - name: Build application
+      working-directory: ./.github_build
+      run: python3 build.py ${{ matrix.arch }}
+    - name: Debug
+      run: |
+        echo "pwd: $(pwd)"
+        echo "GITHUB_WORKSPACE: ${{ github.workspace }}"
+        ARTIFACT_FOLDER="${{ github.workspace }}/.github_build/.build"
+        ls -laR "$ARTIFACT_FOLDER" || echo "'$ARTIFACT_FOLDER' does not exist or is empty."
+      continue-on-error: true
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: dotnet-${{ matrix.arch }}
+        path: ./.github_build/.build   
+        include-hidden-files: true  
+  final_matrix:
+    needs:
+    - rust_build_matrix
+    - dotnet_build_matrix
+    strategy:
+      matrix:
+        os: [windows, macos, linux]
+        arch: [x86_64, aarch64]
+        include:
+          - arch: x86_64
+            dotnet_arch: x64
+          - arch: aarch64
+            dotnet_arch: ARM64
+          - os: macos
+            dotnet_arch: any
+          - os: linux
+            dotnet_arch: any
+    runs-on: ubuntu-latest
+    steps:
+    - name: Download rust artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: rust-${{ matrix.osKind }}-${{ matrix.arch }}
+    - name: Download dotnet artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: dotnet-${{ matrix.dotnet_arch }}
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: full-${{matrix.os}}-${{matrix.arch}}-dotnet_${{matrix.dotnet_arch}}
+        path: ./
+        include-hidden-files: true  
+        
