@@ -21,7 +21,7 @@ jobs:
             ext: so
           - osKind: windows
             arch: aarch64
-            toolchain: aarch64-pc-windows-gnullvm
+            toolchain: aarch64-pc-windows-msvc
             os: windows-11-arm
           - osKind: macos
             arch: x86_64
