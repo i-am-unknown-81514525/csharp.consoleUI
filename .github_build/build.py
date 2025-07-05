@@ -45,11 +45,12 @@ for cls_name, out_name in name.items():
         raise ChildProcessError(f"Failed to compile with non-zero status code: {status}")
     for file in tmp_build_dir.glob("*.exe"):
         shutil.move(file, build_dir / out_name)
+        print(f"Moved {file.as_posix()} -> {(build_dir / out_name).as_posix()}")
     for file in tmp_build_dir.glob("*.dll"):
         if (build_dir / file.name).exists():
             continue
         shutil.move(file, build_dir / file.name)
-        print("Moved")
+        print(f"Moved {file.as_posix()} -> {(build_dir / file.name).as_posix()}")
 
 
     
