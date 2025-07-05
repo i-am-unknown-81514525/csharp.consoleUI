@@ -38,7 +38,7 @@ for cls_name, out_name in name.items():
     os.system("rm -rf bin || true")
     os.system("rm -rf .tmp_build || true")
     tmp_build_dir.mkdir(exist_ok=True)
-    os.system(f"msbuild github_workdlow_build.sln -maxCpuCount:4 -p:Platform=\"{arch_arg}\" -p:OutputPath=.tmp_build")
+    os.system(f"msbuild github_workflow_build.sln -maxCpuCount:4 -p:Platform=\"{arch_arg}\" -p:OutputPath=.tmp_build")
     for file in tmp_build_dir.rglob("*.exe"):
         file.rename(build_dir / out_name)
 
