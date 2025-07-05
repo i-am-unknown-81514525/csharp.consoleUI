@@ -7,11 +7,12 @@ import pathlib
 import shutil
 import os, sys
 
-arch_arg = sys.argv[1] if sys.argv else "x86"
+arch_arg = sys.argv[1] if sys.argv else "x64"
 if arch_arg == "any":
     arch_arg = "Any CPU"
-elif arch_arg not in ["x86", "ARM64"]:
-    arch_arg = "x86"
+elif arch_arg not in ["x64", "ARM64"]:
+    print(f"Architecture {arch_arg} is unknown, default to x64")
+    arch_arg = "x64"
 
 base = """
 using ui.test;
