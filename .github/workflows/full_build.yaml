@@ -26,7 +26,7 @@ jobs:
           - osKind: macos
             arch: x86_64
             toolchain: x86_64-apple-darwin
-            os: macos-latest
+            os: macos-13
           - osKind: windows
             arch: x86_64
             toolchain: x86_64-pc-windows-gnu
