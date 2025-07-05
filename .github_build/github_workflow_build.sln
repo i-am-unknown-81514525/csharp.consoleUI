@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "test", "test.csproj", "{62A
 		{3C6FB759-B64C-4E44-B7CD-63A4449E16DE} = {3C6FB759-B64C-4E44-B7CD-63A4449E16DE}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ui", "ui.csproj", "{3C6FB759-B64C-4E44-B7CD-63A4449E16DE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ui", "..\ui.csproj", "{3C6FB759-B64C-4E44-B7CD-63A4449E16DE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

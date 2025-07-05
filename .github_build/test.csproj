@@ -83,14 +83,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="test\File.cs" />
+    <Compile Include="File.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="test\App.config" />
+    <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="ui.csproj">
+    <ProjectReference Include="..\ui.csproj">
       <Project>{3c6fb759-b64c-4e44-b7cd-63a4449e16de}</Project>
       <Name>ui</Name>
     </ProjectReference>
