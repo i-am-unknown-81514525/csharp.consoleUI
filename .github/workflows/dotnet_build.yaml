@@ -28,4 +28,5 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: dotnet-${{ matrix.arch }}
-        path: ./.github_build/.build     
+        path: ./.github_build/.build   
+        include-hidden-files: true  
