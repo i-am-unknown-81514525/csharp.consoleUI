@@ -13,7 +13,7 @@ elif arch_arg not in ["x86", "ARM64"]:
     arch_arg = "x86"
 
 base = """
-using ui;
+using ui.test;
 internal class Program {
     public static void Main(string[] _) => [CLSNAME].Setup();
 }
@@ -41,6 +41,10 @@ for cls_name, out_name in name.items():
     os.system(f"msbuild github_workflow_build.sln -maxCpuCount:4 -p:Platform=\"{arch_arg}\" -p:OutputPath=.tmp_build")
     for file in tmp_build_dir.rglob("*.exe"):
         file.rename(build_dir / out_name)
+    for file in tmp_build_dir.rglob("*.dll"):
+        if (build_dir / file.name).exists:
+            continue
+        file.rename(build_dir / file.name)
 
 
     
