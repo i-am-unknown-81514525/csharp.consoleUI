@@ -8,17 +8,17 @@ jobs:
     strategy:
       matrix:
         arch: [x86, ARM64, any]
-      runs-on: ubuntu-latest
-      steps:
-      - uses: actions/checkout@v3
-      - name: Install mono
-        working-directory: ./.github_build
-        run: sh mono_install.sh
-      - name: Build application
-        working-directory: ./.github_build
-        run: python3 build.py ${{ matrix.arch }}
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: dotnet-${{ matrix.arch }}
-          path: ./.github_build/.build     
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Install mono
+      working-directory: ./.github_build
+      run: sh mono_install.sh
+    - name: Build application
+      working-directory: ./.github_build
+      run: python3 build.py ${{ matrix.arch }}
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: dotnet-${{ matrix.arch }}
+        path: ./.github_build/.build     
