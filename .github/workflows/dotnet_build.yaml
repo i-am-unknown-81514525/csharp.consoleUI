@@ -17,6 +17,13 @@ jobs:
     - name: Build application
       working-directory: ./.github_build
       run: python3 build.py ${{ matrix.arch }}
+    - name: Debug
+      run: |
+        echo "pwd: $(pwd)"
+        echo "GITHUB_WORKSPACE: ${{ github.workspace }}"
+        ARTIFACT_FOLDER="${{ github.workspace }}/.github_build/.build"
+        ls -laR "$ARTIFACT_FOLDER" || echo "'$ARTIFACT_FOLDER' does not exist or is empty."
+      continue-on-error: true
     - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
