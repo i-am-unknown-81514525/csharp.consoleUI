@@ -7,7 +7,7 @@ import pathlib
 import shutil
 import os, sys
 
-arch_arg = sys.argv[1] if sys.argv else "x64"
+arch_arg = sys.argv[1] if len(sys.argv) >= 2 else "x64"
 if arch_arg == "any":
     arch_arg = "Any CPU"
 elif arch_arg not in ["x64", "ARM64"]:
@@ -40,15 +40,16 @@ for cls_name, out_name in name.items():
     os.system("rm -rf bin || true")
     os.system("rm -rf .tmp_build || true")
     tmp_build_dir.mkdir(exist_ok=True)
-    status = os.system(f"msbuild github_workflow_build.sln -maxCpuCount:4 -p:Platform=\"{arch_arg}\" -p:OutputPath=.tmp_build")
+    status = os.system(f"msbuild github_workflow_build.sln -maxCpuCount:4 -p:Platform=\"{arch_arg}\" -p:OutputPath=\"{tmp_build_dir.as_posix()}\"")
     if status != 0:
         raise ChildProcessError(f"Failed to compile with non-zero status code: {status}")
-    for file in tmp_build_dir.rglob("*.exe"):
+    for file in tmp_build_dir.glob("*.exe"):
         shutil.move(file, build_dir / out_name)
-    for file in tmp_build_dir.rglob("*.dll"):
-        if (build_dir / file.name).exists:
+    for file in tmp_build_dir.glob("*.dll"):
+        if (build_dir / file.name).exists():
             continue
         shutil.move(file, build_dir / file.name)
+        print("Moved")
 
 
     
