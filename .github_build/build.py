@@ -4,6 +4,7 @@ name: dict[str, str] = {
 }
 
 import pathlib
+import shutil
 import os, sys
 
 arch_arg = sys.argv[1] if sys.argv else "x86"
@@ -42,11 +43,11 @@ for cls_name, out_name in name.items():
     if status != 0:
         raise ChildProcessError(f"Failed to compile with non-zero status code: {status}")
     for file in tmp_build_dir.rglob("*.exe"):
-        file.rename(build_dir / out_name)
+        shutil.move(file, build_dir / out_name)
     for file in tmp_build_dir.rglob("*.dll"):
         if (build_dir / file.name).exists:
             continue
-        file.rename(build_dir / file.name)
+        shutil.move(file, build_dir / file.name)
 
 
     
