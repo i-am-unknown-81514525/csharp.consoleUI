@@ -51,7 +51,7 @@ jobs:
         override: true
     - name: Build Release
       working-directory: ./stdin_handler
-      run: cargo build --release
+      run: cargo build --release --target ${{matrix.toolchain}} --target-dir target/release/
     - name: Rename file
       if: ${{ matrix.ext == 'dll' }}
       working-directory: ./stdin_handler
