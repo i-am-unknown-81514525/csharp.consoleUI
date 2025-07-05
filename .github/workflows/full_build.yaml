@@ -109,7 +109,7 @@ jobs:
     - name: Download rust artifact
       uses: actions/download-artifact@v4
       with:
-        name: rust-${{ matrix.osKind }}-${{ matrix.arch }}
+        name: rust-${{ matrix.os }}-${{ matrix.arch }}
     - name: Download dotnet artifact
       uses: actions/download-artifact@v4
       with:
