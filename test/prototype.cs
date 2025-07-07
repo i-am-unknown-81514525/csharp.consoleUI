@@ -204,7 +204,7 @@ namespace ui.test
                 Start();
                 return;
             }
-            FracConfig.iterationLimit = 8;
+            FracConfig.iterationLimit = 256; // 8
             table = new Fraction[varCount + 1, constraintCount + 1];
             strTable = new string[varCount + 1, constraintCount + 1];
             ExitHandler exitHandler = new ExitHandler();
