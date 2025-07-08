@@ -86,6 +86,7 @@ jobs:
     strategy:
       matrix:
         arch: [x64, ARM64, any]
+      fail-fast: false
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
@@ -131,6 +132,7 @@ jobs:
             dotnet_arch: any
           - os: linux
             dotnet_arch: any
+      fail-fast: false
     runs-on: ubuntu-latest
     steps:
     - name: Download rust artifact
