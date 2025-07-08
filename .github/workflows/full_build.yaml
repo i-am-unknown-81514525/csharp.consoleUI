@@ -3,6 +3,11 @@ name: Build and package full application
 on:
   workflow_dispatch:
 
+permissions:
+  id-token: write
+  contents: read
+  attestations: write
+
 jobs:
   rust_build_matrix:
     strategy:
@@ -68,6 +73,10 @@ jobs:
       if: ${{ matrix.ext == 'dll' }}
       working-directory: ./stdin_handler
       run: "cp target/release/stdin_handler.dll target/release/libstdin_handler.dll"
+    - name: Generate artifact attestation
+      uses: actions/attest-build-provenance@v2
+      with:
+        subject-path: ./stdin_handler/target/release/libstdin_handler.${{ matrix.ext }}
     - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
@@ -93,6 +102,12 @@ jobs:
         ARTIFACT_FOLDER="${{ github.workspace }}/.github_build/.build"
         ls -laR "$ARTIFACT_FOLDER" || echo "'$ARTIFACT_FOLDER' does not exist or is empty."
       continue-on-error: true
+    - name: Generate artifact attestation
+      uses: actions/attest-build-provenance@v2
+      with:
+        subject-path: |
+          ./.github_build/.build/*.exe
+          ./.github_build/.build/ui.dll
     - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
@@ -126,6 +141,10 @@ jobs:
       uses: actions/download-artifact@v4
       with:
         name: dotnet-${{ matrix.dotnet_arch }}
+    - name: Generate artifact attestation
+      uses: actions/attest-build-provenance@v2
+      with:
+        subject-path: ./*
     - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
