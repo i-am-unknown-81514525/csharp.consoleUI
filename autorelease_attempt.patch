@@ -1,0 +1,39 @@
+diff --git a/.github/workflows/full_build.yaml b/.github/workflows/full_build.yaml
+index 2115897..017268b 100644
+--- a/.github/workflows/full_build.yaml
++++ b/.github/workflows/full_build.yaml
+@@ -2,6 +2,14 @@ name: Build and package full application
+ 
+ on:
+   workflow_dispatch:
++    release:
++      description: 'Release name (optional):'
++      required: false
++      type: string
++    tag_name:
++      description: 'Tag name:'
++      required: false
++      type: string
+ 
+ permissions:
+   id-token: write
+@@ -115,6 +123,19 @@ jobs:
+         name: dotnet-${{ matrix.arch }}
+         path: ./.github_build/.build   
+         include-hidden-files: true  
++  check_is_release:
++    runs-on: ubuntu-latest
++    steps:
++    - if: "${{ github.event.inputs.release != '' && github.event.inputs.tag_name != ''}}"
++      name: Release
++      env:
++        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
++        tag: ${{ github.ref_name }}
++      run: |
++        gh release create "${{ github.event.inputs.tag_name }}" \
++            --repo="$GITHUB_REPOSITORY" \
++            --title="${{ github.event.inputs.release }}" \
++            --generate-notes
+   final_matrix:
+     needs:
+     - rust_build_matrix
