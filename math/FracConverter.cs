@@ -11,14 +11,14 @@ namespace ui.math
 
     public static class FracConverter
     {
-        public Fraction ParseInteger(string integer)
+        public static Fraction ParseInteger(string integer)
         {
             if (!RegexChecker.IsInteger(integer))
                 throw new FractionFormatException(integer);
             return new Fraction(BigInteger.Parse(integer), 1);
         }
 
-        public Fraction ParseDecimal(string decimalValue)
+        public static Fraction ParseDecimal(string decimalValue)
         {
             if (!RegexChecker.IsDecimal(decimalValue))
                 throw new FractionFormatException(decimalValue);
@@ -28,7 +28,7 @@ namespace ui.math
             return new Fraction(BigInteger.Parse(left + right), BigInteger.Parse("1" + new string('0', rCount)));
         }
 
-        public Fraction ParseNumber(string number)
+        public static Fraction ParseNumber(string number)
         {
             if (DEBUG.FracConverter_AlternativeLowerScopeCheck && !RegexChecker.IsNumber(number) && (RegexChecker.IsDecimal(number) || RegexChecker.IsInteger(number)))
             {
@@ -41,7 +41,7 @@ namespace ui.math
             throw new NotSupportedException($"Regex Error: {number} is being consider as number but have not been consider as either of decimal or integer");
         }
 
-        public Fraction ParseFraction(string fraction)
+        public static Fraction ParseFraction(string fraction)
         {
             if (!RegexChecker.IsFraction(fraction))
                 throw new FractionFormatException(fraction);
@@ -51,7 +51,7 @@ namespace ui.math
             return ParseNumber(left) / ParseNumber(right);
         }
 
-        public Fraction Parse(string value)
+        public static Fraction Parse(string value)
         {
             if (DEBUG.FracConverter_AlternativeLowerScopeCheck && !RegexChecker.IsNumber(number) && (RegexChecker.IsFraction(number) || RegexChecker.IsNumber(number)))
             {
