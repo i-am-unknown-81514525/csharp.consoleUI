@@ -89,5 +89,8 @@
     <Compile Include="utils\*.cs" />
     <Compile Include="math\*.cs" />
   </ItemGroup>
+  <!-- <ItemGroup>
+    <PackageReference Include="System.Text.RegularExpressions" Version="4.3.1" />
+  </ItemGroup> -->
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
