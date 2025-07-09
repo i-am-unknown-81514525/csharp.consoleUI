@@ -8,7 +8,7 @@ namespace ui.math
     public class FractionFormatException : FormatException
     {
         public FractionFormatException() : base("Invalid format string at ui.math.Fraction") { }
-        public FractionFormatException(string value) : base($"Invalid format string of {integer} at ui.math.Fraction") { }
+        public FractionFormatException(string value) : base($"Invalid format string of {value} at ui.math.Fraction") { }
     }
 
     public static class FracConverter
