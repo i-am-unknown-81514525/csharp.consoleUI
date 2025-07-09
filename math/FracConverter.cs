@@ -55,15 +55,15 @@ namespace ui.math
 
         public static Fraction Parse(string value)
         {
-            if (DEBUG.FracConverter_AlternativeLowerScopeCheck && !RegexChecker.IsNumber(number) && (RegexChecker.IsFraction(number) || RegexChecker.IsNumber(number)))
+            if (DEBUG.FracConverter_AlternativeLowerScopeCheck && !RegexChecker.IsNumber(value) && (RegexChecker.IsFraction(value) || RegexChecker.IsNumber(value)))
             {
-                throw new NotSupportedException($"Regex Error: {number} is not being consider as parsable but have been consider as one of fraction or number");
+                throw new NotSupportedException($"Regex Error: {value} is not being consider as parsable but have been consider as one of fraction or number");
             }
             if (!RegexChecker.IsFracOrNum(value))
                 throw new FractionFormatException(value);
-            if (RegexChecker.IsFraction(number)) return ParseFraction(number);
-            if (RegexChecker.IsNumber(number)) return ParseNumber(number);
-            throw new NotSupportedException($"Regex Error: {number} is being consider as parsable but have not been consider as either of fraction or number");
+            if (RegexChecker.IsFraction(value)) return ParseFraction(value);
+            if (RegexChecker.IsNumber(value)) return ParseNumber(value);
+            throw new NotSupportedException($"Regex Error: {value} is being consider as parsable but have not been consider as either of fraction or number");
             
         }
     }
