@@ -4,12 +4,6 @@ using System.Linq;
 
 namespace ui.core
 {
-    public static class InputConst
-    {
-        public const bool IgnoreHanlderValidateException = false;
-        public const bool IgnoreHandlerHandleException = false;
-    }
-
     public abstract class InputHandler
     {
         private LockStatus _prevLockStatus = LockStatus.NoLock;
@@ -104,7 +98,7 @@ namespace ui.core
             }
             catch (Exception)
             {
-                if (!InputConst.IgnoreHanlderValidateException) throw;
+                if (!DEBUG.InputHandler_IgnoreHanlderValidateException) throw;
                 #pragma warning disable CS0162 // Unreachable code detected
                 return LockStatus.NoLock;
                 #pragma warning restore CS0162 // Unreachable code detected
@@ -139,7 +133,7 @@ namespace ui.core
                     _lockStatus = LockStatus.NoLock;
                     root.LockChangeAnnounce(this);
                 }
-                if (!InputConst.IgnoreHandlerHandleException) throw;
+                if (!DEBUG.InputHandler_IgnoreHandlerHandleException) throw;
             }
             finally
             {

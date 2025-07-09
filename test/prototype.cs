@@ -150,9 +150,8 @@ namespace ui.test
             if (handler != null)
             {
                 Global.InputHandler.Remove(handler);
-                if (double.TryParse(value, out double longValue))
+                if (Fraction.TryParse(value, out Fraction frac))
                 {
-                    Fraction frac = new Fraction(longValue);
                     table[loc.varLoc, loc.constLoc] = frac;
                     uint varLoc = loc.varLoc + 1;
                     uint constLoc = loc.constLoc;

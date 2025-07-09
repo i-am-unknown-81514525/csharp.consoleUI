@@ -1,6 +1,7 @@
 using System;
 using System.Runtime.CompilerServices;
 using System.Numerics;
+using ui.utils;
 
 namespace ui.math
 {
@@ -79,6 +80,13 @@ namespace ui.math
             }
         }
 
+        public Fraction(string value)
+        {
+            Fraction f = Fraction.Parse(value);
+            denominator = f.denominator;
+            numerator = f.numerator;
+        }
+
         public static implicit operator double(Fraction fraction)
         {
             return (double)fraction.numerator / (double)fraction.denominator;
@@ -91,7 +99,7 @@ namespace ui.math
 
         public Fraction simplify()
         {
-            
+
             BigInteger value = MathUtils.factorize(numerator, denominator);
             if (numerator < 0 && denominator < 0)
             {
@@ -268,6 +276,18 @@ namespace ui.math
                 return $"{numerator.ToString()}";
             }
             return $"{numerator.ToString()}/{denominator.ToString()}";
+        }
+
+        public static Fraction Parse(string value)
+        {
+            return FracConverter.Parse(value);
+        }
+
+        public static bool TryParse(string value, out Fraction frac)
+        {
+            frac = new Fraction(0, 1);
+            if (!RegexChecker.IsFracOrNum(value)) return false;
+            return Fraction.Parse(value);
         }
     }
 }
