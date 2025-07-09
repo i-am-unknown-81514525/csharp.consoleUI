@@ -84,6 +84,7 @@
     <Compile Include="const.cs" />
     <Compile Include="Global.cs" />
     <Compile Include="ui*.cs" />
+    <Compile Include="debug.cs" />
     <Compile Include="test\testHandler.cs" />
     <Compile Include="test\prototype.cs" />
     <Compile Include="input\*.cs" />
