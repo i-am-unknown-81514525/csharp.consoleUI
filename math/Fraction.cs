@@ -288,7 +288,7 @@ namespace ui.math
             frac = new Fraction(0, 1);
             if (!RegexChecker.IsFracOrNum(value)) return false;
             frac = Fraction.Parse(value);
-            return True;
+            return true;
         }
     }
 }
