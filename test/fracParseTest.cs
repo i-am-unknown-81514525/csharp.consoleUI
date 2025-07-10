@@ -2,14 +2,17 @@ using ui.math;
 
 namespace ui.test
 {
-    public static void Setup()
+    public class FracParseTest
     {
-        while (true)
+        public static void Setup()
         {
-            Console.Write("Fraction: ");
-            if (Fraction.TryParse(Console.ReadLine(), out Fraction frac))
+            while (true)
             {
-                Console.WriteLine(frac.ToString());
+                Console.Write("Fraction: ");
+                if (Fraction.TryParse(Console.ReadLine(), out Fraction frac))
+                {
+                    Console.WriteLine(frac.ToString());
+                }
             }
         }
     }
