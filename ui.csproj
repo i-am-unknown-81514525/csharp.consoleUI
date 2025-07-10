@@ -81,16 +81,17 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="core\*.cs" />
     <Compile Include="input_handler\*.cs" />
-    <Compile Include="const.cs" />
+    <Compile Include="Const.cs" />
     <Compile Include="Global.cs" />
     <Compile Include="ui*.cs" />
-    <Compile Include="debug.cs" />
+    <Compile Include="Debug.cs" />
     <Compile Include="test\testHandler.cs" />
     <Compile Include="test\prototype.cs" />
     <Compile Include="input\*.cs" />
     <Compile Include="components\*.cs" />
     <Compile Include="utils\*.cs" />
     <Compile Include="math\*.cs" />
+    <Compile Include="Config.cs" />
   </ItemGroup>
   <!-- <ItemGroup>
     <PackageReference Include="System.Text.RegularExpressions" Version="4.3.1" />

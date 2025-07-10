@@ -1,45 +1,53 @@
-#[cfg(target_family = "unix")]
-use nix::sys::termios::{SetArg, Termios, tcgetattr, cfmakeraw, tcsetattr, ControlFlags, InputFlags, LocalFlags, OutputFlags};
-#[cfg(target_family = "windows")]
-use win32console::console::{HandleType, WinConsole};
-// use std::fs::File;
 use std::io::{self, BufRead};
 use std::io::{Read, Write};
 use std::ffi::{CString, c_char};
-use core::sync::atomic::{AtomicBool, Ordering};
+use core::sync::atomic::{AtomicBool, Ordering, AtomicU32};
 use std::thread;
 use std::time::Duration;
 use crossbeam_channel::{bounded};
 
+cfg_if::cfg_if! {
+    if #[cfg(target_family = "unix")] {
+        use nix::sys::termios::{SetArg, Termios, tcgetattr, cfmakeraw, tcsetattr, ControlFlags, InputFlags, LocalFlags, OutputFlags};
+        static ORDER: Ordering = Ordering::Relaxed;
+        static C_IF: AtomicU32 = AtomicU32::new(0);
+        static C_OF: AtomicU32 = AtomicU32::new(0);
+        static C_CF: AtomicU32 = AtomicU32::new(0);
+        static C_LF: AtomicU32 = AtomicU32::new(0);
+        static TERMINAL_RAW_IS_ACTIVE: AtomicBool = AtomicBool::new(false);
+        const DC_IF: u32 = 27906; // Value obtained from Github Codespace, Visual Studio Code Terminal
+        const DC_OF: u32 = 5;
+        const DC_CF: u32 = 1215;
+        const DC_LF: u32 = 35389;
+    }
+    else if #[cfg(target_family = "windows")] {
+        use win32console::console::{HandleType, WinConsole};
+        struct InputConsoleMode;
+        impl InputConsoleMode {
+            pub const ENABLE_PROCESSED_INPUT: u32 = 1u32;
+            pub const ENABLE_LINE_INPUT: u32 = 2u32;
+            pub const ENABLE_ECHO_INPUT: u32 = 4u32;
+            pub const ENABLE_WINDOW_INPUT: u32 = 8u32;
+            pub const ENABLE_MOUSE_INPUT: u32 = 16u32;
+            pub const ENABLE_INSERT_MODE: u32 = 32u32;
+            pub const ENABLE_QUICK_EDIT_MODE: u32 = 64u32;
+            pub const ENABLE_VIRTUAL_TERMINAL_INPUT: u32 = 512u32;
+        }
+        struct OutputConsoleMode;
+        impl OutputConsoleMode {
+            pub const ENABLE_PROCESSED_OUTPUT: u32 = 1u32;
+            pub const ENABLE_WRAP_AT_EOL_OUTPUT: u32 = 2u32;
+            pub const ENABLE_VIRTUAL_TERMINAL_PROCESSING: u32 = 4u32;
+            pub const DISABLE_NEWLINE_AUTO_RETURN: u32 = 8u32;
+            pub const ENABLE_LVB_GRID_WORLDWIDE: u32 = 16u32;
+        }
 
-// const IS_DEBUG: bool = false;
+    }
+}
+
 static REMAIN_LOCK: AtomicBool = AtomicBool::new(false);
 static READ_END_LOCK: AtomicBool = AtomicBool::new(false);
 
-#[cfg(target_family = "windows")]
-struct InputConsoleMode;
-#[cfg(target_family = "windows")]
-impl InputConsoleMode {
-    pub const ENABLE_PROCESSED_INPUT: u32 = 1u32;
-    pub const ENABLE_LINE_INPUT: u32 = 2u32;
-    pub const ENABLE_ECHO_INPUT: u32 = 4u32;
-    pub const ENABLE_WINDOW_INPUT: u32 = 8u32;
-    pub const ENABLE_MOUSE_INPUT: u32 = 16u32;
-    pub const ENABLE_INSERT_MODE: u32 = 32u32;
-    pub const ENABLE_QUICK_EDIT_MODE: u32 = 64u32;
-    pub const ENABLE_VIRTUAL_TERMINAL_INPUT: u32 = 512u32;
-}
-
-#[cfg(target_family = "windows")]
-struct OutputConsoleMode;
-#[cfg(target_family = "windows")]
-impl OutputConsoleMode {
-    pub const ENABLE_PROCESSED_OUTPUT: u32 = 1u32;
-    pub const ENABLE_WRAP_AT_EOL_OUTPUT: u32 = 2u32;
-    pub const ENABLE_VIRTUAL_TERMINAL_PROCESSING: u32 = 4u32;
-    pub const DISABLE_NEWLINE_AUTO_RETURN: u32 = 8u32;
-    pub const ENABLE_LVB_GRID_WORLDWIDE: u32 = 16u32;
-}
 
 #[cfg(target_family = "unix")]
 fn internal_init() -> i32{
@@ -50,6 +58,13 @@ fn internal_init() -> i32{
             termios = t
         },
         Result::Err(_) => return -1,
+    }
+    if !TERMINAL_RAW_IS_ACTIVE.load(ORDER) {
+        C_CF.store(termios.control_flags.bits(), ORDER);
+        C_IF.store(termios.input_flags.bits(), ORDER);
+        C_LF.store(termios.local_flags.bits(), ORDER);
+        C_OF.store(termios.output_flags.bits(), ORDER);
+        TERMINAL_RAW_IS_ACTIVE.store(true, ORDER);
     }
     cfmakeraw(&mut termios);
     let stdin = io::stdin();
@@ -62,10 +77,14 @@ fn internal_init() -> i32{
 
 #[cfg(target_family = "unix")]
 fn internal_reset() -> i32 {
-    let c_iflag = InputFlags::from_bits_truncate(27906);
-    let c_oflag = OutputFlags::from_bits_truncate(5);
-    let c_cflag = ControlFlags::from_bits_truncate(1215);
-    let c_lflag = LocalFlags::from_bits_truncate(35387);
+    let have_init: bool = TERMINAL_RAW_IS_ACTIVE.load(ORDER);
+    let c_iflag = if have_init {C_IF.load(ORDER)} else {DC_IF};
+    let c_oflag = if have_init {C_OF.load(ORDER)} else {DC_OF};
+    let c_cflag = if have_init {C_CF.load(ORDER)} else {DC_CF};
+    let c_lflag = if have_init {C_LF.load(ORDER)} else {DC_LF};
+    if have_init {
+        TERMINAL_RAW_IS_ACTIVE.store(false, ORDER);
+    }
     let stdin = io::stdin();
     let mut termios: Termios;
     match tcgetattr(stdin) {
@@ -74,10 +93,10 @@ fn internal_reset() -> i32 {
         },
         Result::Err(_) => return -1,
     }
-    termios.input_flags = c_iflag;
-    termios.output_flags = c_oflag;
-    termios.control_flags = c_cflag;
-    termios.local_flags = c_lflag;
+    termios.input_flags = InputFlags::from_bits_truncate(c_iflag);
+    termios.output_flags = OutputFlags::from_bits_truncate(c_oflag);
+    termios.control_flags = ControlFlags::from_bits_truncate(c_cflag);
+    termios.local_flags = LocalFlags::from_bits_truncate(c_lflag);
     let stdin = io::stdin();
     match tcsetattr(stdin, SetArg::TCSANOW, &termios) {
         Result::Err(_) => return -2,
@@ -180,10 +199,10 @@ pub extern "cdecl" fn read_stdin() -> u8 {
 #[unsafe(no_mangle)]
 pub extern "cdecl" fn stdin_data_remain() -> bool {
     let (s, r) = bounded::<bool>(1);
-    if REMAIN_LOCK.load(Ordering::Relaxed) {
+    if REMAIN_LOCK.load(ORDER) {
         return false;
     }
-    REMAIN_LOCK.store(true, Ordering::Relaxed);
+    REMAIN_LOCK.store(true, ORDER);
     thread::spawn(move || {
         let mut stdin = io::stdin().lock();
         let mut v1 = stdin.fill_buf()
@@ -196,7 +215,7 @@ pub extern "cdecl" fn stdin_data_remain() -> bool {
             let buf = (*io::stdin().lock().fill_buf().unwrap()).to_vec();
             v1 = buf.iter().count() > 0;
         }
-        REMAIN_LOCK.store(false, Ordering::Relaxed);
+        REMAIN_LOCK.store(false, ORDER);
         let _ = s.send(v1); // ignore error
     });
     let result: bool = match r.recv_timeout(Duration::from_micros(400)) {
@@ -210,12 +229,12 @@ pub extern "cdecl" fn stdin_data_remain() -> bool {
 #[unsafe(no_mangle)]
 pub extern "cdecl" fn read_stdin_end()  -> *const c_char {
     let mut buf: Vec<u8> = vec![];
-    if !READ_END_LOCK.load(Ordering::Relaxed) && stdin_data_remain() {
+    if !READ_END_LOCK.load(ORDER) && stdin_data_remain() {
         let (s, r) = bounded::<Vec<u8>>(1);
-        READ_END_LOCK.store(true, Ordering::Relaxed);
+        READ_END_LOCK.store(true, ORDER);
         thread::spawn(move || {
             let _ = s.send((*io::stdin().lock().fill_buf().unwrap()).to_vec());
-            READ_END_LOCK.store(false, Ordering::Relaxed);
+            READ_END_LOCK.store(false, ORDER);
         });
         match r.recv_timeout(Duration::from_micros(1000)) {
             Ok(b) => buf = b,

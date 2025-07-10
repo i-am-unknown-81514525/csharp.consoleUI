@@ -14,3 +14,4 @@ crate-type = ["rlib", "cdylib", "staticlib"]
 [dependencies]
 crossbeam = { version = "0.8.4", features = ["crossbeam-channel"] }
 crossbeam-channel = "0.5.15"
+cfg-if = "1.0.1"

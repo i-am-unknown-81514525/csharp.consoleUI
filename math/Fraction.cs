@@ -2,13 +2,10 @@ using System;
 using System.Runtime.CompilerServices;
 using System.Numerics;
 using ui.utils;
+using ui;
 
 namespace ui.math
 {
-
-    public static class FracConfig {
-        public static int iterationLimit = 64;
-    }
     public struct Fraction : IComparable<Fraction>
     {
         public readonly BigInteger numerator, denominator;
@@ -61,7 +58,7 @@ namespace ui.math
             denominator = 1;
             double remain = value % 1;
             int it = 0;
-            while (remain != 0 && it < FracConfig.iterationLimit)
+            while (remain != 0 && it < Config.Frac_DoubleInterpretPrecision)
             {
                 remain *= 2;
                 numerator <<= 1;
