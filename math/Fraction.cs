@@ -10,36 +10,40 @@ namespace ui.math
     {
         public readonly BigInteger numerator, denominator;
 
-        public Fraction(long numerator, long denominator)
+        public Fraction(BigInteger numerator, BigInteger denominator)
         {
             if (denominator == 0) throw new DivideByZeroException("Denominator cannot be 0");
-            long value = MathUtils.factorize(numerator, denominator);
+            if (denominator < 0) { numerator = -numerator; denominator = -denominator; }
+            BigInteger value = MathUtils.factorize(numerator, denominator);
             this.numerator = numerator / value;
             this.denominator = denominator / value;
+        }
+
+        public Fraction(long numerator, long denominator)
+        {
+            (this.numerator, this.denominator) = new Fraction((BigInteger)numerator, (BigInteger)denominator);
+            // if (denominator == 0) throw new DivideByZeroException("Denominator cannot be 0");
+            // long value = MathUtils.factorize(numerator, denominator);
+            // this.numerator = numerator / value;
+            // this.denominator = denominator / value;
         }
 
         public Fraction(BigInteger numerator, long denominator)
         {
-            if (denominator == 0) throw new DivideByZeroException("Denominator cannot be 0");
-            BigInteger value = MathUtils.factorize(numerator, (BigInteger)denominator);
-            this.numerator = numerator / value;
-            this.denominator = denominator / value;
+            (this.numerator, this.denominator) = new Fraction((BigInteger)numerator, (BigInteger)denominator);
+            // if (denominator == 0) throw new DivideByZeroException("Denominator cannot be 0");
+            // BigInteger value = MathUtils.factorize(numerator, (BigInteger)denominator);
+            // this.numerator = numerator / value;
+            // this.denominator = denominator / value;
         }
 
         public Fraction(long numerator, BigInteger denominator)
         {
-            if (denominator == 0) throw new DivideByZeroException("Denominator cannot be 0");
-            BigInteger value = MathUtils.factorize((BigInteger)numerator, denominator);
-            this.numerator = numerator / value;
-            this.denominator = denominator / value;
-        }
-
-        public Fraction(BigInteger numerator, BigInteger denominator)
-        {
-            if (denominator == 0) throw new DivideByZeroException("Denominator cannot be 0");
-            BigInteger value = MathUtils.factorize(numerator, denominator);
-            this.numerator = numerator / value;
-            this.denominator = denominator / value;
+            (this.numerator, this.denominator) = new Fraction(numerator, (BigInteger)denominator);
+            // if (denominator == 0) throw new DivideByZeroException("Denominator cannot be 0");
+            // BigInteger value = MathUtils.factorize((BigInteger)numerator, denominator);
+            // this.numerator = numerator / value;
+            // this.denominator = denominator / value;
         }
 
         public Fraction(long value)
@@ -54,8 +58,8 @@ namespace ui.math
             // -40/8, -0.96 -> -80/16, -1.92 => -81/16, -0.92, -162/32, -1.84 => -163/32, -0.84
             // -> -326/64, -1.68 => -327/64, -0.68 -> -654/128, -1.36 => -655/128, -0.36 -> -1310/256, -0.72
             // -2620/512, -1.44 => -2621/512, -0.44 -> -5242/1024, -0.88 -> -10484/2048, -1.76 => -10485/2048, -0.76
-            numerator = (BigInteger)value;
-            denominator = 1;
+            BigInteger numerator = (BigInteger)value;
+            BigInteger denominator = 1;
             double remain = value % 1;
             int it = 0;
             while (remain != 0 && it < Config.Frac_DoubleInterpretPrecision)
@@ -75,6 +79,7 @@ namespace ui.math
                 }
                 it += 1;
             }
+            (this.numerator, this.denominator) = new Fraction(numerator, denominator);
         }
 
         public Fraction(string value)
@@ -92,6 +97,14 @@ namespace ui.math
         public static implicit operator float(Fraction fraction)
         {
             return (float)((double)fraction.numerator / (double)fraction.denominator);
+        }
+
+        public static implicit operator (BigInteger numerator, BigInteger denominator)(Fraction fraction) => fraction.asTuple();
+
+        public void Deconstruct(out BigInteger numerator, out BigInteger denominator)
+        {
+            numerator = this.numerator;
+            denominator = this.denominator;
         }
 
         public Fraction simplify()
@@ -287,5 +300,7 @@ namespace ui.math
             frac = Fraction.Parse(value);
             return true;
         }
+
+        public (BigInteger numerator, BigInteger denominator) asTuple() => (numerator, denominator);
     }
 }
