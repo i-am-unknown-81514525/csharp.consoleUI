@@ -6,7 +6,6 @@ use std::thread;
 use std::time::Duration;
 use crossbeam_channel::{bounded};
 use cli_clipboard::get_contents;
-use nix::libc::ERA;
 
 cfg_if::cfg_if! {
     if #[cfg(target_family = "unix")] {
