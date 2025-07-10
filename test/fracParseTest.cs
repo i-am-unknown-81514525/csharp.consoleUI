@@ -1,8 +1,9 @@
+using System;
 using ui.math;
 
 namespace ui.test
 {
-    public class FracParseTest
+    public static class FracParseTest
     {
         public static void Setup()
         {
@@ -12,6 +13,10 @@ namespace ui.test
                 if (Fraction.TryParse(Console.ReadLine(), out Fraction frac))
                 {
                     Console.WriteLine(frac.ToString());
+                }
+                else
+                {
+                    Console.WriteLine("Failed");
                 }
             }
         }

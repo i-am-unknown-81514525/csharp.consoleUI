@@ -85,8 +85,7 @@
     <Compile Include="Global.cs" />
     <Compile Include="ui*.cs" />
     <Compile Include="Debug.cs" />
-    <Compile Include="test\testHandler.cs" />
-    <Compile Include="test\prototype.cs" />
+    <Compile Include="test\*.cs" />
     <Compile Include="input\*.cs" />
     <Compile Include="components\*.cs" />
     <Compile Include="utils\*.cs" />
