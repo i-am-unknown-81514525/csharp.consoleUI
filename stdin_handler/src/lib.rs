@@ -1,7 +1,7 @@
 use std::io::{self, BufRead};
 use std::io::{Read, Write};
 use std::ffi::{CString, c_char};
-use core::sync::atomic::{AtomicBool, Ordering, AtomicU32};
+use core::sync::atomic::{AtomicBool, Ordering};
 use std::thread;
 use std::time::Duration;
 use crossbeam_channel::{bounded};
@@ -9,16 +9,16 @@ use crossbeam_channel::{bounded};
 cfg_if::cfg_if! {
     if #[cfg(target_family = "unix")] {
         use nix::sys::termios::{SetArg, Termios, tcgetattr, cfmakeraw, tcsetattr, ControlFlags, InputFlags, LocalFlags, OutputFlags};
-        static ORDER: Ordering = Ordering::Relaxed;
-        static C_IF: AtomicU32 = AtomicU32::new(0);
-        static C_OF: AtomicU32 = AtomicU32::new(0);
-        static C_CF: AtomicU32 = AtomicU32::new(0);
-        static C_LF: AtomicU32 = AtomicU32::new(0);
+        use core::sync::atomic::AtomicU64;
+        static C_IF: AtomicU64 = AtomicU64::new(0);
+        static C_OF: AtomicU64 = AtomicU64::new(0);
+        static C_CF: AtomicU64 = AtomicU64::new(0);
+        static C_LF: AtomicU64 = AtomicU64::new(0);
         static TERMINAL_RAW_IS_ACTIVE: AtomicBool = AtomicBool::new(false);
-        const DC_IF: u32 = 27906; // Value obtained from Github Codespace, Visual Studio Code Terminal
-        const DC_OF: u32 = 5;
-        const DC_CF: u32 = 1215;
-        const DC_LF: u32 = 35389;
+        const DC_IF: u64 = 27906; // Value obtained from Github Codespace, Visual Studio Code Terminal
+        const DC_OF: u64 = 5;
+        const DC_CF: u64 = 1215;
+        const DC_LF: u64 = 35389;
     }
     else if #[cfg(target_family = "windows")] {
         use win32console::console::{HandleType, WinConsole};
@@ -45,6 +45,7 @@ cfg_if::cfg_if! {
     }
 }
 
+static ORDER: Ordering = Ordering::Relaxed;
 static REMAIN_LOCK: AtomicBool = AtomicBool::new(false);
 static READ_END_LOCK: AtomicBool = AtomicBool::new(false);
 
@@ -60,10 +61,10 @@ fn internal_init() -> i32{
         Result::Err(_) => return -1,
     }
     if !TERMINAL_RAW_IS_ACTIVE.load(ORDER) {
-        C_CF.store(termios.control_flags.bits(), ORDER);
-        C_IF.store(termios.input_flags.bits(), ORDER);
-        C_LF.store(termios.local_flags.bits(), ORDER);
-        C_OF.store(termios.output_flags.bits(), ORDER);
+        C_CF.store(termios.control_flags.bits().into(), ORDER);
+        C_IF.store(termios.input_flags.bits().into(), ORDER);
+        C_LF.store(termios.local_flags.bits().into(), ORDER);
+        C_OF.store(termios.output_flags.bits().into(), ORDER);
         TERMINAL_RAW_IS_ACTIVE.store(true, ORDER);
     }
     cfmakeraw(&mut termios);
@@ -93,10 +94,10 @@ fn internal_reset() -> i32 {
         },
         Result::Err(_) => return -1,
     }
-    termios.input_flags = InputFlags::from_bits_truncate(c_iflag);
-    termios.output_flags = OutputFlags::from_bits_truncate(c_oflag);
-    termios.control_flags = ControlFlags::from_bits_truncate(c_cflag);
-    termios.local_flags = LocalFlags::from_bits_truncate(c_lflag);
+    termios.input_flags = InputFlags::from_bits_truncate(c_iflag.try_into().unwrap_or(0));
+    termios.output_flags = OutputFlags::from_bits_truncate(c_oflag.try_into().unwrap_or(0));
+    termios.control_flags = ControlFlags::from_bits_truncate(c_cflag.try_into().unwrap_or(0));
+    termios.local_flags = LocalFlags::from_bits_truncate(c_lflag.try_into().unwrap_or(0));
     let stdin = io::stdin();
     match tcsetattr(stdin, SetArg::TCSANOW, &termios) {
         Result::Err(_) => return -2,
