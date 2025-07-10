@@ -5,6 +5,7 @@ namespace ui
         INTERRUPT = 3,
         TAB = 9,
         NEWLINE = 13,
+        PASTE = 22,
         ESC = 27,
         SPACE = 32,
         BACKSPACE = 127,

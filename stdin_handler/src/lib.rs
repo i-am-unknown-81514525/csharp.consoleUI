@@ -5,6 +5,8 @@ use core::sync::atomic::{AtomicBool, Ordering};
 use std::thread;
 use std::time::Duration;
 use crossbeam_channel::{bounded};
+use cli_clipboard::get_contents;
+use nix::libc::ERA;
 
 cfg_if::cfg_if! {
     if #[cfg(target_family = "unix")] {
@@ -226,6 +228,10 @@ pub extern "cdecl" fn stdin_data_remain() -> bool {
     result
 }
 
+fn to_cstring(buf: Vec<u8>) -> CString {
+    let filtered: Vec<u8> = buf.iter().map(|x| *x).filter(|v| (*v)!=0).collect();
+    CString::new(filtered.as_slice()).unwrap()
+}
 
 #[unsafe(no_mangle)]
 pub extern "cdecl" fn read_stdin_end()  -> *const c_char {
@@ -245,8 +251,7 @@ pub extern "cdecl" fn read_stdin_end()  -> *const c_char {
     if buf.len() > 0 {
         consume(buf.len() as u32);
     }
-    let filtered: Vec<u8> = buf.iter().map(|x| *x).filter(|v| (*v)!=0).collect();
-    let c_string: CString = CString::new(filtered.as_slice()).unwrap();
+    let c_string: CString = to_cstring(buf);
     let ptr: *const c_char = c_string.as_ptr();
     std::mem::forget(c_string);
     ptr
@@ -257,6 +262,20 @@ pub extern "cdecl" fn consume(amount: u32)  -> () {
     io::stdin().lock().consume(amount as usize)
 }
 
+#[unsafe(no_mangle)]
+pub extern "cdecl" fn read_clipboard() -> *const c_char {
+    let mut string: String = "".to_string();
+    match get_contents() {
+        Ok(result) => {
+            string = result;
+        }
+        Err(_) => {}
+    };
+    let c_string = to_cstring(string.as_bytes().to_vec());
+    let ptr: *const c_char = c_string.as_ptr();
+    std::mem::forget(c_string);
+    ptr
+}
 
 // Old:
 // #[unsafe(no_mangle)]
