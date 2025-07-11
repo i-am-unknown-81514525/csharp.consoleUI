@@ -27,8 +27,11 @@ namespace ui.core
             [DllImport("libstdin_handler.dll", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
             private static extern string read_stdin_end();
 
-            [DllImport("libstdin_handler", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
+            [DllImport("libstdin_handler.dll", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
             private static extern void consume(uint amount);
+
+            [DllImport("libstdin_handler.dll", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
+            private static extern string read_clipboard();
 
             public static byte readStdin() => read_stdin();
 
@@ -54,6 +57,8 @@ namespace ui.core
             {
                 consume(size);
             }
+
+            public static string ReadClipboard() => read_clipboard();
         }
 
         private static class PosixConsoleHandler
@@ -75,6 +80,9 @@ namespace ui.core
 
             [DllImport("libstdin_handler", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
             private static extern void consume(uint amount);
+
+            [DllImport("libstdin_handler", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
+            private static extern string read_clipboard();
 
             public static byte readStdin() => read_stdin();
 
@@ -116,6 +124,8 @@ namespace ui.core
             {
                 consume(size);
             }
+
+            public static string ReadClipboard() => read_clipboard();
         }
 
         public static class ConsoleIntermediateHandler
@@ -228,6 +238,17 @@ namespace ui.core
                 //         }
                 // }
                 // return result ? task.Result : "";
+            }
+            public static string ReadClipboard()
+            {
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                {
+                    return WindowConsoleHandler.ReadClipboard();
+                }
+                else
+                {
+                    return PosixConsoleHandler.ReadClipboard();
+                }
             }
         }
     }
