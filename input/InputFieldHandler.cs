@@ -169,7 +169,7 @@ namespace ui.input
             content = content.GetReadable();
             for (int i = 0; i < content.Length; i++)
             {
-                Handle(content[i]);
+                Handle((byte)content[i]);
             }
         }
 
