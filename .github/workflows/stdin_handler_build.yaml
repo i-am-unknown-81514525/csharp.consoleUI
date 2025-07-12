@@ -52,7 +52,7 @@ jobs:
     - name: Cache Cargo
       uses: actions/cache@v4
       with:
-        key: cargo-${{matrix.osKind}}-${{os.arch}}
+        key: cargo-${{matrix.osKind}}-${{matrix.arch}}
         path: |
           ~/.cargo
           ./stdin_handler/target
