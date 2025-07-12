@@ -80,7 +80,7 @@ namespace ui.test
         {
             ConsoleCanva canva = Global.consoleCanva;
             canva.EventLoopPre();
-            uint width = 6 + (8 * ((uint)strTable.GetLength(0) - 1)) + 2 + 4;
+            uint width = 6 + (16 * ((uint)strTable.GetLength(0) - 1)) + 2 + 4;
             uint height = 1 + (uint)strTable.GetLength(1) - 1;
             if (canva.GetConsoleSize().Width < width || canva.GetConsoleSize().Height < height)
             {
@@ -91,11 +91,11 @@ namespace ui.test
             {
                 ConsoleCanva.WriteStringOnCanva(Global.consoleCanva, y == 0 ? "MAX P=" : "      ", (0, y));
             }
-            for (int x = 6; x < 6 + (8 * ((uint)strTable.GetLength(0) - 1)); x += 8)
+            for (int x = 6; x < 6 + (16 * ((uint)strTable.GetLength(0) - 1)); x += 16)
             {
                 for (int y = 0; y < height; y++)
                 {
-                    int n = (x - 6) / 8;
+                    int n = (x - 6) / 16;
                     // Console.Write($"{n} {y},");
                     // File.AppendAllText("log-loc", $"{n} {y}\n");
                     string ansiPrefix = "";
@@ -106,13 +106,13 @@ namespace ui.test
                         ansiPostfix = "\x1b[37;40m";
                     }
                     ConsoleCanva.WriteStringOnCanva(Global.consoleCanva, $"+", (x, y));
-                    ConsoleCanva.WriteStringOnCanva(Global.consoleCanva, (strTable[n, y] ?? "").PadRight(3).Substring(0, 3), (x + 1, y), ansiPrefix, ansiPostfix);
-                    ConsoleCanva.WriteStringOnCanva(Global.consoleCanva, $"x_{n}", (x + 4, y));
+                    ConsoleCanva.WriteStringOnCanva(Global.consoleCanva, (strTable[n, y] ?? "").PadRight(11).Substring(0, 11), (x + 1, y), ansiPrefix, ansiPostfix);
+                    ConsoleCanva.WriteStringOnCanva(Global.consoleCanva, $"x_{n}", (x + 12, y));
                 }
             }
             for (int y = 0; y < height; y++)
             {
-                int x = 6 + (8 * (table.GetLength(0) - 1));
+                int x = 6 + (16 * (table.GetLength(0) - 1));
                 string ansiPrefix = "";
                 string ansiPostfix = "";
                 if (((uint)table.GetLength(0) - 1, (uint)y) == loc)
@@ -126,7 +126,7 @@ namespace ui.test
                     continue;
                 }
                 ConsoleCanva.WriteStringOnCanva(Global.consoleCanva, $"<=", (x, y));
-                ConsoleCanva.WriteStringOnCanva(Global.consoleCanva, (strTable[strTable.GetLength(0) - 1, y] ?? "").PadRight(3).Substring(0, 3), (x + 2, y), ansiPrefix, ansiPostfix);
+                ConsoleCanva.WriteStringOnCanva(Global.consoleCanva, (strTable[strTable.GetLength(0) - 1, y] ?? "").PadRight(11).Substring(0, 11), (x + 2, y), ansiPrefix, ansiPostfix);
             }
             canva.EventLoopPost();
         }
