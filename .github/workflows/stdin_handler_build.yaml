@@ -50,8 +50,10 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
     - name: Run sccache-cache
+      if: matrix.os != 'windows-11-arm'
       uses: mozilla-actions/sccache-action@v0.0.9
     - name: Set Rust caching env vars only on non-release runs
+      if: matrix.os != 'windows-11-arm'
       run: |
         echo "SCCACHE_GHA_ENABLED=true" >> $GITHUB_ENV
         echo "RUSTC_WRAPPER=sccache" >> $GITHUB_ENV
