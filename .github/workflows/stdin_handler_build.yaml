@@ -49,6 +49,13 @@ jobs:
       fail-fast: false
     runs-on: ${{ matrix.os }}
     steps:
+    - name: Cache Cargo
+      uses: actions/cache@v4
+      with:
+        key: cargo-${{matrix.osKind}}-${{os.arch}}
+        path: |
+          ~/.cargo
+          ./stdin_handler/target
     - uses: actions/checkout@v3
     - if: matrix.os == 'windows-11-arm'
       name: Install rustup on Windows ARM
