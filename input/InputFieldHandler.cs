@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using ui.core;
+using ui.utils;
 
 namespace ui.input
 {
@@ -96,6 +97,9 @@ namespace ui.input
                 case KeyCode.NEWLINE:
                     onEnter();
                     break;
+                case KeyCode.PASTE:
+                    onPaste();
+                    break;
                 default:
                     onDefault(value);
                     break;
@@ -156,6 +160,16 @@ namespace ui.input
                 List<byte> data = content.AsByteBuffer().AsList();
                 data.RemoveAt((int)cursor);
                 content = data.AsByteBuffer().AsString();
+            }
+        }
+
+        internal virtual void onPaste()
+        {
+            string content = ConsoleHandler.ConsoleIntermediateHandler.ReadClipboard();
+            content = content.GetReadable();
+            for (int i = 0; i < content.Length; i++)
+            {
+                Handle(content[i]);
             }
         }
 
