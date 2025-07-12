@@ -104,7 +104,7 @@ namespace ui.core
                                                                            //ConsoleHandler.ConsoleIntermediateHandler.ToANSI("3J") + // Clear screen and delete all lines saved in the scrollback buffer (xterm alive)
                 ConsoleHandler.ConsoleIntermediateHandler.ToANSI("1;39m") + // Set colour to default (according to ANSI)
                 ConsoleHandler.ConsoleIntermediateHandler.ToANSI("0;0H") + // Move cursor to 0,0 (top left)
-                ConsoleHandler.ConsoleIntermediateHandler.ToANSI("30;47m") // Set default colour
+                ConsoleHandler.ConsoleIntermediateHandler.ToANSI("37;40m") // Set default colour
             );
             builder.Append(prefix);
             string postfix = (
