@@ -11,6 +11,15 @@ win32console = "0.1.5"
 name = "stdin_handler"
 crate-type = ["rlib", "cdylib", "staticlib"]
 
+[profile.release]
+opt-level = 3
+debug = 2
+strip = "none"
+lto = "thin"
+panic = "unwind"
+incremental = true
+codegen-units = 64
+
 [dependencies]
 crossbeam = { version = "0.8.4", features = ["crossbeam-channel"] }
 crossbeam-channel = "0.5.15"
