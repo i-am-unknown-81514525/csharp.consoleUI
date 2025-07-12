@@ -1,4 +1,5 @@
 using System;
+using System.Text;
 
 namespace ui.core
 {
@@ -94,6 +95,7 @@ namespace ui.core
 
         internal string GetContent()
         {
+            StringBuilder builder = new StringBuilder(65536);
             string prefix = (
                 //ConsoleHandler.ConsoleIntermediateHandler.ToANSI("?1049h") + // Enable alternative buffer
                 ConsoleHandler.ConsoleIntermediateHandler.ToANSI("0m") + // Reset colour
@@ -103,20 +105,22 @@ namespace ui.core
                 ConsoleHandler.ConsoleIntermediateHandler.ToANSI("1;39m") + // Set colour to default (according to ANSI)
                 ConsoleHandler.ConsoleIntermediateHandler.ToANSI("0;0H") // Move cursor to 0,0 (top left)
             );
+            builder.Append(prefix);
             string postfix = (
                 ConsoleHandler.ConsoleIntermediateHandler.ToANSI("0m") + // Reset colour
                 ConsoleHandler.ConsoleIntermediateHandler.ToANSI("0;0H") // Move cursor to 0,0 (top left)
             );
-            string outputBuffer = "";
+            // string outputBuffer = "";
             for (int y = 1; y <= ConsoleWindow.GetLength(1); y++)
             {
-                outputBuffer += ConsoleHandler.ConsoleIntermediateHandler.ToANSI($"{y};0H");
+                builder.Append(ConsoleHandler.ConsoleIntermediateHandler.ToANSI($"{y};0H"));
                 for (int x = 1; x <= ConsoleWindow.GetLength(0); x++)
                 {
-                    outputBuffer += ConsoleWindow[x - 1, y - 1].ToString();
+                    builder.Append(ConsoleWindow[x - 1, y - 1].ToString());
                 }
             }
-            return prefix + outputBuffer + postfix;
+            builder.Append(postfix);
+            return builder.ToString();
         }
 
         public ConsoleSize GetConsoleSize()
