@@ -272,7 +272,14 @@ namespace ui.test
                 }
                 newTable[table.GetLength(0) + table.GetLength(1) - 2, c] = table[table.GetLength(0) - 1, c];
             }
-
+            for (int dj = 0; dj < newTable.GetLength(1); dj++)
+            {
+                for (int di = 0; di < newTable.GetLength(0); di++)
+                {
+                    Console.Write($"{newTable[di, dj]} ");
+                }
+                Console.Write("\n");
+            }
             while (getObjFrac(newTable).Min() < new Fraction(0))
             {
                 Fraction frac = getObjFrac(newTable).Min();
@@ -298,8 +305,17 @@ namespace ui.test
                         newTable[x, y] -= subMul * newTable[x, j];
                     }
                 }
+                for (int dj = 0; dj < newTable.GetLength(1); dj++)
+                {
+                    for (int di = 0; di < newTable.GetLength(0); di++)
+                    {
+                        Console.Write($"{newTable[di, dj]} ");
+                    }
+                    Console.Write("\n");
+                }
             }
             Console.WriteLine($"P = {newTable[newTable.GetLength(0) - 1, 0].ToString()}");
+            int[] oneFrom = new int[newTable.GetLength(0)].Select(q=>-1).ToArray();
             for (int x = 0; x < newTable.GetLength(0) - 1; x++)
             {
                 int count1 = 0;
@@ -310,6 +326,12 @@ namespace ui.test
                     if (newTable[x, y] == 1)
                     {
                         count1++;
+                        if (oneFrom.Count(q => q == y) > 0)
+                        {
+                            count1++;
+                            continue;
+                        }
+                        oneFrom[x] = y;
                         frac = newTable[x, y];
                         rhs = newTable[newTable.GetLength(0) - 1, y];
                     }
