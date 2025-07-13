@@ -1,6 +1,16 @@
 name: Build ui library and all test application
 
 on:
+  push:
+    paths:
+      - "**.cs"
+      - "**.csproj"
+      - "**.sln"
+  pull_request:
+    paths:
+      - "**.cs"
+      - "**.csproj"
+      - "**.sln"
   workflow_dispatch:
 
 jobs:

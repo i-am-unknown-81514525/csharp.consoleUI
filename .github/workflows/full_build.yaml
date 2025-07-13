@@ -1,6 +1,14 @@
 name: Build and package full application
 
 on:
+  push:
+    paths:
+      - ".github/workflows/full_build.yaml"
+      - ".github_build/**"
+  pull_request:
+    paths:
+      - ".github/workflows/full_build.yaml"
+      - ".github_build/**"
   workflow_dispatch:
 
 permissions:
