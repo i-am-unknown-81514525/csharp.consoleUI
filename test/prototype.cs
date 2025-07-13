@@ -10,6 +10,7 @@ namespace ui.test
     public class ValueFieldHandler : InputFieldHandler
     {
         internal bool componentStatus = true;
+        private bool ignoreI = false;
 
         internal void SetComponentStatus(bool status)
         {
@@ -32,6 +33,11 @@ namespace ui.test
 
         internal override void Handle(byte value)
         {
+            if (value == (byte)'i' && ignoreI)
+            {
+                ignoreI = false;
+                return;
+            }
             uint pre = cursor;
             base.Handle(value);
             File.AppendAllText("log-loc", $"recv {value}, pre {pre}, cursor {cursor}, content {content}\n");
@@ -43,6 +49,7 @@ namespace ui.test
         {
             if (GetComponentStatus() && !GetActiveStatus() && (Buffer[0] == 'i' || Buffer[0] == 'i'))
             {
+                ignoreI = true;
                 SetActiveStatus(true);
                 return LockStatus.ExclusiveLock;
             }
@@ -228,7 +235,10 @@ namespace ui.test
                         System.Threading.Thread.Sleep(1);
                         continue;
                     }
-                    if (exitHandler.GetExitStatus()) break;
+                    if (exitHandler.GetExitStatus())
+                    {
+                        return;
+                    }
                     HandleNext();
                     Prototype.WriteTable();
                 }
