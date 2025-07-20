@@ -91,6 +91,7 @@
     <Compile Include="utils\*.cs" />
     <Compile Include="math\*.cs" />
     <Compile Include="Config.cs" />
+    <Compile Include="mouse\*.cs" />
   </ItemGroup>
   <!-- <ItemGroup>
     <PackageReference Include="System.Text.RegularExpressions" Version="4.3.1" />

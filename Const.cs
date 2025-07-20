@@ -22,4 +22,10 @@ namespace ui
         ARR_RIGHT = 254, // SPECIAL: \x1b[C, \x1bOC
         ARR_LEFT = 255 // SPECIAL: \x1b[D, \x1bOD
     }
+
+    public enum MouseOpCode : uint
+    {
+        CLICK = 0,
+        HOVER = 35
+    }
 }

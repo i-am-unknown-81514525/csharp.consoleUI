@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using ui.core;
+using ui.math;
 using ui.utils;
 using static ui.utils.Array2DHandler;
 
@@ -50,6 +51,10 @@ namespace ui.components
 
         private bool _frame_recurr_lock = false;
 
+        internal SplitConfig splitConfig;
+
+        public SplitConfig GetSplitConfig() => splitConfig;
+
         public bool getIsActive() => _isActive;
 
         public bool getContainsActive()
@@ -57,7 +62,7 @@ namespace ui.components
             return getIsActive() || childsMapping.Select(x => x.component.getContainsActive()).Any();
         }
 
-        internal List<(BaseComponent component, (uint x, uint y, uint allocX, uint allocY) location, int prioity)> GetMapping()
+        protected List<(BaseComponent component, (uint x, uint y, uint allocX, uint allocY) location, int prioity)> GetMapping()
         {
             return childsMapping.ToList();
         }
@@ -72,7 +77,7 @@ namespace ui.components
             return true;
         }
 
-        internal bool setDeactive()
+        protected bool setDeactive()
         {
             if (!getIsActive())
             {
@@ -128,7 +133,7 @@ namespace ui.components
             }
         }
 
-        internal bool setActive()
+        protected bool setActive()
         {
             if (_active_lock)
             {
@@ -148,9 +153,9 @@ namespace ui.components
             }
         }
 
-        internal virtual void onActive() { }
+        protected virtual void onActive() { }
 
-        internal virtual void onFrame() { }
+        protected virtual void onFrame() { }
 
         public void onFrameExternal()
         {
@@ -174,7 +179,7 @@ namespace ui.components
             return _localHasUpdate || childsMapping.Any(x => x.component.GetHasUpdate());
         }
 
-        internal void SetHasUpdate()
+        protected void SetHasUpdate()
         {
             _localHasUpdate = true;
         }
@@ -210,22 +215,8 @@ namespace ui.components
             root = component;
         }
 
-        internal bool ClickPropagationHandler(ConsoleLocation pressLocation)
-        {
-            foreach (var compLoc in childsMapping.OrderByDescending(x => x.prioity))
-            {
-                (uint lx, uint ly) = (compLoc.location.x, compLoc.location.y);
-                (uint hx, uint hy) = (lx + compLoc.location.allocX, ly + compLoc.location.allocY);
-                if (lx <= pressLocation.x && pressLocation.x <= lx && ly <= pressLocation.y && pressLocation.y <= hy)
-                {
-                    compLoc.component.onClick(pressLocation);
-                    return true;
-                }
-            }
-            return false;
-        }
 
-        internal virtual void onHover(ConsoleLocation location) { }
+        protected virtual void onHover(ConsoleLocation location) { }
 
         public virtual void onHoverExternal(ConsoleLocation location)
         {
@@ -249,8 +240,22 @@ namespace ui.components
                 }
             }
         }
+        protected bool ClickPropagationHandler(ConsoleLocation pressLocation)
+        {
+            foreach (var compLoc in childsMapping.OrderByDescending(x => x.prioity))
+            {
+                (uint lx, uint ly) = (compLoc.location.x, compLoc.location.y);
+                (uint hx, uint hy) = (lx + compLoc.location.allocX, ly + compLoc.location.allocY);
+                if (lx <= pressLocation.x && pressLocation.x <= lx && ly <= pressLocation.y && pressLocation.y <= hy)
+                {
+                    compLoc.component.onClick(pressLocation);
+                    return true;
+                }
+            }
+            return false;
+        }
 
-        internal virtual void onClick(ConsoleLocation pressLocation)
+        public virtual void onClick(ConsoleLocation pressLocation)
         {
             bool isPropagate = ClickPropagationHandler(pressLocation);
             if (!isPropagate)
@@ -298,7 +303,7 @@ namespace ui.components
             return false;
         }
 
-        internal abstract void onResize();
+        protected abstract void onResize();
 
         internal void setSize(BaseComponent component, (uint x, uint y, uint allocX, uint allocY) loc, int? prioity = null)
         {
@@ -318,7 +323,7 @@ namespace ui.components
             }
         }
 
-        internal void Remove(BaseComponent component)
+        protected void Remove(BaseComponent component)
         {
             if (!Contains(component))
             {
@@ -328,7 +333,7 @@ namespace ui.components
             childsMapping.RemoveAt(idx);
         }
 
-        internal virtual (bool isAdd, (BaseComponent, (uint, uint, uint, uint), int) data) onAddHandler((BaseComponent, (uint, uint, uint, uint), int) child)
+        protected virtual (bool isAdd, (BaseComponent, (uint, uint, uint, uint), int) data) onAddHandler((BaseComponent, (uint, uint, uint, uint), int) child)
         {
             return (true, child);
         }
@@ -357,7 +362,7 @@ namespace ui.components
             return Render();
         }
 
-        internal virtual ConsoleContent[,] Render()
+        protected virtual ConsoleContent[,] Render()
         {
             CheckLock();
             bool hasResize = UpdateAllocSize();

@@ -24,12 +24,12 @@ namespace ui.components
             AddChildComponent(component, (0, 0, allocX, allocY), 1);
         }
 
-        internal override (bool isAdd, (BaseComponent, (uint, uint, uint, uint), int) data) onAddHandler((BaseComponent, (uint, uint, uint, uint), int) child)
+        protected override (bool isAdd, (BaseComponent, (uint, uint, uint, uint), int) data) onAddHandler((BaseComponent, (uint, uint, uint, uint), int) child)
         {
             return (GetMapping().Count == 0, child);
         }
 
-        internal override void onResize()
+        protected override void onResize()
         {
 
         }

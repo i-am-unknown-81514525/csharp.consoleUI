@@ -1,6 +1,8 @@
 using System;
 using System.Runtime.CompilerServices;
 using System.Numerics;
+using System.Linq;
+using System.Collections.Generic;
 using ui.utils;
 using ui;
 
@@ -107,7 +109,7 @@ namespace ui.math
             denominator = this.denominator;
         }
 
-        public Fraction simplify()
+        public Fraction Simplify()
         {
 
             BigInteger value = MathUtils.factorize(numerator, denominator);
@@ -220,6 +222,11 @@ namespace ui.math
             return true;
         }
 
+        public BigInteger GetFloor()
+        {
+            return numerator / denominator;
+        }
+
         public static Fraction operator +(Fraction left, Fraction right) => left.Add(right);
         public static Fraction operator +(Fraction left, long right) => left + new Fraction(right);
         public static Fraction operator +(long left, Fraction right) => new Fraction(left) + right;
@@ -236,8 +243,8 @@ namespace ui.math
         public static bool operator ==(Fraction left, Fraction right)
         {
             // if (right is null) return false;
-            Fraction simLeft = left.simplify();
-            Fraction simRight = right.simplify();
+            Fraction simLeft = left.Simplify();
+            Fraction simRight = right.Simplify();
             return simLeft.numerator == simRight.numerator && simLeft.denominator == simRight.denominator;
         }
 
@@ -302,5 +309,28 @@ namespace ui.math
         }
 
         public (BigInteger numerator, BigInteger denominator) asTuple() => (numerator, denominator);
+    }
+
+    public static class FractionExtension
+    {
+        public static Fraction Sum(this IEnumerable<Fraction> fracs)
+        {
+            Fraction totalFrac = new Fraction(0);
+            foreach (Fraction frac in fracs)
+            {
+                totalFrac += frac;
+            }
+            return totalFrac;
+        }
+
+        public static Fraction Sum<T>(this IEnumerable<T> items, Func<T, Fraction> selector)
+        {
+            Fraction totalFrac = new Fraction(0);
+            foreach (T item in items)
+            {
+                totalFrac += selector(item);
+            }
+            return totalFrac;
+        }
     }
 }
