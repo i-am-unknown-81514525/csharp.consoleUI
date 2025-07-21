@@ -216,12 +216,12 @@ namespace ui.components
         }
 
 
-        protected virtual void onHover(ConsoleLocation location) { }
+        protected virtual void onHoverInternal(ConsoleLocation location) { }
 
-        public virtual void onHoverExternal(ConsoleLocation location)
+        public virtual void onHover(ConsoleLocation location)
         {
             CheckLock();
-            onHover(location);
+            onHoverInternal(location);
             foreach (var compLoc in childsMapping.OrderByDescending(x => x.prioity))
             {
                 (uint lx, uint ly) = (compLoc.location.x, compLoc.location.y);
@@ -240,7 +240,7 @@ namespace ui.components
                 }
             }
         }
-        protected bool ClickPropagationHandler(ConsoleLocation pressLocation)
+        protected bool onClickPropagate(ConsoleLocation pressLocation)
         {
             foreach (var compLoc in childsMapping.OrderByDescending(x => x.prioity))
             {
@@ -257,7 +257,7 @@ namespace ui.components
 
         public virtual void onClick(ConsoleLocation pressLocation)
         {
-            bool isPropagate = ClickPropagationHandler(pressLocation);
+            bool isPropagate = onClickPropagate(pressLocation);
             if (!isPropagate)
                 setActive();
         }
