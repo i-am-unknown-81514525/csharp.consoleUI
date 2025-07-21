@@ -155,18 +155,18 @@ namespace ui.components
 
         protected virtual void onActive() { }
 
-        protected virtual void onFrame() { }
+        protected virtual void onFrameInternal() { }
 
-        public void onFrameExternal()
+        public void onFrame()
         {
             if (_frame_recurr_lock) return;
             try
             {
                 _frame_recurr_lock = true;
-                onFrame();
+                onFrameInternal();
                 if (childsMapping != null)
                     foreach (var compLoc in childsMapping)
-                        compLoc.component.onFrameExternal();
+                        compLoc.component.onFrame();
             }
             finally
             {
@@ -351,7 +351,7 @@ namespace ui.components
             return true;
         }
 
-        public ConsoleContent[,] RenderExternal()
+        public ConsoleContent[,] Render()
         {
             CheckLock();
             if (!GetHasUpdate())
@@ -359,10 +359,10 @@ namespace ui.components
                 return (ConsoleContent[,])contentPlace.Clone();
             }
             _localHasUpdate = false;
-            return Render();
+            return RenderInternal();
         }
 
-        protected virtual ConsoleContent[,] Render()
+        protected virtual ConsoleContent[,] RenderInternal()
         {
             CheckLock();
             bool hasResize = UpdateAllocSize();
@@ -381,7 +381,7 @@ namespace ui.components
                 {
                     newArr = CopyTo(
                         changeSize(
-                            compLoc.component.RenderExternal(),
+                            compLoc.component.Render(),
                             (compLoc.meta.allocX, compLoc.meta.allocY),
                             ConsoleContent.getDefault()
                         ),

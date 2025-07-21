@@ -7,6 +7,8 @@ namespace ui.components
 {
     public class App : BaseComponent, IEnumerable<BaseComponent>
     {
+        internal OverlayApp overlay = null; // Future
+
         public App(BaseComponent component)
         {
             noParent = true;
@@ -31,7 +33,7 @@ namespace ui.components
 
         protected override void onResize()
         {
-
+            
         }
 
         IEnumerator IEnumerable.GetEnumerator()
