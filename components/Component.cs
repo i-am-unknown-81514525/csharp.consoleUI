@@ -17,14 +17,14 @@ namespace ui.components
 
     internal class DeactiveIgnoreNotice : Exception { }
 
-    public abstract class BaseComponent : ICanActive
+    public abstract class Component : ICanActive, IComponent
     {
         protected ActiveStatusHandler activeHandler;
-        private BaseComponent root = null;
+        private IComponent root = null;
 
         private (uint x, uint y) allocSize = (0, 0);
-        private List<(BaseComponent component, (uint x, uint y, uint allocX, uint allocY) location, int prioity)> childsMapping =
-                new List<(BaseComponent, (uint, uint, uint, uint), int)>(); // Lower value -> earlier to render = lower prioity (being override by higher value)
+        private List<(IComponent component, (uint x, uint y, uint allocX, uint allocY) location, int prioity)> childsMapping =
+                new List<(IComponent, (uint, uint, uint, uint), int)>(); // Lower value -> earlier to render = lower prioity (being override by higher value)
                                                                             // The component writer decide itself override on other or other overide on itself by call order
 
         internal ConsoleContent[,] contentPlace = new ConsoleContent[0, 0];
@@ -49,7 +49,7 @@ namespace ui.components
 
         public SplitConfig GetSplitConfig() => splitConfig;
 
-        protected List<(BaseComponent component, (uint x, uint y, uint allocX, uint allocY) location, int prioity)> GetMapping()
+        protected List<(IComponent component, (uint x, uint y, uint allocX, uint allocY) location, int prioity)> GetMapping()
         {
             return childsMapping.ToList();
         }
@@ -96,12 +96,12 @@ namespace ui.components
             }
         }
 
-        public BaseComponent getParent()
+        public IComponent getParent()
         {
             return root;
         }
 
-        public void setParent(BaseComponent component)
+        public void setParent(IComponent component)
         {
             CheckLock();
             if (component == null)
@@ -164,7 +164,7 @@ namespace ui.components
             bool isPropagate = onClickPropagate(pressLocation);
         }
 
-        public (uint x, uint y) GetChildAllocatedSize(BaseComponent component)
+        public (uint x, uint y) GetChildAllocatedSize(IComponent component)
         {
             if (!Contains(component))
             {
@@ -174,12 +174,12 @@ namespace ui.components
             return (allocX, allocY);
         }
 
-        public bool Contains(BaseComponent component)
+        public bool Contains(IComponent component)
         {
             return childsMapping.Select(x => x.component).Count(x => x == component) > 0;
         }
 
-        public int IndexOf(BaseComponent component)
+        public int IndexOf(IComponent component)
         {
             return childsMapping.Select(x => x.component).ToList().IndexOf(component);
         }
@@ -207,7 +207,7 @@ namespace ui.components
 
         protected abstract void onResize();
 
-        internal void setSize(BaseComponent component, (uint x, uint y, uint allocX, uint allocY) loc, int? prioity = null)
+        internal void setSize(IComponent component, (uint x, uint y, uint allocX, uint allocY) loc, int? prioity = null)
         {
             if (!Contains(component))
             {
@@ -225,7 +225,7 @@ namespace ui.components
             }
         }
 
-        protected void Remove(BaseComponent component)
+        protected void Remove(IComponent component)
         {
             if (!Contains(component))
             {
@@ -235,15 +235,15 @@ namespace ui.components
             childsMapping.RemoveAt(idx);
         }
 
-        protected virtual (bool isAdd, (BaseComponent, (uint, uint, uint, uint), int) data) onAddHandler((BaseComponent, (uint, uint, uint, uint), int) child)
+        protected virtual (bool isAdd, (IComponent, (uint, uint, uint, uint), int) data) onAddHandler((IComponent, (uint, uint, uint, uint), int) child)
         {
             return (true, child);
         }
 
-        public bool AddChildComponent(BaseComponent component, (uint x, uint y, uint allocX, uint allocY) loc, int prioity)
+        public bool AddChildComponent(IComponent component, (uint x, uint y, uint allocX, uint allocY) loc, int prioity)
         {
             CheckLock();
-            (bool isAdd, (BaseComponent, (uint, uint, uint, uint), int) data) = onAddHandler((component, loc, prioity));
+            (bool isAdd, (IComponent, (uint, uint, uint, uint), int) data) = onAddHandler((component, loc, prioity));
             if (!isAdd)
             {
                 return false;
@@ -277,7 +277,7 @@ namespace ui.components
             try
             {
                 foreach (
-                    (BaseComponent component, (uint x, uint y, uint allocX, uint allocY) meta, int prioity) compLoc
+                    (IComponent component, (uint x, uint y, uint allocX, uint allocY) meta, int prioity) compLoc
                     in childsMapping.OrderBy(x => x.prioity)
                 )
                 {
