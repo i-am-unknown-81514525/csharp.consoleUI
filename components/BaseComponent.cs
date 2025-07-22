@@ -17,8 +17,9 @@ namespace ui.components
 
     internal class DeactiveIgnoreNotice : Exception { }
 
-    public abstract class BaseComponent
+    public abstract class BaseComponent : ICanActive
     {
+        protected ActiveStatusHandler activeHandler;
         private BaseComponent root = null;
 
         private (uint x, uint y) allocSize = (0, 0);
@@ -34,15 +35,8 @@ namespace ui.components
 
         private bool _lock = false; // Any active change called to upper level class would enable this lock
 
-        private bool _isActive = false; // There must only 0 or 1 components in the whole tree is active
-                                        // This applied as a suggestion, where if a component is active, other component shouldn't have any of their input handler hold lock
-                                        // This doesn't guarentee to applied and the code doesn't force such behaviour
-                                        // But instead just a guideline to follow by the developer
-                                        // A component active status can be deactive by DeactiveAll()
-                                        // But can be countered by returning `false` on `onDeactive`
-                                        // (Prioity: ignore _isActive -> DeactiveIgnoreNotice -> DeactiveAll)
+        private bool _isActive = false;
 
-        private bool _deactive_recurr_lock = false;
         private bool _active_lock = false; // When onDeactive, calling setActive would have the unintend side-effect, 
                                            // where _isActive would is still depend on onDeactive return result, not the calling of onActive
                                            // Or under undiscover side effect (UB)
@@ -55,13 +49,6 @@ namespace ui.components
 
         public SplitConfig GetSplitConfig() => splitConfig;
 
-        public bool getIsActive() => _isActive;
-
-        public bool getContainsActive()
-        {
-            return getIsActive() || childsMapping.Select(x => x.component.getContainsActive()).Any();
-        }
-
         protected List<(BaseComponent component, (uint x, uint y, uint allocX, uint allocY) location, int prioity)> GetMapping()
         {
             return childsMapping.ToList();
@@ -71,89 +58,6 @@ namespace ui.components
         {
             return allocSize;
         }
-
-        public virtual bool onDeactive()
-        {
-            return true;
-        }
-
-        protected bool setDeactive()
-        {
-            if (!getIsActive())
-            {
-                return true;
-            }
-            try
-            {
-                _active_lock = true;
-                if (onDeactive())
-                {
-                    _localHasUpdate = true;
-                    _isActive = false;
-                    return true;
-                }
-            }
-            finally
-            {
-                _active_lock = false;
-            }
-            return false;
-        }
-
-        public void DeactiveAll()
-        {
-            if (_deactive_recurr_lock) return;
-            _deactive_recurr_lock = true;
-            try
-            {
-                if (getIsActive())
-                {
-                    if (!setDeactive())
-                        throw new DeactiveIgnoreNotice();
-                    
-                }
-                else if (getContainsActive())
-                {
-                    foreach (BaseComponent comp in childsMapping.Select(x => x.component).ToList())
-                    {
-                        comp.DeactiveAll();
-                    }
-                }
-                else
-                {
-                    if (root != null)
-                    {
-                        root.DeactiveAll();
-                    }
-                }
-            }
-            finally
-            {
-                _deactive_recurr_lock = false;
-            }
-        }
-
-        protected bool setActive()
-        {
-            if (_active_lock)
-            {
-                throw new InvalidOperationException("Cannot setActive when running onDeactive handler, return false instead.");
-            }
-            try
-            {
-                DeactiveAll();
-                _isActive = true;
-                _localHasUpdate = true;
-                onActive();
-                return true;
-            }
-            catch (DeactiveIgnoreNotice)
-            {
-                return false;
-            }
-        }
-
-        protected virtual void onActive() { }
 
         protected virtual void onFrameInternal() { }
 
@@ -258,8 +162,6 @@ namespace ui.components
         public virtual void onClick(ConsoleLocation pressLocation)
         {
             bool isPropagate = onClickPropagate(pressLocation);
-            if (!isPropagate)
-                setActive();
         }
 
         public (uint x, uint y) GetChildAllocatedSize(BaseComponent component)
@@ -395,6 +297,69 @@ namespace ui.components
             {
                 _lock = false;
             }
+        }
+
+        public bool Deactive(Event deactiveEvent)
+        {
+            try
+            {
+                _active_lock = true;
+                return onDeactive(deactiveEvent);
+            }
+            finally
+            {
+                _active_lock = false;
+            }
+        }
+
+        protected virtual bool onDeactive(Event deactiveEvent)
+        {
+            return true;
+        }
+
+        public bool isRequestingActive()
+        {
+            return _isActive;
+        }
+
+        protected bool setActive(Event activeEvent)
+        {
+            if (_active_lock) throw new InvalidOperationException("Cannot setActive when running onDeactive handler, return false instead.");
+            try
+            {
+                _isActive = true;
+                _isActive = activeHandler.setActive(this);
+            }
+            catch
+            {
+                _isActive = false;
+                if (activeHandler.getCurrActive() == this) activeHandler.setInactive(this);
+                throw;
+            }
+            if (_isActive)
+            {
+                onActive();
+            }
+            return _isActive;
+        }
+
+        protected virtual void onActive() { }
+
+        protected void setInactive()
+        {
+            if (activeHandler.getCurrActive() != this) return;
+            activeHandler.setInactive(this);
+        }
+
+
+        public bool isRequestingDeactive()
+        {
+            return !_isActive;
+        }
+
+        public virtual Event ActiveRequest()
+        {
+            return null;
         }
     }
 }
