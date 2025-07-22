@@ -53,7 +53,7 @@ namespace ui.core
                 return src;
             }
 
-            internal static void Consume(uint size)
+            public static void Consume(uint size)
             {
                 consume(size);
             }
@@ -120,7 +120,7 @@ namespace ui.core
                 return src;
             }
 
-            internal static void Consume(uint size)
+            public static void Consume(uint size)
             {
                 consume(size);
             }

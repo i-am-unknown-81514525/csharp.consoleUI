@@ -7,27 +7,27 @@ namespace ui.input
 {
     public class InputFieldHandler : InputHandler
     {
-        internal uint cursor = 0; // Position the place/delete // -1 for position to backspace
+        protected uint cursor = 0; // Position the place/delete // -1 for position to backspace
 
         private bool isActive = false;
 
-        internal byte? currBuf = null;
+        protected byte? currBuf = null;
 
-        internal string content = "";
+        protected string content = "";
 
-        internal byte GetBuf()
+        protected byte GetBuf()
         {
             byte value = Buffer[0];
             Buffer.RemoveAt(0);
             return value;
         }
 
-        internal uint size
+        protected uint size
         {
             get => (uint)content.Length;
         }
 
-        internal override void Handle(RootInputHandler root)
+        protected override void Handle(RootInputHandler root)
         {
             if (Buffer.Count == 0) return;
             currBuf = GetBuf();
@@ -44,7 +44,7 @@ namespace ui.input
             }
         }
 
-        internal virtual void onDefault(byte value)
+        protected virtual void onDefault(byte value)
         {
             List<byte> byteArr = content.AsByteBuffer().AsList();
             byteArr.Insert((int)cursor, value);
@@ -52,7 +52,7 @@ namespace ui.input
             cursor += 1;
         }
 
-        internal virtual void Handle(byte value)
+        protected virtual void Handle(byte value)
         {
             if (!Enum.IsDefined(typeof(KeyCode), value))
             {
@@ -106,43 +106,43 @@ namespace ui.input
 
             }
         }
-        internal virtual void onArrLeft()
+        protected virtual void onArrLeft()
         {
             if (cursor > 0) cursor--;
         }
 
-        internal virtual void onArrRight()
+        protected virtual void onArrRight()
         {
             if (cursor < size) cursor++;
         }
 
-        internal virtual void onArrUp()
+        protected virtual void onArrUp()
         {
             cursor = 0;
         }
 
-        internal virtual void onArrDown()
+        protected virtual void onArrDown()
         {
             cursor = size;
         }
 
-        internal virtual void onPgUp()
+        protected virtual void onPgUp()
         {
             cursor = 0;
         }
 
-        internal virtual void onPgDown()
+        protected virtual void onPgDown()
         {
             cursor = size;
         }
 
-        internal virtual void onInsertToggle() { }
+        protected virtual void onInsertToggle() { }
 
-        internal virtual void onApplicationUnfocus() { }
+        protected virtual void onApplicationUnfocus() { }
 
-        internal virtual void onApplicationFocus() { }
+        protected virtual void onApplicationFocus() { }
 
-        internal virtual void onBackspace()
+        protected virtual void onBackspace()
         {
             if (cursor > 0)
             {
@@ -153,7 +153,7 @@ namespace ui.input
             }
         }
 
-        internal virtual void onDelete()
+        protected virtual void onDelete()
         {
             if (cursor < size)
             {
@@ -163,7 +163,7 @@ namespace ui.input
             }
         }
 
-        internal virtual void onPaste()
+        protected virtual void onPaste()
         {
             string content = ConsoleHandler.ConsoleIntermediateHandler.ReadClipboard();
             content = content.GetReadable();
@@ -181,7 +181,7 @@ namespace ui.input
 
         public bool GetActiveStatus() => isActive;
 
-        internal override LockStatus Validate()
+        protected override LockStatus Validate()
         {
             return (
                 isActive ?
@@ -191,7 +191,7 @@ namespace ui.input
         }
 
 
-        internal virtual void onEnter()
+        protected virtual void onEnter()
         {
             content += "\n";
             cursor += 1;
@@ -200,10 +200,10 @@ namespace ui.input
 
     public class MultiLineInputFieldHandler : InputFieldHandler
     {
-        internal (uint row, uint column) loc = (0, 0);
-        internal (uint row, uint column) vir_loc = (0, 0); // Suggestive location in multiline tranversal, which might not be valid
+        protected (uint row, uint column) loc = (0, 0);
+        protected (uint row, uint column) vir_loc = (0, 0); // Suggestive location in multiline tranversal, which might not be valid
 
-        internal uint to1D((uint row, uint column) loc)
+        protected uint to1D((uint row, uint column) loc)
         {
             string[] op = content.Split('\n');
             uint idx = 0;
@@ -214,7 +214,7 @@ namespace ui.input
             idx += loc.column;
             return idx;
         }
-        internal (uint row, uint column) to2D(uint idx)
+        protected (uint row, uint column) to2D(uint idx)
         {
             uint row = 0;
             uint column = 0;
@@ -234,7 +234,7 @@ namespace ui.input
             return (row, column);
         }
 
-        internal (uint row, uint column) Correct((uint row, uint column) loc)
+        protected (uint row, uint column) Correct((uint row, uint column) loc)
         {
             string[] strArr = content.Split('\n');
             uint row = loc.row;
@@ -259,34 +259,34 @@ namespace ui.input
             return (row, col);
         }
 
-        internal override void Handle(byte value)
+        protected override void Handle(byte value)
         {
             base.Handle(value);
             loc = to2D(cursor);
         }
 
-        internal override void onArrUp()
+        protected override void onArrUp()
         {
             if (vir_loc.row > 0)
                 vir_loc = (vir_loc.row - 1, vir_loc.column);
             loc = Correct(vir_loc);
         }
 
-        internal override void onArrDown()
+        protected override void onArrDown()
         {
             if (vir_loc.row < content.Split('\n').Length - 1)
                 vir_loc = (vir_loc.row + 1, vir_loc.column);
             loc = Correct(vir_loc);
         }
 
-        internal override void onArrLeft()
+        protected override void onArrLeft()
         {
             base.onArrLeft();
             loc = to2D(cursor);
             vir_loc = to2D(cursor);
         }
 
-        internal override void onArrRight()
+        protected override void onArrRight()
         {
             base.onArrRight();
             loc = to2D(cursor);

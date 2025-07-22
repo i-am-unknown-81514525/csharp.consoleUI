@@ -88,10 +88,10 @@ namespace ui.math
 
     public class SplitHandler
     {
-        internal Dictionary<SplitConfig, (SplitAmount amount, uint prioity)> amount = new Dictionary<SplitConfig, (SplitAmount amount, uint prioity)>();
-        internal Dictionary<SplitConfig, int?> size = new Dictionary<SplitConfig, int?>();
+        protected Dictionary<SplitConfig, (SplitAmount amount, uint prioity)> amount = new Dictionary<SplitConfig, (SplitAmount amount, uint prioity)>();
+        protected Dictionary<SplitConfig, int?> size = new Dictionary<SplitConfig, int?>();
 
-        internal int totalSize;
+        protected int totalSize;
 
         public SplitHandler(int totalSize)
         {

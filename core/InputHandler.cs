@@ -88,7 +88,7 @@ namespace ui.core
             throw new NotImplementedException("Unexpected case");
         }
 
-        internal abstract LockStatus Validate();
+        protected abstract LockStatus Validate();
 
         public LockStatus ValidateExternal()
         {
@@ -108,7 +108,7 @@ namespace ui.core
             return status;
         }
 
-        internal void SetLockStatus(LockStatus status)
+        protected void SetLockStatus(LockStatus status)
         {
             if (!_allowModifyStatus)
             {
@@ -118,7 +118,7 @@ namespace ui.core
             _lockStatus = status;
         }
 
-        internal abstract void Handle(RootInputHandler root);
+        protected abstract void Handle(RootInputHandler root);
 
         public void HandleExternal(RootInputHandler root)
         {

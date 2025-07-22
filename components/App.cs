@@ -7,7 +7,7 @@ namespace ui.components
 {
     public class App : Component, IEnumerable<IComponent>
     {
-        internal OverlayApp overlay = null; // Future
+        protected OverlayApp overlay = null; // Future
 
         public App(Component component)
         {

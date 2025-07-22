@@ -27,9 +27,9 @@ namespace ui.components
                 new List<(IComponent, (uint, uint, uint, uint), int)>(); // Lower value -> earlier to render = lower prioity (being override by higher value)
                                                                             // The component writer decide itself override on other or other overide on itself by call order
 
-        internal ConsoleContent[,] contentPlace = new ConsoleContent[0, 0];
+        protected ConsoleContent[,] contentPlace = new ConsoleContent[0, 0];
 
-        internal bool noParent = false;
+        protected bool noParent = false;
 
         private bool _localHasUpdate = true;
 
@@ -45,7 +45,7 @@ namespace ui.components
 
         private bool _frame_recurr_lock = false;
 
-        internal SplitConfig splitConfig;
+        protected SplitConfig splitConfig;
 
         public SplitConfig GetSplitConfig() => splitConfig;
 
@@ -207,7 +207,7 @@ namespace ui.components
 
         protected abstract void onResize();
 
-        internal void setSize(IComponent component, (uint x, uint y, uint allocX, uint allocY) loc, int? prioity = null)
+        protected void setSize(IComponent component, (uint x, uint y, uint allocX, uint allocY) loc, int? prioity = null)
         {
             if (!Contains(component))
             {

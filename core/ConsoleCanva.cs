@@ -93,7 +93,7 @@ namespace ui.core
             applyToNew((Console.BufferWidth, Console.BufferHeight));
         }
 
-        internal string GetContent()
+        public string GetContent()
         {
             StringBuilder builder = new StringBuilder(65536);
             string prefix = (

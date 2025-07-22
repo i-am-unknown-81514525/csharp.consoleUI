@@ -171,7 +171,7 @@ namespace ui.core
             }
         }
 
-        internal void checkLock()
+        protected void checkLock()
         {
             if (_recursivePreventLock)
             {
@@ -188,7 +188,7 @@ namespace ui.core
                     .Any(x => x);
         }
 
-        internal void MultiDispatch(List<byte> data)
+        protected void MultiDispatch(List<byte> data)
         {
             foreach (byte v in data)
             {
