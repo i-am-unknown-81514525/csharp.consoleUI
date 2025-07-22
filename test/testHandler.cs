@@ -8,14 +8,14 @@ namespace ui.test
     // ReSharper disable once UnusedMember.Global
     internal class StdoutInputHandler : InputHandler
     {
-        internal override void Handle(RootInputHandler root)
+        protected override void Handle(RootInputHandler root)
         {
             string value = "";
             foreach (var b in Buffer) value += (char)b;
             Console.Write(value);
         }
 
-        internal override LockStatus Validate()
+        protected override LockStatus Validate()
         {
             return LockStatus.NoLock;
         }
@@ -25,7 +25,7 @@ namespace ui.test
     {
         private bool exit = false;
 
-        internal override void Handle(RootInputHandler root)
+        protected override void Handle(RootInputHandler root)
         {
             if (GetLockStatus() > LockStatus.NoLock)
             {
@@ -35,7 +35,7 @@ namespace ui.test
             }
         }
 
-        internal override LockStatus Validate()
+        protected override LockStatus Validate()
         {
             if (Buffer.Count > 0 && Buffer[0] == (byte)KeyCode.INTERRUPT) return LockStatus.ExclusiveLock;
             return LockStatus.NoLock;
@@ -48,7 +48,7 @@ namespace ui.test
     {
         private bool enableInput = false;
 
-        internal override void Handle(RootInputHandler root)
+        protected override void Handle(RootInputHandler root)
         {
             enableInput = false;
             if (GetLockStatus() > LockStatus.NoLock)
@@ -59,7 +59,7 @@ namespace ui.test
             }
         }
 
-        internal override LockStatus Validate()
+        protected override LockStatus Validate()
         {
             if (Buffer.Count > 0 && Buffer[0] == (byte)'i') return LockStatus.SharedLock;
             return LockStatus.NoLock;
@@ -71,7 +71,7 @@ namespace ui.test
     // ReSharper disable once UnusedMember.Global
     internal class RndLockInputHandler : InputHandler
     {
-        internal override void Handle(RootInputHandler root)
+        protected override void Handle(RootInputHandler root)
         {
             if (GetLockStatus() == LockStatus.NoLock)
             {
@@ -82,7 +82,7 @@ namespace ui.test
             root.LockChangeAnnounce(this);
         }
 
-        internal override LockStatus Validate()
+        protected override LockStatus Validate()
         {
 
             // ReSharper disable once RedundantExplicitArraySize
@@ -116,12 +116,12 @@ namespace ui.test
     // ReSharper disable once InconsistentNaming
     internal class ASCIIIntStdouInputHandler : InputHandler
     {
-        internal override LockStatus Validate()
+        protected override LockStatus Validate()
         {
             return LockStatus.NoLock;
         }
 
-        internal override void Handle(RootInputHandler root)
+        protected override void Handle(RootInputHandler root)
         {
             if (Buffer.Count == 0)
             {

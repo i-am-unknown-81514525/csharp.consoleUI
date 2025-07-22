@@ -19,19 +19,19 @@ namespace ui.test
 
         internal bool GetComponentStatus() => componentStatus;
 
-        internal override void onDefault(byte value)
+        protected override void onDefault(byte value)
         {
             base.onDefault(value);
             Prototype.Set(content);
         }
 
-        internal override void onEnter()
+        protected override void onEnter()
         {
             componentStatus = false;
             Prototype.Next(content);
         }
 
-        internal override void Handle(byte value)
+        protected override void Handle(byte value)
         {
             if (value == (byte)'i' && ignoreI)
             {
@@ -45,7 +45,7 @@ namespace ui.test
             Prototype.WriteTable();
         }
 
-        internal override LockStatus Validate()
+        protected override LockStatus Validate()
         {
             if (GetComponentStatus() && !GetActiveStatus() && (Buffer[0] == 'i' || Buffer[0] == 'i'))
             {
