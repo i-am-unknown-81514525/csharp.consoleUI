@@ -11,7 +11,7 @@ namespace ui.utils
         public const string FRACTION = @"^((([+-]?([1-9][0-9]*)(\.?[0-9]*[1-9])?)|([+-]?0(\.[0-9]*[1-9]))|0)\/(([+-]?([1-9][0-9]*)(\.?[0-9]*[1-9])?)|([+-]?0(\.[0-9]*[1-9]))))$";
         public const string FRACTION_OR_NUMBER = @"^((([+-]?([1-9][0-9]*)(\.?[0-9]*[1-9])?)|([+-]?0(\.[0-9]*[1-9]))|0)\/(([+-]?([1-9][0-9]*)(\.?[0-9]*[1-9])?)|([+-]?0(\.[0-9]*[1-9])))|(([+-]?([1-9][0-9]*)(\.?[0-9]*[1-9])?)|([+-]?0(\.[0-9]*[1-9]))|0))$";
 
-        public const string MOUSE_ACTIVITY_ANSI_SEQ = @"^\x1b\[\<(\d+);(\d+);(\d+)(?:M|m)$";
+        public const string MOUSE_ACTIVITY_ANSI_SEQ = @"^\x1b\[\<(\d+);(\d+);(\d+)(M|m)$";
         public static readonly Regex Compiled_Mouse_Activity_ANSI_Seq = new Regex(MOUSE_ACTIVITY_ANSI_SEQ, RegexOptions.Compiled);
 
     }
