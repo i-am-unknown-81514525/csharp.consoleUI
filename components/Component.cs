@@ -5,6 +5,7 @@ using ui.core;
 using ui.math;
 using ui.utils;
 using static ui.utils.Array2DHandler;
+using System.Collections;
 
 namespace ui.components
 {
@@ -17,13 +18,13 @@ namespace ui.components
 
     internal class DeactiveIgnoreNotice : Exception { }
 
-    public abstract class Component : ICanActive, IComponent
+    public abstract class Component : IComponent, IEnumerable<IComponent>
     {
         protected ActiveStatusHandler activeHandler;
         private IComponent root = null;
 
         private (uint x, uint y) allocSize = (0, 0);
-        private List<(IComponent component, (uint x, uint y, uint allocX, uint allocY) location, int prioity)> childsMapping =
+        protected List<(IComponent component, (uint x, uint y, uint allocX, uint allocY) location, int prioity)> childsMapping =
                 new List<(IComponent, (uint, uint, uint, uint), int)>(); // Lower value -> earlier to render = lower prioity (being override by higher value)
                                                                             // The component writer decide itself override on other or other overide on itself by call order
 
@@ -46,6 +47,12 @@ namespace ui.components
         private bool _frame_recurr_lock = false;
 
         protected SplitConfig splitConfig;
+
+        public Component(ComponentConfig config)
+        {
+            activeHandler = config.activeStatusHandler;
+            splitConfig = config.splitConfig;
+        }
 
         public SplitConfig GetSplitConfig() => splitConfig;
 
@@ -273,6 +280,7 @@ namespace ui.components
                 onResize();
             }
             ConsoleContent[,] newArr = new ConsoleContent[allocSize.x, allocSize.y];
+            RenderPre(newArr);
             _lock = true;
             try
             {
@@ -288,16 +296,22 @@ namespace ui.components
                             ConsoleContent.getDefault()
                         ),
                         newArr,
-                        (compLoc.meta.x, compLoc.meta.y))
-                    ;
+                        (compLoc.meta.x, compLoc.meta.y)
+                    );
                 }
-                return newArr;
             }
             finally
             {
                 _lock = false;
             }
+            RenderPost(newArr);
+            return newArr;
         }
+
+        protected virtual ConsoleContent[,] RenderPre(ConsoleContent[,] content) => content;
+
+        protected virtual ConsoleContent[,] RenderPost(ConsoleContent[,] content) => content;
+
 
         public bool Deactive(Event deactiveEvent)
         {
@@ -360,6 +374,22 @@ namespace ui.components
         public virtual Event ActiveRequest()
         {
             return null;
+        }
+
+        public IEnumerator<IComponent> GetEnumerator()
+        {
+            return GetMapping().Select(x => x.component).GetEnumerator();
+        }
+
+        public void Add(Component component)
+        {
+            (uint allocX, uint allocY) = GetAllocSize();
+            AddChildComponent(component, (0, 0, allocX, allocY), 1);
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
     }
 }

@@ -2,28 +2,25 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using ui.utils;
+using ui.core;
 
 namespace ui.components
 {
-    public class App : Component, IEnumerable<IComponent>
+    public class App : SingleChildComponent
     {
         protected OverlayApp overlay = null; // Future
 
-        public App(Component component)
+        public App(Component component) : base(new ComponentConfig(new SplitHandler(1).AddSplit(new math.Fraction(1), 1), new ActiveStatusHandler()))
         {
             noParent = true;
             Add(component);
         }
 
-        public IEnumerator<IComponent> GetEnumerator()
+        protected App(Component component, SplitConfig splitConfig, ActiveStatusHandler activeStatusHandler) : base(new ComponentConfig(splitConfig, activeStatusHandler))
         {
-            return GetMapping().Select(x=>x.component).GetEnumerator();
-        }
-
-        public void Add(Component component)
-        {
-            (uint allocX, uint allocY)  = GetAllocSize();
-            AddChildComponent(component, (0, 0, allocX, allocY), 1);
+            noParent = true;
+            Add(component);
         }
 
         protected override (bool isAdd, (IComponent, (uint, uint, uint, uint), int) data) onAddHandler((IComponent, (uint, uint, uint, uint), int) child)
@@ -33,12 +30,11 @@ namespace ui.components
 
         protected override void onResize()
         {
-            
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
+            if (GetMapping().Count == 0) throw new InvalidOperationException("An App must have a child component");
+            (IComponent component, (uint x, uint y, uint allocX, uint allocY) location, int prioity) value = childsMapping[0];
+            value.location.allocX = GetAllocSize().x;
+            value.location.allocY = GetAllocSize().y;
+            childsMapping[0] = value;
         }
     }
 }

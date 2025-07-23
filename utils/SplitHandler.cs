@@ -1,8 +1,9 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
+using ui.math;
 
-namespace ui.math
+namespace ui.utils
 {
     public sealed class SplitConfig
     {
