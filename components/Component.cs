@@ -169,7 +169,7 @@ namespace ui.components
             {
                 (uint lx, uint ly) = (compLoc.location.x, compLoc.location.y);
                 (uint hx, uint hy) = (lx + compLoc.location.allocX, ly + compLoc.location.allocY);
-                if (lx <= pressLocation.x && pressLocation.x <= lx && ly <= pressLocation.y && pressLocation.y <= hy)
+                if (lx <= pressLocation.x && pressLocation.x < hx && ly <= pressLocation.y && pressLocation.y < hy)
                 {
                     compLoc.component.onClick(pressLocation);
                     return true;

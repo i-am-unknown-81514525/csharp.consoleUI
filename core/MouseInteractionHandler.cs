@@ -20,15 +20,15 @@ namespace ui.core
             this.opCode = opCode;
         }
 
-        public abstract void onActive(int opCode, int col, int row);
-        public abstract void onInactive(int opCode, int col, int row);
+        public abstract void onActive(int opCode, ConsoleLocation loc);
+        public abstract void onInactive(int opCode, ConsoleLocation loc);
 
         public void Handle((int opCode, int col, int row, bool isActive) data)
         {
-            Action<int, int, int> fn;
+            Action<int, ConsoleLocation> fn;
             if (data.isActive) fn = onActive;
             else fn = onInactive;
-            fn(data.opCode, data.col, data.row);
+            fn(data.opCode, ANSIConverter.ToConsoleLocation(data.row, data.col));
         }
 
         public override bool Handle(byte[] buf)

@@ -13,12 +13,11 @@ namespace ui.mouse
             this.app = app;
         }
 
-        public override void onActive(int opCode, int col, int row)
+        public override void onActive(int opCode, ConsoleLocation loc)
         {
-            ConsoleLocation loc = new ConsoleLocation(row, col);
             app.onHover(loc);
         }
 
-        public override void onInactive(int opCode, int col, int row) { }
+        public override void onInactive(int opCode, ConsoleLocation loc) { }
     }
 }
