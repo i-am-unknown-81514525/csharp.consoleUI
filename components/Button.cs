@@ -48,7 +48,13 @@ namespace ui.components {
                     }
                     else
                     {
-                        content[ix, iy] = ConsoleContent.getDefault();
+                        content[ix, iy] = new ConsoleContent
+                        {
+                            content = " ",
+                            ansiPrefix = TextFormatter.Constructor(foreground, background),
+                            ansiPostfix = TextFormatter.Constructor(ForegroundColorEnum.LIB_DEFAULT, BackgroundColorEnum.LIB_DEFAULT),
+                            isContent = true
+                        };
                     }
                 }
             }

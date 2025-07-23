@@ -11,7 +11,7 @@ namespace ui.fmt
 
     public class ForegroundColor : Color
     {
-        public ForegroundColor(ForegroundColorEnum fEnum) : base(fEnum.ToString())
+        public ForegroundColor(ForegroundColorEnum fEnum) : base(((int)fEnum).ToString())
         {
         }
 
@@ -42,7 +42,7 @@ namespace ui.fmt
 
     public class BackgroundColor : Color
     {
-        public BackgroundColor(BackgroundColorEnum bEnum) : base(bEnum.ToString())
+        public BackgroundColor(BackgroundColorEnum bEnum) : base(((int)bEnum).ToString())
         {
         }
 
