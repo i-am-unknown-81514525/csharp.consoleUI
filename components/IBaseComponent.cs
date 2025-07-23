@@ -15,5 +15,7 @@ namespace ui.components
         bool UpdateAllocSize();
         bool AddChildComponent(IComponent component, (uint x, uint y, uint allocX, uint allocY) loc, int prioity);
         ConsoleContent[,] Render();
+        bool isInit();
+        void Init(ComponentConfig config);
     }
 }

@@ -11,16 +11,18 @@ namespace ui.components
     {
         protected OverlayApp overlay = null; // Future
 
-        public App(Component component) : base(new ComponentConfig(new SplitHandler(1).AddSplit(new math.Fraction(1), 1), new ActiveStatusHandler()))
+        public App(Component component) : base(new ComponentConfig(new ActiveStatusHandler()))
         {
             noParent = true;
             Add(component);
+            setSize(component, (0, 0, GetAllocSize().x, GetAllocSize().y), 1);
         }
 
-        protected App(Component component, SplitConfig splitConfig, ActiveStatusHandler activeStatusHandler) : base(new ComponentConfig(splitConfig, activeStatusHandler))
+        protected App(Component component, ActiveStatusHandler activeStatusHandler) : base(new ComponentConfig(activeStatusHandler))
         {
             noParent = true;
             Add(component);
+            setSize(component, (0, 0, GetAllocSize().x, GetAllocSize().y), 1);
         }
 
         protected override (bool isAdd, (IComponent, (uint, uint, uint, uint), int) data) onAddHandler((IComponent, (uint, uint, uint, uint), int) child)
@@ -31,10 +33,7 @@ namespace ui.components
         protected override void onResize()
         {
             if (GetMapping().Count == 0) throw new InvalidOperationException("An App must have a child component");
-            (IComponent component, (uint x, uint y, uint allocX, uint allocY) location, int prioity) value = childsMapping[0];
-            value.location.allocX = GetAllocSize().x;
-            value.location.allocY = GetAllocSize().y;
-            childsMapping[0] = value;
+            setSize(GetMapping()[0].component, (0, 0, GetAllocSize().x, GetAllocSize().y), 1);
         }
     }
 }

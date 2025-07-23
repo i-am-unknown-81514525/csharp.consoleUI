@@ -5,12 +5,10 @@ namespace ui.components
 {
     public struct ComponentConfig
     {
-        public SplitConfig splitConfig;
         public ActiveStatusHandler activeStatusHandler;
 
-        public ComponentConfig(SplitConfig config, ActiveStatusHandler statusHandler)
+        public ComponentConfig(ActiveStatusHandler statusHandler)
         {
-            splitConfig = config;
             activeStatusHandler = statusHandler;
         }
     }

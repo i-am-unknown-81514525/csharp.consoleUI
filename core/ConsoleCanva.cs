@@ -9,7 +9,7 @@ namespace ui.core
         public string ansiPrefix { get; set; }
         public string ansiPostfix { get; set; }
         public bool isContent { get; set; }
-        public new string ToString() => (ansiPrefix ?? "") + content.ToString() + (ansiPostfix ?? "");
+        public new string ToString() => (ansiPrefix ?? "") + (content ?? " ") + (ansiPostfix ?? "");
 
         public static ConsoleContent getDefault()
         {

@@ -27,7 +27,7 @@ namespace ui.components
         private (uint x, uint y) allocSize = (0, 0);
         protected List<(IComponent component, (uint x, uint y, uint allocX, uint allocY) location, int prioity)> childsMapping =
                 new List<(IComponent, (uint, uint, uint, uint), int)>(); // Lower value -> earlier to render = lower prioity (being override by higher value)
-                                                                            // The component writer decide itself override on other or other overide on itself by call order
+                                                                         // The component writer decide itself override on other or other overide on itself by call order
 
         protected ConsoleContent[,] contentPlace = new ConsoleContent[0, 0];
 
@@ -49,8 +49,6 @@ namespace ui.components
 
         private bool _isInit = false;
 
-        protected SplitConfig splitConfig;
-
         public Component(ComponentConfig config)
         {
             Init(config);
@@ -67,11 +65,8 @@ namespace ui.components
         {
             if (isInit()) throw new AlreadyInitException();
             activeHandler = config.activeStatusHandler;
-            splitConfig = config.splitConfig;
             _isInit = true;
         }
-
-        public SplitConfig GetSplitConfig() => splitConfig;
 
         protected List<(IComponent component, (uint x, uint y, uint allocX, uint allocY) location, int prioity)> GetMapping()
         {
@@ -229,7 +224,7 @@ namespace ui.components
             return false;
         }
 
-        protected virtual void onResize() {}
+        protected virtual void onResize() { }
 
         protected void setSize(IComponent component, (uint x, uint y, uint allocX, uint allocY) loc, int? prioity = null)
         {
@@ -273,6 +268,8 @@ namespace ui.components
                 return false;
             }
             childsMapping.Add(data);
+            component.setParent(this);
+            component.Init(new ComponentConfig(activeHandler));
             SetHasUpdate();
             return true;
         }
@@ -403,6 +400,7 @@ namespace ui.components
 
         public void Add(Component component)
         {
+            if (component.getParent() != null && component.getParent() != this) throw new InvalidOperationException("The component already have a parent");
             (uint allocX, uint allocY) = GetAllocSize();
             AddChildComponent(component, (0, 0, allocX, allocY), 1);
         }
@@ -410,6 +408,32 @@ namespace ui.components
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
+        }
+
+        public string Debug_WriteStructure()
+        {
+            string clsName = GetType().Name;
+            string content = "";
+            if (root == null)
+                content = $"{clsName} (allocX={GetAllocSize().x}, allocY={GetAllocSize().y}) - {Debug_Info() ?? ""}\r\n";
+            string inner = String.Join(
+                "\n",
+                childsMapping
+                    .Select(x => x)
+                    .Select(
+                        x =>
+                        $"    {x.component.GetType().Name} (x={x.location.x}, y={x.location.y}, allocX={x.location.allocX}, allocY={x.location.allocY}) - {x.component.Debug_Info() ?? ""}\r\n" +
+                        String.Join("\r\n", x.component.Debug_WriteStructure().Split('\n').Select(y=>"    " + y.TrimEnd('\r')))
+                    )
+            );
+
+            return content + inner;
+
+        }
+
+        public virtual string Debug_Info()
+        {
+            return "";
         }
     }
 }
