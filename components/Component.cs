@@ -219,6 +219,7 @@ namespace ui.components
             if (old != allocSize)
             {
                 SetHasUpdate();
+                onResize();
                 return true;
             }
             return false;
@@ -277,12 +278,7 @@ namespace ui.components
         public ConsoleContent[,] Render()
         {
             CheckLock();
-            bool hasResize = UpdateAllocSize();
-            if (hasResize)
-            {
-                SetHasUpdate();
-                onResize();
-            }
+            UpdateAllocSize();
             if (!GetHasUpdate())
             {
                 return (ConsoleContent[,])contentPlace.Clone();

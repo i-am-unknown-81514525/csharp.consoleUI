@@ -63,7 +63,6 @@ namespace ui.test
                 while (!isComplete)
                 {
                     Global.consoleCanva.EventLoopPre();
-                    app.UpdateAllocSize();
                     bool status = Global.InputHandler.Handle();
                     if (!status)
                     {
