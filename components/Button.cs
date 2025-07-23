@@ -80,9 +80,9 @@ namespace ui.components {
             }
         }
 
-        protected override void onResize()
+        protected virtual ConsoleContent[,] RenderPost()
         {
-            throw new System.NotImplementedException();
+            return RenderSelf();
         }
 
         public override void onClick(ConsoleLocation loc)

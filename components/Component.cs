@@ -9,6 +9,7 @@ using System.Collections;
 
 namespace ui.components
 {
+    // using ComponentLocation = (IComponent component, (uint x, uint y, uint allocX, uint allocY) location, int prioity);
 
     public class UnpermitHierarchyChangeException : InvalidOperationException
     {
@@ -212,7 +213,7 @@ namespace ui.components
             return false;
         }
 
-        protected abstract void onResize();
+        protected virtual void onResize() {}
 
         protected void setSize(IComponent component, (uint x, uint y, uint allocX, uint allocY) loc, int? prioity = null)
         {
@@ -263,22 +264,25 @@ namespace ui.components
         public ConsoleContent[,] Render()
         {
             CheckLock();
+            bool hasResize = UpdateAllocSize();
+            if (hasResize)
+            {
+                SetHasUpdate();
+                onResize();
+            }
             if (!GetHasUpdate())
             {
                 return (ConsoleContent[,])contentPlace.Clone();
             }
             _localHasUpdate = false;
-            return RenderInternal();
+            ConsoleContent[,] content = RenderInternal();
+            contentPlace = content;
+            return content;
         }
 
         protected virtual ConsoleContent[,] RenderInternal()
         {
             CheckLock();
-            bool hasResize = UpdateAllocSize();
-            if (hasResize)
-            {
-                onResize();
-            }
             ConsoleContent[,] newArr = new ConsoleContent[allocSize.x, allocSize.y];
             RenderPre(newArr);
             _lock = true;
