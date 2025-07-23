@@ -293,7 +293,8 @@ namespace ui.components
         {
             CheckLock();
             ConsoleContent[,] newArr = new ConsoleContent[allocSize.x, allocSize.y];
-            RenderPre(newArr);
+            newArr = RenderPre(newArr);
+            if (newArr.GetLength(0) != allocSize.x || newArr.GetLength(1) != allocSize.y) throw new InvalidOperationException("Cannot change size of ConsoleContent array on RenderPre");
             _lock = true;
             try
             {
@@ -317,7 +318,8 @@ namespace ui.components
             {
                 _lock = false;
             }
-            RenderPost(newArr);
+            newArr = RenderPost(newArr);
+            if (newArr.GetLength(0) != allocSize.x || newArr.GetLength(1) != allocSize.y) throw new InvalidOperationException("Cannot change size of ConsoleContent array on RenderPost");
             return newArr;
         }
 
