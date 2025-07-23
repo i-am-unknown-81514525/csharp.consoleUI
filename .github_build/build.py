@@ -2,6 +2,7 @@ name: dict[str, str] = {
     "Prototype":"Prototype.exe",
     "Test": "StdinRepeat.exe",
     "FracParseTest": "FracParseTest.exe",
+    "ButtonTest": "ButtonTest.exe"
 }
 
 import pathlib

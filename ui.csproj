@@ -93,6 +93,7 @@
     <Compile Include="Config.cs" />
     <Compile Include="mouse\*.cs" />
     <Compile Include="fmt\*.cs" />
+    <Compile Include="events\*.cs" />
   </ItemGroup>
   <!-- <ItemGroup>
     <PackageReference Include="System.Text.RegularExpressions" Version="4.3.1" />

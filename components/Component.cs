@@ -17,7 +17,7 @@ namespace ui.components
         public UnpermitHierarchyChangeException() : base() { }
     }
 
-    internal class DeactiveIgnoreNotice : Exception { }
+    public class AlreadyInitException : InvalidOperationException { }
 
     public abstract class Component : IComponent, IEnumerable<IComponent>
     {
@@ -47,12 +47,28 @@ namespace ui.components
 
         private bool _frame_recurr_lock = false;
 
+        private bool _isInit = false;
+
         protected SplitConfig splitConfig;
 
         public Component(ComponentConfig config)
         {
+            Init(config);
+        }
+
+        public Component()
+        {
+            _isInit = false;
+        }
+
+        public bool isInit() => _isInit;
+
+        public void Init(ComponentConfig config)
+        {
+            if (isInit()) throw new AlreadyInitException();
             activeHandler = config.activeStatusHandler;
             splitConfig = config.splitConfig;
+            _isInit = true;
         }
 
         public SplitConfig GetSplitConfig() => splitConfig;
