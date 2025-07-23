@@ -84,7 +84,7 @@ namespace ui.components {
             }
         }
 
-        protected virtual ConsoleContent[,] RenderPost()
+        protected override ConsoleContent[,] RenderPost(ConsoleContent[,] content)
         {
             return RenderSelf();
         }
