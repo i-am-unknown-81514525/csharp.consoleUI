@@ -174,7 +174,7 @@ namespace ui.components
                 (uint hx, uint hy) = (lx + compLoc.location.allocX, ly + compLoc.location.allocY);
                 if (lx <= pressLocation.x && pressLocation.x < hx && ly <= pressLocation.y && pressLocation.y < hy)
                 {
-                    compLoc.component.onClick(pressLocation);
+                    compLoc.component.onClick(new ConsoleLocation(pressLocation.x - (int)lx, pressLocation.y - (int)ly));
                     return true;
                 }
             }
