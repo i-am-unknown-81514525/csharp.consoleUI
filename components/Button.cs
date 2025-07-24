@@ -76,7 +76,7 @@ namespace ui.components {
 
         public override void onClick(ConsoleLocation loc)
         {
-            if (activeHandler.getCurrActive() != null && activeHandler.getCurrActive() == this)
+            if (activeHandler.getCurrActive() != null && activeHandler.getCurrActive() != this)
             {
                 bool r = setActive(new ClickEvent(loc)); // Attempt to reset activity handler status
                 if (r) setInactive();

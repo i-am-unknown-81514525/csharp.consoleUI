@@ -19,7 +19,7 @@ namespace ui.components
 
     public class AlreadyInitException : InvalidOperationException { }
 
-    public abstract class Component : IComponent, IEnumerable<IComponent>
+    public abstract class Component : IComponent
     {
         protected ActiveStatusHandler activeHandler;
         private IComponent root = null;
@@ -391,22 +391,9 @@ namespace ui.components
             return null;
         }
 
-        public IEnumerator<IComponent> GetEnumerator()
-        {
-            return GetMapping().Select(x => x.component).GetEnumerator();
-        }
+        
 
-        public void Add(Component component)
-        {
-            if (component.getParent() != null && component.getParent() != this) throw new InvalidOperationException("The component already have a parent");
-            (uint allocX, uint allocY) = GetAllocSize();
-            AddChildComponent(component, (0, 0, allocX, allocY), 1);
-        }
 
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
 
         public string Debug_WriteStructure()
         {

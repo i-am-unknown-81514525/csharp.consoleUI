@@ -48,6 +48,12 @@ namespace ui.math
             // this.denominator = denominator / value;
         }
 
+        public Fraction(BigInteger value)
+        {
+            numerator = value;
+            denominator = 1;
+        }
+
         public Fraction(long value)
         {
             numerator = value;
@@ -102,6 +108,11 @@ namespace ui.math
         }
 
         public static implicit operator (BigInteger numerator, BigInteger denominator)(Fraction fraction) => fraction.asTuple();
+
+        public static implicit operator Fraction(uint value) => new Fraction((long)value);
+        public static implicit operator Fraction(long value) => new Fraction(value);
+        public static implicit operator Fraction(ulong value) => new Fraction((BigInteger)value);
+        public static implicit operator Fraction(BigInteger value) => new Fraction(value);
 
         public void Deconstruct(out BigInteger numerator, out BigInteger denominator)
         {

@@ -54,14 +54,17 @@ namespace ui.utils
         
     }
 
-    public class SplitAmount
+    public sealed class SplitAmount
     {
         private bool _isFraction;
         private Fraction frac;
         private int size;
 
-        public SplitAmount(Fraction frac)
+        public uint prioity { get; }
+
+        public SplitAmount(Fraction frac, uint prioity = 1)
         {
+            if (prioity < 1) throw new ArgumentOutOfRangeException();
             _isFraction = true;
             this.frac = frac;
         }
@@ -69,6 +72,7 @@ namespace ui.utils
         public SplitAmount(int size)
         {
             _isFraction = false;
+            prioity = 0;
             this.size = size;
         }
 
@@ -85,11 +89,15 @@ namespace ui.utils
             if (_isFraction) throw new InvalidCastException();
             return size;
         }
+
+        public static implicit operator SplitAmount(Fraction frac) => new SplitAmount(frac);
+        public static implicit operator SplitAmount(int abs) => new SplitAmount(abs);
+        public static implicit operator SplitAmount((Fraction frac, uint prioity) value) => new SplitAmount(value.frac, value.prioity);
     }
 
     public class SplitHandler
     {
-        protected Dictionary<SplitConfig, (SplitAmount amount, uint prioity)> amount = new Dictionary<SplitConfig, (SplitAmount amount, uint prioity)>();
+        protected Dictionary<SplitConfig, SplitAmount> amount = new Dictionary<SplitConfig, SplitAmount>();
         protected Dictionary<SplitConfig, int?> size = new Dictionary<SplitConfig, int?>();
 
         protected int totalSize;
@@ -106,10 +114,20 @@ namespace ui.utils
             return size[config];
         }
 
+        public int GetTotalSize() => totalSize;
+
         public void SetTotalSize(int totalSize)
         {
             if (totalSize <= 0) throw new ArgumentOutOfRangeException();
             this.totalSize = totalSize;
+            Update();
+        }
+
+        public void Remove(SplitConfig splitConfig)
+        {
+            if (!amount.ContainsKey(splitConfig)) throw new InvalidOperationException("The config provided doesn't exist in the handler");
+            amount.Remove(splitConfig);
+            Update();
         }
 
         public void Update()
@@ -119,12 +137,13 @@ namespace ui.utils
             List<(uint prioity, List<KeyValuePair<SplitConfig, SplitAmount>> elements)> sortedGrouped = amount.
                 GroupBy(
                     x => x.Value.prioity, // Key: the prioity
-                    x => new KeyValuePair<SplitConfig, SplitAmount>(x.Key, x.Value.amount), // The element
+                    x => new KeyValuePair<SplitConfig, SplitAmount>(x.Key, x.Value), // The element
                     (x, y) => (x, y.ToList()) // Form back to a tuple of prioity and the list of remapped element
                 )
                 .OrderBy(x => x.Item1)
                 .ToList();
             int totalPrioityTier = sortedGrouped.Count();
+            size = new Dictionary<SplitConfig, int?>();
             for (int i = 0; i < totalPrioityTier; i++)
             {
                 (uint prioity, List<KeyValuePair<SplitConfig, SplitAmount>> elements) = sortedGrouped[i];
@@ -145,7 +164,7 @@ namespace ui.utils
                     size[element.Key] = alloc;
                     curr -= alloc;
                 }
-                Fraction totalFrac = fracElements.Sum(x=>x.Value.GetFraction());
+                Fraction totalFrac = fracElements.Sum(x => x.Value.GetFraction());
                 Fraction mul = new Fraction(1);
                 if (totalFrac > 1 || i == totalPrioityTier - 1)
                 {
@@ -181,21 +200,23 @@ namespace ui.utils
 
         public SplitConfig AddSplit(Fraction ratio, uint prioity = 1)
         {
-            if (prioity < 1) throw new ArgumentOutOfRangeException();
-            SplitAmount amount = new SplitAmount(ratio);
-            SplitConfig config = new SplitConfig(this);
-            this.amount[config] = (amount, prioity);
-            this.size[config] = null;
-            return config;
+            return AddSplit(new SplitAmount(ratio, prioity));
         }
 
         public SplitConfig AddSplit(int absoluteSize)
         {
-            SplitAmount amount = new SplitAmount(absoluteSize);
+            return AddSplit(new SplitAmount(absoluteSize));
+        }
+
+        public SplitConfig AddSplit(SplitAmount amount)
+        {
             SplitConfig config = new SplitConfig(this);
-            this.amount[config] = (amount, 0);
+            this.amount[config] = amount;
             this.size[config] = null;
+            Update();
             return config;
         }
+
+        public bool Contains(SplitConfig config) => amount.ContainsKey(config);
     }
 }
