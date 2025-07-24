@@ -116,6 +116,7 @@ namespace ui.components
                     childsMapping[idx] = (component, (curr, 0, size, GetAllocSize().y), prioity);
                 }
                 curr += size;
+                component.UpdateAllocSize();
             }
 
         }

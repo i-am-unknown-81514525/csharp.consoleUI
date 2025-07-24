@@ -170,6 +170,7 @@ namespace ui.utils
                 {
                     mul = totalFrac.Invert();
                 }
+                int oriCurr = curr;
                 int usedSize = 0;
                 Fraction usedFraction = new Fraction(0);
                 foreach (KeyValuePair<SplitConfig, SplitAmount> element in fracElements)
@@ -181,7 +182,7 @@ namespace ui.utils
                     }
                     Fraction frac = element.Value.GetFraction();
                     usedFraction += frac;
-                    int currSize = (int)(usedFraction * mul * curr).GetFloor();
+                    int currSize = (int)(usedFraction * mul * oriCurr).GetFloor();
                     int alloc = currSize - usedSize;
                     usedSize = currSize;
                     if (alloc > curr)

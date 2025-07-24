@@ -66,6 +66,9 @@ namespace ui.components
             if (isInit()) throw new AlreadyInitException();
             activeHandler = config.activeStatusHandler;
             _isInit = true;
+            foreach (IComponent component in GetMapping().Select(x => x.component))
+                if (!component.isInit())
+                    component.Init(config);
         }
 
         protected List<(IComponent component, (uint x, uint y, uint allocX, uint allocY) location, int prioity)> GetMapping()
@@ -270,7 +273,8 @@ namespace ui.components
             }
             childsMapping.Add(data);
             component.setParent(this);
-            component.Init(new ComponentConfig(activeHandler));
+            if (activeHandler != null)
+                component.Init(new ComponentConfig(activeHandler));
             SetHasUpdate();
             return true;
         }
