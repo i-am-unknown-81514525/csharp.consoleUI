@@ -6,9 +6,9 @@ namespace ui.utils
     {
         public static T[,] CopyTo<T>(T[,] src, T[,] dest, (uint minLeft, uint minTop) location)
         {
-            for (int x = (int)location.minLeft; x < src.GetLength(0) - (int)location.minLeft && x < dest.GetLength(0); x++)
+            for (int x = (int)location.minLeft; x - (int)location.minLeft < src.GetLength(0) && x < dest.GetLength(0); x++)
             {
-                for (int y = (int)location.minTop; y < src.GetLength(1) - (int)location.minTop && y < dest.GetLength(1); y++)
+                for (int y = (int)location.minTop; y - (int)location.minTop < src.GetLength(1) && y < dest.GetLength(1); y++)
                 {
                     dest[x, y] = src[x - (int)location.minLeft, y - (int)location.minTop];
                 }
