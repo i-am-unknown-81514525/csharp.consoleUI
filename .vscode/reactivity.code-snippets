@@ -1,0 +1,20 @@
+{
+	"Add reactive attribute": {
+		"scope": "csharp",
+		"prefix": "reactive",
+		"body": [
+			"//Reactive of $2 with type $1, Trigger: ${3:SetHasUpdate();}",
+			"private $1 _$2;",
+			"public $1 $2 {get => _$2; set {_$2 = value; ${3:SetHasUpdate();}} }"
+		]
+	},
+	"Add reactive attribute with default value": {
+		"scope": "csharp",
+		"prefix": "reactive-default",
+		"body": [
+			"//Reactive of $2 with type $1 and default value: `$3`, Trigger: ${4:SetHasUpdate();}",
+			"private $1 _$2 = $3;",
+			"public $1 $2 {get => _$2; set {_$2 = value; ${4:SetHasUpdate();}} }"
+		]
+	}
+}

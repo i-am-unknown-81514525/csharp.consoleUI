@@ -6,11 +6,18 @@ using ui.fmt;
 namespace ui.components {
     public class Button : Component
     {
-        // Require component update
+        //Reactive of text with type string, Trigger SetHasUpdate();
         private string _text;
-        private ForegroundColor _fore = new ForegroundColor(ForegroundColorEnum.BLACK);
-        private BackgroundColor _back = new BackgroundColor(BackgroundColorEnum.WHITE);
-        
+        public string text {get => _text; set {_text = value; SetHasUpdate();} }
+
+        //Reactive of foreground with type ForegroundColor and default value: `ForegroundColorEnum.BLACK`, Trigger: SetHasUpdate();
+        private ForegroundColor _foreground = ForegroundColorEnum.BLACK;
+        public ForegroundColor foreground {get => _foreground; set {_foreground = value; SetHasUpdate();} }
+
+        //Reactive of background with type BackgroundColor and default value: `BackgroundColorEnum.WHITE`, Trigger: SetHasUpdate();
+        private BackgroundColor _background = BackgroundColorEnum.WHITE;
+        public BackgroundColor background {get => _background; set {_background = value; SetHasUpdate();} }
+
         // Not require component update
 
         public Action<ConsoleLocation> onClickHandler = (_) => { };
@@ -61,34 +68,6 @@ namespace ui.components {
             return content;
         }
 
-        public string text
-        {
-            get => _text;
-            set
-            {
-                _text = value;
-                SetHasUpdate();
-            }
-        }
-
-        public ForegroundColor foreground
-        {
-            get => _fore;
-            set
-            {
-                _fore = value;
-                SetHasUpdate();
-            }
-        }
-        public BackgroundColor background
-        {
-            get => _back;
-            set
-            {
-                _back = value;
-                SetHasUpdate();
-            }
-        }
 
         protected override ConsoleContent[,] RenderPost(ConsoleContent[,] content)
         {
