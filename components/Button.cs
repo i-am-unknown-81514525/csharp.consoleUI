@@ -3,75 +3,19 @@ using ui.core;
 using ui.events;
 using ui.fmt;
 
-namespace ui.components {
-    public class Button : Component
+namespace ui.components
+{
+    public class Button : TextLabel
     {
-        //Reactive of text with type string, Trigger SetHasUpdate();
-        private string _text;
-        public string text {get => _text; set {_text = value; SetHasUpdate();} }
-
-        //Reactive of foreground with type ForegroundColor and default value: `ForegroundColorEnum.BLACK`, Trigger: SetHasUpdate();
-        private ForegroundColor _foreground = ForegroundColorEnum.BLACK;
-        public ForegroundColor foreground {get => _foreground; set {_foreground = value; SetHasUpdate();} }
-
-        //Reactive of background with type BackgroundColor and default value: `BackgroundColorEnum.WHITE`, Trigger: SetHasUpdate();
-        private BackgroundColor _background = BackgroundColorEnum.WHITE;
-        public BackgroundColor background {get => _background; set {_background = value; SetHasUpdate();} }
 
         // Not require component update
 
         public Action<ConsoleLocation> onClickHandler = (_) => { };
 
-
-
-        public Button(string text = null) : base()
+        public Button(string text = null) : base(text)
         {
-            _text = text;
-        }
-
-        protected virtual ConsoleContent[,] RenderSelf()
-        {
-            (uint x, uint y) = this.GetAllocSize();
-            ConsoleContent[,] content = new ConsoleContent[x, y];
-            if (x == 0 || y == 0) return content;
-            uint midY = y / 2;
-            uint offsetX = (x - (uint)text.Length) / 2;
-            bool notComplete = text.Length > x;
-            for (uint ix = 0; ix < x; ix++)
-            {
-                for (uint iy = 0; iy < y; iy++)
-                {
-                    if (iy == midY && ix >= offsetX && ix < offsetX + (uint)text.Length)
-                    {
-                        string curr = text[(int)ix - (int)offsetX].ToString();
-                        if (notComplete && ix == x - 1) curr = "\u206f"; // unicode character for `...` in single character
-                        content[ix, iy] = new ConsoleContent
-                        {
-                            content = curr,
-                            ansiPrefix = TextFormatter.Constructor(foreground, background),
-                            ansiPostfix = TextFormatter.Constructor(ForegroundColorEnum.LIB_DEFAULT, BackgroundColorEnum.LIB_DEFAULT),
-                            isContent = true
-                        };
-                    }
-                    else
-                    {
-                        content[ix, iy] = new ConsoleContent
-                        {
-                            content = " ",
-                            ansiPrefix = TextFormatter.Constructor(foreground, background),
-                            ansiPostfix = TextFormatter.Constructor(ForegroundColorEnum.LIB_DEFAULT, BackgroundColorEnum.LIB_DEFAULT),
-                            isContent = true
-                        };
-                    }
-                }
-            }
-            return content;
-        }
-
-
-        protected override ConsoleContent[,] RenderPost(ConsoleContent[,] content)
-        {
-            return RenderSelf();
+            foreground = ForegroundColorEnum.BLACK;
+            background = BackgroundColorEnum.WHITE;
         }
 
         public override void onClick(ConsoleLocation loc)

@@ -5,24 +5,22 @@ using System.Text;
 
 namespace ui.utils
 {
-    public class TextFlag
+
+    public enum VerticalAlignment : int
     {
-        public const int MULTILINE = 1;
-        public const int TEXTWRAP = 2;
-
-        private int v { get; }
-
-        public TextFlag(int v)
-        {
-            this.v = v;
-        }
-
-        public static implicit operator TextFlag(int v) => new TextFlag(v);
-
-        public static implicit operator int(TextFlag flag) => flag.v;
+        TOP = 0,
+        MIDDLE = 1,
+        BOTTOM = 2,
+    }
+    public enum HorizontalAlignment : int
+    {
+        LEFT = 0,
+        MIDDLE = 1,
+        RIGHT = 2,
     }
 
-    public static class WordWrapExtension {
+    public static class WordWrapExtension
+    {
         public static string Wrap(this string src, int amount, string weakSplitOptions = " .,/?!<>:;", string stripWith = " ")
         {
             if (amount < 1) throw new InvalidOperationException("The amount cannot be <= 0 as there are no method to make a valid split");
@@ -104,8 +102,82 @@ namespace ui.utils
                 {
                     output.Append("\n");
                 }
-                output.Append(currLine.ToString().Trim(stripArr));
+            output.Append(currLine.ToString().Trim(stripArr));
             return output.ToString();
+        }
+
+        public static string Align(this string src, (VerticalAlignment align, int space) vAlign, (HorizontalAlignment align, int space) hAlign)
+        {
+            // Note that this can truncate if insufficient space
+            StringBuilder outputStringBuilder = new StringBuilder((hAlign.space + 1) * vAlign.space);
+            string[] splitted = src.Split('\n');
+            int vLength = splitted.Length;
+            for (int y = 0; y < vAlign.space; y++)
+            {
+                int vIdx = y;
+                switch (vAlign.align)
+                {
+                    case VerticalAlignment.TOP:
+                        vIdx = y;
+                        break;
+                    case VerticalAlignment.MIDDLE:
+                        vIdx = ((vAlign.space - vLength) / 2) + y;
+                        break;
+                    case VerticalAlignment.BOTTOM:
+                        vIdx = (vAlign.space - vLength) + y;
+                        break;
+                }
+                if (vIdx < y) vIdx = y;
+                string lineContent = "";
+                if (vIdx < vLength)
+                {
+                    lineContent = splitted[vIdx];
+                }
+                int hLength = lineContent.Length;
+                if (lineContent == "")
+                {
+                    outputStringBuilder.Append(new string(' ', hAlign.space) + "\n");
+                    continue;
+                }
+                for (int x = 0; x < hAlign.space; y++)
+                {
+                    int hIdx = x;
+                    switch (hAlign.align)
+                    {
+                        case HorizontalAlignment.LEFT:
+                            hIdx = x;
+                            break;
+                        case HorizontalAlignment.MIDDLE:
+                            vIdx = ((hAlign.space - hLength) / 2) + x;
+                            break;
+                        case HorizontalAlignment.RIGHT:
+                            vIdx = (hAlign.space - hLength) + x;
+                            break;
+                    }
+                    if (hIdx < x) hIdx = x;
+                    char v = ' ';
+                    if (hIdx < hLength)
+                    {
+                        v = lineContent[hIdx];
+                    }
+                    if (y + 1 == vAlign.space && vLength > vAlign.space && hIdx + 1 == hLength) // Final line, with more line exist that is truncated, and the final character
+                    {
+                        v = '\u206f';
+                    }
+                    if (x + 1 == hAlign.space && hLength > hAlign.space) // Final character with more character exist that is truncated
+                    {
+                        v = '\u206f';
+                    }
+                    outputStringBuilder.Append(v);
+                }
+                if (y + 1 == vAlign.space) outputStringBuilder.Append("\n");
+            }
+            return outputStringBuilder.ToString();
+        }
+
+        public static string Align(this string src, (HorizontalAlignment align, int space) hAlign, (VerticalAlignment align, int space) vAlign)
+        {
+            return src.Align(vAlign, hAlign);
         }
     }
 }

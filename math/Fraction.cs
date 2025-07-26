@@ -110,6 +110,9 @@ namespace ui.math
         public static implicit operator (BigInteger numerator, BigInteger denominator)(Fraction fraction) => fraction.asTuple();
 
         public static implicit operator Fraction(uint value) => new Fraction((long)value);
+        // Operator conversion precedence fix for the compiler, with AI advise used, fixed SplitHandler.Update (totalFrac > 1 || i == totalPrioityTier - 1)
+        // Google Gemini 2.5 Flash via Gemini app, Accessed 24 July 2025, https://g.co/gemini/share/30770d6d34e9
+
         public static implicit operator Fraction(long value) => new Fraction(value);
         public static implicit operator Fraction(ulong value) => new Fraction((BigInteger)value);
         public static implicit operator Fraction(BigInteger value) => new Fraction(value);
