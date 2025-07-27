@@ -151,10 +151,10 @@ namespace ui.utils
                             hIdx = x;
                             break;
                         case HorizontalAlignment.MIDDLE:
-                            vIdx = x - (hOffset / 2);
+                            hIdx = x - (hOffset / 2);
                             break;
                         case HorizontalAlignment.RIGHT:
-                            vIdx = x - hOffset;
+                            hIdx = x - hOffset;
                             break;
                     }
                     char v = ' ';
