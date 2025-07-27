@@ -16,10 +16,13 @@ namespace ui.test
                 {
                     new HorizontalGroupComponent() {
                         new CounterButton("Click me 1", 0),
+                        (new Seperator(), 2),
                         new CounterButton("Click me 2", 0)
                     },
+                    (new Seperator(), 1),
                     new HorizontalGroupComponent() {
                         new CounterButton("Click me 3", 0),
+                        (new Seperator(), 2),
                         new CounterButton("Click me 4", 0)
                     }
                 }
