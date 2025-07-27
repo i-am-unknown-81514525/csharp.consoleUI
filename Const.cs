@@ -28,4 +28,11 @@ namespace ui
         CLICK = 0,
         HOVER = 35
     }
+
+    public static class SpecialChar
+    {
+        public const char SINGLE_CHAR_ELLIPSIS = '\u206f';
+    }
+
+
 }
