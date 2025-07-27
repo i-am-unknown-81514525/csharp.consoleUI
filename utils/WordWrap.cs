@@ -115,21 +115,22 @@ namespace ui.utils
             for (int y = 0; y < vAlign.space; y++)
             {
                 int vIdx = y;
+                int vOffset = (vAlign.space - vLength);
+                if (vOffset < 0) vOffset = 0;
                 switch (vAlign.align)
                 {
                     case VerticalAlignment.TOP:
                         vIdx = y;
                         break;
                     case VerticalAlignment.MIDDLE:
-                        vIdx = ((vAlign.space - vLength) / 2) + y;
+                        vIdx = y - (vOffset / 2);
                         break;
                     case VerticalAlignment.BOTTOM:
-                        vIdx = (vAlign.space - vLength) + y;
+                        vIdx = y - (vOffset);
                         break;
                 }
-                if (vIdx < y) vIdx = y;
                 string lineContent = "";
-                if (vIdx < vLength)
+                if (vIdx < vLength && vIdx >= 0)
                 {
                     lineContent = splitted[vIdx];
                 }
@@ -139,24 +140,25 @@ namespace ui.utils
                     outputStringBuilder.Append(new string(' ', hAlign.space) + "\n");
                     continue;
                 }
-                for (int x = 0; x < hAlign.space; y++)
+                for (int x = 0; x < hAlign.space; x++)
                 {
                     int hIdx = x;
+                    int hOffset = (hAlign.space - hLength);
+                    if (hOffset < 0) hOffset = 0;
                     switch (hAlign.align)
                     {
                         case HorizontalAlignment.LEFT:
                             hIdx = x;
                             break;
                         case HorizontalAlignment.MIDDLE:
-                            vIdx = ((hAlign.space - hLength) / 2) + x;
+                            vIdx = x - (hOffset / 2);
                             break;
                         case HorizontalAlignment.RIGHT:
-                            vIdx = (hAlign.space - hLength) + x;
+                            vIdx = x - hOffset;
                             break;
                     }
-                    if (hIdx < x) hIdx = x;
                     char v = ' ';
-                    if (hIdx < hLength)
+                    if (hIdx < hLength && hIdx >= 0)
                     {
                         v = lineContent[hIdx];
                     }
@@ -170,7 +172,7 @@ namespace ui.utils
                     }
                     outputStringBuilder.Append(v);
                 }
-                if (y + 1 == vAlign.space) outputStringBuilder.Append("\n");
+                outputStringBuilder.Append("\n");
             }
             return outputStringBuilder.ToString();
         }
