@@ -14,11 +14,12 @@ namespace ui.components
         public ComponentInputFieldHandler(Action postHandler = null, Action<Event> exitHandler = null)
         {
             SetHandler(postHandler);
+            SetHandler(exitHandler);
         }
 
         public bool SetHandler(Action postHandler)
         {
-            if (!(postHandler is null))
+            if (!(this.postHandler is null))
                 return false;
             this.postHandler = postHandler;
             return true;
@@ -26,7 +27,7 @@ namespace ui.components
 
         public bool SetHandler(Action<Event> exitHandler)
         {
-            if (!(exitHandler is null))
+            if (!(this.exitHandler is null))
                 return false;
             this.exitHandler = exitHandler;
             return true;
