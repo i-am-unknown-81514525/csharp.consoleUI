@@ -42,7 +42,7 @@ namespace ui.components
 
         protected override void onEnter()
         {
-            base.onEnter();
+            // base.onEnter();
             this.Deactive(Global.InputHandler);
         }
 
@@ -85,6 +85,7 @@ namespace ui.components
             {
                 Global.consoleCanva.cursorPosition = null;
             }
+            setCursorPos();
         }
 
         protected void OnExitEventTrigger(Event curr)
@@ -102,7 +103,7 @@ namespace ui.components
             Global.InputHandler.Add(inputFieldHandler);
             inputFieldHandler.SetActiveStatus(true);
             SetHasUpdate();
-            Global.consoleCanva.cursorPosition = getAbsolutePos((0, 0));
+            setCursorPos();
         }
 
         protected override bool onDeactive(Event deactiveEvent)
@@ -196,8 +197,18 @@ namespace ui.components
             {
                 int startIdx = getStartIdx();
                 inputFieldHandler.SetCursorPosition((uint)(startIdx + x));
+                setCursorPos();
             }
             SetHasUpdate();
+        }
+
+        protected void setCursorPos()
+        {
+            if (IsActive())
+            {
+                (string _, int cursorPos) = getRenderContent();
+                Global.consoleCanva.cursorPosition = this.getAbsolutePos((0, cursorPos));
+            }
         }
     }
 }
