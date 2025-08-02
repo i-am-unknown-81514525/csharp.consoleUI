@@ -1,11 +1,11 @@
+use cli_clipboard::get_contents;
+use core::sync::atomic::{AtomicBool, Ordering};
+use crossbeam_channel::bounded;
+use std::ffi::{CString, c_char};
 use std::io::{self, BufRead};
 use std::io::{Read, Write};
-use std::ffi::{CString, c_char};
-use core::sync::atomic::{AtomicBool, Ordering};
 use std::thread;
 use std::time::Duration;
-use crossbeam_channel::{bounded};
-use cli_clipboard::get_contents;
 
 cfg_if::cfg_if! {
     if #[cfg(target_family = "unix")] {
@@ -50,15 +50,12 @@ static ORDER: Ordering = Ordering::Relaxed;
 static REMAIN_LOCK: AtomicBool = AtomicBool::new(false);
 static READ_END_LOCK: AtomicBool = AtomicBool::new(false);
 
-
 #[cfg(target_family = "unix")]
-fn internal_init() -> i32{
+fn internal_init() -> i32 {
     let stdin = io::stdin();
     let mut termios: Termios;
     match tcgetattr(stdin) {
-        Result::Ok(t) => {
-            termios = t
-        },
+        Result::Ok(t) => termios = t,
         Result::Err(_) => return -1,
     }
     if !TERMINAL_RAW_IS_ACTIVE.load(ORDER) {
@@ -80,19 +77,17 @@ fn internal_init() -> i32{
 #[cfg(target_family = "unix")]
 fn internal_reset() -> i32 {
     let have_init: bool = TERMINAL_RAW_IS_ACTIVE.load(ORDER);
-    let c_iflag = if have_init {C_IF.load(ORDER)} else {DC_IF};
-    let c_oflag = if have_init {C_OF.load(ORDER)} else {DC_OF};
-    let c_cflag = if have_init {C_CF.load(ORDER)} else {DC_CF};
-    let c_lflag = if have_init {C_LF.load(ORDER)} else {DC_LF};
+    let c_iflag = if have_init { C_IF.load(ORDER) } else { DC_IF };
+    let c_oflag = if have_init { C_OF.load(ORDER) } else { DC_OF };
+    let c_cflag = if have_init { C_CF.load(ORDER) } else { DC_CF };
+    let c_lflag = if have_init { C_LF.load(ORDER) } else { DC_LF };
     if have_init {
         TERMINAL_RAW_IS_ACTIVE.store(false, ORDER);
     }
     let stdin = io::stdin();
     let mut termios: Termios;
     match tcgetattr(stdin) {
-        Result::Ok(t) => {
-            termios = t
-        },
+        Result::Ok(t) => termios = t,
         Result::Err(_) => return -1,
     }
     termios.input_flags = InputFlags::from_bits_truncate(c_iflag.try_into().unwrap_or(0));
@@ -111,7 +106,7 @@ fn internal_reset() -> i32 {
 fn internal_init() -> i32 {
     let mut value = match WinConsole::input().get_mode() {
         Err(_) => return -1025,
-        Ok(T) => T
+        Ok(T) => T,
     };
     value |= InputConsoleMode::ENABLE_MOUSE_INPUT;
     value |= InputConsoleMode::ENABLE_WINDOW_INPUT;
@@ -125,14 +120,14 @@ fn internal_init() -> i32 {
         Err(_) => return -1026,
         Ok(_) => {}
     }
-    
-    let mut value = match WinConsole::output().get_mode() { 
+
+    let mut value = match WinConsole::output().get_mode() {
         Err(_) => return -1027,
-        Ok(T) => T
+        Ok(T) => T,
     };
     value |= OutputConsoleMode::ENABLE_PROCESSED_OUTPUT;
     value |= OutputConsoleMode::ENABLE_VIRTUAL_TERMINAL_PROCESSING;
-    match WinConsole::output().set_mode(value) { 
+    match WinConsole::output().set_mode(value) {
         Err(_) => return -1028,
         Ok(_) => {}
     }
@@ -157,7 +152,7 @@ fn internal_reset() -> i32 {
     let mut value: u32 = 0;
     value |= OutputConsoleMode::ENABLE_PROCESSED_OUTPUT;
     value |= OutputConsoleMode::ENABLE_VIRTUAL_TERMINAL_PROCESSING;
-    match WinConsole::output().set_mode(value) { 
+    match WinConsole::output().set_mode(value) {
         Err(_) => return -1028,
         Ok(_) => {}
     }
@@ -191,12 +186,10 @@ pub extern "cdecl" fn reset() -> i32 {
 #[unsafe(no_mangle)]
 pub extern "cdecl" fn read_stdin() -> u8 {
     let mut stdin = io::stdin();
-    let mut buffer = [0 as u8;1];
+    let mut buffer = [0 as u8; 1];
     stdin.read(&mut buffer).unwrap();
     buffer[0]
 }
-
-
 
 #[unsafe(no_mangle)]
 pub extern "cdecl" fn stdin_data_remain() -> bool {
@@ -207,11 +200,7 @@ pub extern "cdecl" fn stdin_data_remain() -> bool {
     REMAIN_LOCK.store(true, ORDER);
     thread::spawn(move || {
         let mut stdin = io::stdin().lock();
-        let mut v1 = stdin.fill_buf()
-                            .map(
-                                |b| !b.is_empty()
-                            )
-                            .unwrap_or(false); // Experimental API implemented from https://github.com/rust-lang/rust/pull/85815
+        let mut v1 = stdin.fill_buf().map(|b| !b.is_empty()).unwrap_or(false); // Experimental API implemented from https://github.com/rust-lang/rust/pull/85815
         drop(stdin);
         if v1 {
             let buf = (*io::stdin().lock().fill_buf().unwrap()).to_vec();
@@ -220,7 +209,14 @@ pub extern "cdecl" fn stdin_data_remain() -> bool {
         REMAIN_LOCK.store(false, ORDER);
         let _ = s.send(v1); // ignore error
     });
-    let result: bool = match r.recv_timeout(Duration::from_micros(400)) {
+    cfg_if::cfg_if! {
+        if #[cfg(target_family = "unix")] {
+            let delay = 400;
+        } else {
+            let delay = 1000; // 2.5x the unix delay because it is funky on mouse movement
+        }
+    }
+    let result: bool = match r.recv_timeout(Duration::from_micros(delay)) {
         Ok(r) => r,
         Err(_) => false,
     };
@@ -228,12 +224,12 @@ pub extern "cdecl" fn stdin_data_remain() -> bool {
 }
 
 fn to_cstring(buf: Vec<u8>) -> CString {
-    let filtered: Vec<u8> = buf.iter().map(|x| *x).filter(|v| (*v)!=0).collect();
+    let filtered: Vec<u8> = buf.iter().map(|x| *x).filter(|v| (*v) != 0).collect();
     CString::new(filtered.as_slice()).unwrap()
 }
 
 #[unsafe(no_mangle)]
-pub extern "cdecl" fn read_stdin_end()  -> *const c_char {
+pub extern "cdecl" fn read_stdin_end() -> *const c_char {
     let mut buf: Vec<u8> = vec![];
     if !READ_END_LOCK.load(ORDER) && stdin_data_remain() {
         let (s, r) = bounded::<Vec<u8>>(1);
@@ -242,7 +238,14 @@ pub extern "cdecl" fn read_stdin_end()  -> *const c_char {
             let _ = s.send((*io::stdin().lock().fill_buf().unwrap()).to_vec());
             READ_END_LOCK.store(false, ORDER);
         });
-        match r.recv_timeout(Duration::from_micros(1000)) {
+        cfg_if::cfg_if! {
+            if #[cfg(target_family = "unix")] {
+                let delay = 1000;
+            } else {
+                let delay = 2500; // 2.5x the unix delay because it is funky on mouse movement
+            }
+        }
+        match r.recv_timeout(Duration::from_micros(delay)) {
             Ok(b) => buf = b,
             Err(_) => {}
         }
@@ -257,7 +260,7 @@ pub extern "cdecl" fn read_stdin_end()  -> *const c_char {
 }
 
 #[unsafe(no_mangle)]
-pub extern "cdecl" fn consume(amount: u32)  -> () {
+pub extern "cdecl" fn consume(amount: u32) -> () {
     io::stdin().lock().consume(amount as usize)
 }
 
@@ -298,7 +301,7 @@ pub extern "cdecl" fn read_clipboard() -> *const c_char {
 //     let mut buf: Vec<u8> = vec![];
 //     if stdin_data_remain() {
 //         buf = (*io::stdin().lock().fill_buf().unwrap()).to_vec();
-//         if consume_less { // 
+//         if consume_less { //
 //             io::stdin().lock().consume(buf.len() - 1); // ??? Somehow this work and don't question this
 //         } else {
 //             io::stdin().lock().consume(buf.len());
