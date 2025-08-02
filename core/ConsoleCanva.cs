@@ -112,16 +112,13 @@ namespace ui.core
             );
             builder.Append(prefix);
             string postfix = (
-                ConsoleHandler.ConsoleIntermediateHandler.ToANSI("0m") // Reset colour
+                ConsoleHandler.ConsoleIntermediateHandler.ToANSI("0m") + // Reset colour
+                ConsoleHandler.ConsoleIntermediateHandler.ToANSI("0;0H") // Move cursor to 0,0 (top left)
             );
-            if (cursorPosition is null)
-            {
-                ConsoleHandler.ConsoleIntermediateHandler.ToANSI("0;0H"); // Move cursor to 0,0 (top left)
-            }
-            else
+            if (!(cursorPosition is null))
             {
                 (int row, int col) v = cursorPosition.GetValueOrDefault();
-                ConsoleHandler.ConsoleIntermediateHandler.ToANSI($"{v.row};{v.col}H");
+                postfix += ConsoleHandler.ConsoleIntermediateHandler.ToANSI($"{v.row};{v.col}H");
             }
             // string outputBuffer = "";
             for (int y = 1; y <= ConsoleWindow.GetLength(1); y++)
