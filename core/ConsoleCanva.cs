@@ -100,13 +100,10 @@ namespace ui.core
             string prefix = (
                 //ConsoleHandler.ConsoleIntermediateHandler.ToANSI("?1049h") + // Enable alternative buffer
                 ConsoleHandler.ConsoleIntermediateHandler.ToANSI("0m") + // Reset colour
-                (
-                    cursorPosition is null ?
-                        ConsoleHandler.ConsoleIntermediateHandler.ToANSI("?25l") :
-                        ConsoleHandler.ConsoleIntermediateHandler.ToANSI("?25h")
-                ) + // Hide cursor conditionally
-                    //ConsoleHandler.ConsoleIntermediateHandler.ToANSI("2J") + // Clear screen and move cursor to top left (Window ANSI.sys)                                                                                                                                                 //ConsoleHandler.ConsoleIntermediateHandler.ToANSI("3J") + // Clear screen and delete all lines saved in the scrollback buffer (xterm alive)
-                ConsoleHandler.ConsoleIntermediateHandler.ToANSI("1;39m") + // Set colour to default (according to ANSI)
+                ConsoleHandler.ConsoleIntermediateHandler.ToANSI("?25l") + // Hide cursor
+                                                                           // ConsoleHandler.ConsoleIntermediateHandler.ToANSI("2J") + // Clear screen and move cursor to top left (Window ANSI.sys)
+                ConsoleHandler.ConsoleIntermediateHandler.ToANSI("0m") + // Reset colour                                                                                                                                           //ConsoleHandler.ConsoleIntermediateHandler.ToANSI("3J") + // Clear screen and delete all lines saved in the scrollback buffer (xterm alive)
+                                                                         // ConsoleHandler.ConsoleIntermediateHandler.ToANSI("1;39m") + // Set colour to default (according to ANSI)
                 ConsoleHandler.ConsoleIntermediateHandler.ToANSI("0;0H") + // Move cursor to 0,0 (top left)
                 ConsoleHandler.ConsoleIntermediateHandler.ToANSI("37;40m") // Set default colour
             );
@@ -119,6 +116,7 @@ namespace ui.core
             {
                 (int row, int col) v = cursorPosition.GetValueOrDefault();
                 postfix += ConsoleHandler.ConsoleIntermediateHandler.ToANSI($"{v.row};{v.col}H");
+                postfix += ConsoleHandler.ConsoleIntermediateHandler.ToANSI("?25h"); // Show cursor
             }
             // string outputBuffer = "";
             for (int y = 1; y <= ConsoleWindow.GetLength(1); y++)
