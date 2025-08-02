@@ -31,6 +31,7 @@ namespace ui.core
         public ConsoleContent[,] ConsoleWindow = new ConsoleContent[120, 80];
 
         private ConsoleContent[,] previous = null;
+        public (int row, int col)? cursorPosition = null;
 
         protected void applyToNew((int width, int height) size)
         {
@@ -99,18 +100,29 @@ namespace ui.core
             string prefix = (
                 //ConsoleHandler.ConsoleIntermediateHandler.ToANSI("?1049h") + // Enable alternative buffer
                 ConsoleHandler.ConsoleIntermediateHandler.ToANSI("0m") + // Reset colour
-                ConsoleHandler.ConsoleIntermediateHandler.ToANSI("?25l") + // Hide cursor
-                                                                           //ConsoleHandler.ConsoleIntermediateHandler.ToANSI("2J") + // Clear screen and move cursor to top left (Window ANSI.sys)
-                                                                           //ConsoleHandler.ConsoleIntermediateHandler.ToANSI("3J") + // Clear screen and delete all lines saved in the scrollback buffer (xterm alive)
+                (
+                    cursorPosition is null ?
+                        ConsoleHandler.ConsoleIntermediateHandler.ToANSI("?25l") :
+                        ConsoleHandler.ConsoleIntermediateHandler.ToANSI("?25h")
+                ) + // Hide cursor conditionally
+                    //ConsoleHandler.ConsoleIntermediateHandler.ToANSI("2J") + // Clear screen and move cursor to top left (Window ANSI.sys)                                                                                                                                                 //ConsoleHandler.ConsoleIntermediateHandler.ToANSI("3J") + // Clear screen and delete all lines saved in the scrollback buffer (xterm alive)
                 ConsoleHandler.ConsoleIntermediateHandler.ToANSI("1;39m") + // Set colour to default (according to ANSI)
                 ConsoleHandler.ConsoleIntermediateHandler.ToANSI("0;0H") + // Move cursor to 0,0 (top left)
                 ConsoleHandler.ConsoleIntermediateHandler.ToANSI("37;40m") // Set default colour
             );
             builder.Append(prefix);
             string postfix = (
-                ConsoleHandler.ConsoleIntermediateHandler.ToANSI("0m") + // Reset colour
-                ConsoleHandler.ConsoleIntermediateHandler.ToANSI("0;0H") // Move cursor to 0,0 (top left)
+                ConsoleHandler.ConsoleIntermediateHandler.ToANSI("0m") // Reset colour
             );
+            if (cursorPosition is null)
+            {
+                ConsoleHandler.ConsoleIntermediateHandler.ToANSI("0;0H"); // Move cursor to 0,0 (top left)
+            }
+            else
+            {
+                (int row, int col) v = cursorPosition.GetValueOrDefault();
+                ConsoleHandler.ConsoleIntermediateHandler.ToANSI($"{v.row};{v.col}H");
+            }
             // string outputBuffer = "";
             for (int y = 1; y <= ConsoleWindow.GetLength(1); y++)
             {
@@ -134,34 +146,44 @@ namespace ui.core
             Console.Write(GetContent());
         }
 
-        public static ConsoleCanva OverwriteOnCanva(ConsoleCanva canva, ConsoleContent[,] data, (int x, int y) topLeft, bool force = true) { // When force, it would write to the content that fit instead of raising error
+        public static ConsoleCanva OverwriteOnCanva(ConsoleCanva canva, ConsoleContent[,] data, (int x, int y) topLeft, bool force = true)
+        { // When force, it would write to the content that fit instead of raising error
 
             int minX = topLeft.x;
             int minY = topLeft.y;
             int maxX = topLeft.x + data.GetLength(0);
             int maxY = topLeft.y + data.GetLength(1);
-            if (force) {
-                if (maxX > canva.ConsoleWindow.GetLength(0)) {
+            if (force)
+            {
+                if (maxX > canva.ConsoleWindow.GetLength(0))
+                {
                     maxX = canva.ConsoleWindow.GetLength(0);
                 }
-                if (maxY > canva.ConsoleWindow.GetLength(1)) {
+                if (maxY > canva.ConsoleWindow.GetLength(1))
+                {
                     maxY = canva.ConsoleWindow.GetLength(1);
                 }
                 if (minX < 0) minX = 0;
                 if (minY < 0) minY = 0;
-            } else {
-                if (maxX > canva.ConsoleWindow.GetLength(0)) {
+            }
+            else
+            {
+                if (maxX > canva.ConsoleWindow.GetLength(0))
+                {
                     throw new InvalidOperationException($"To write on canva, with offsetX={topLeft.x} and sizeX={data.GetLength(0)} => maxX={maxX} but limX={canva.ConsoleWindow.GetLength(0)}");
                 }
-                if (maxY > canva.ConsoleWindow.GetLength(1)) {
+                if (maxY > canva.ConsoleWindow.GetLength(1))
+                {
                     throw new InvalidOperationException($"To write on canva, with offsetX={topLeft.y} and sizeX={data.GetLength(1)} => maxX={maxY} but limX={canva.ConsoleWindow.GetLength(1)}");
                 }
                 if (minX < 0) throw new InvalidOperationException($"To write on canva, minX={minX} but limX=0");
                 if (minY < 0) throw new InvalidOperationException($"To write on canva, minY={minY} but limY=0");
             }
 
-            for (int x = minX; x < maxX; x++) {
-                for (int y = minY; y < maxY; y++) {
+            for (int x = minX; x < maxX; x++)
+            {
+                for (int y = minY; y < maxY; y++)
+                {
                     if (data[x - minX, y - minY].isContent)
                     {
                         ConsoleContent content = data[x - minX, y - minY];
@@ -174,7 +196,8 @@ namespace ui.core
             return canva;
         }
 
-        public static ConsoleCanva WriteStringOnCanva(ConsoleCanva canva, string text, (int x, int y) topLeft, string ansiPrefix = "", string ansiPostfix = "") {
+        public static ConsoleCanva WriteStringOnCanva(ConsoleCanva canva, string text, (int x, int y) topLeft, string ansiPrefix = "", string ansiPostfix = "")
+        {
             if (string.IsNullOrEmpty(text)) return canva;
             return OverwriteOnCanva(canva, getContentArr(text, ansiPrefix, ansiPostfix), topLeft, true);
         }
@@ -185,13 +208,13 @@ namespace ui.core
             ConsoleContent[,] data = new ConsoleContent[text.Length, 1];
             for (int i = 0; i < text.Length; i++)
             {
-                    data[i, 0] = new ConsoleContent()
-                    {
-                        content = text[i].ToString(),
-                        ansiPrefix = ansiPrefix,
-                        ansiPostfix = ansiPostfix,
-                        isContent = true
-                    };
+                data[i, 0] = new ConsoleContent()
+                {
+                    content = text[i].ToString(),
+                    ansiPrefix = ansiPrefix,
+                    ansiPostfix = ansiPostfix,
+                    isContent = true
+                };
             }
 
             return data;

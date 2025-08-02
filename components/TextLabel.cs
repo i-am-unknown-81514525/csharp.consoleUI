@@ -6,7 +6,7 @@ using ui.utils;
 
 namespace ui.components
 {
-    public class TextLabel : Component
+    public class TextLabel : NoChildComponent
     {
         //Reactive of text with type string, Trigger SetHasUpdate();
         private string _text;

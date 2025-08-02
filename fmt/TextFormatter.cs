@@ -19,5 +19,20 @@ namespace ui.fmt
             string outStr = $"{foregroundColor};{backgroundColor}";
             return $"\x1b[{outStr}m";
         }
+
+        public static string Constructor(BackgroundColor backgroundColor, ForegroundColor foregroundColor)
+        {
+            return Constructor(foregroundColor, backgroundColor);
+        }
+
+        public static string Constructor((ForegroundColor foreground, BackgroundColor background) color)
+        {
+            return Constructor(color.foreground, color.background);
+        }
+
+        public static string Constructor((BackgroundColor background, ForegroundColor foreground) color)
+        {
+            return Constructor(color.foreground, color.background);
+        }
     }
 }

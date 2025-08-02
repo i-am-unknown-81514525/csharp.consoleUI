@@ -15,6 +15,28 @@ namespace ui.input
 
         protected string content = "";
 
+        public string GetContent()
+        {
+            return content;
+        }
+
+        public void SetContent(string v)
+        {
+            if (v is null) return;
+            content = v;
+            if (cursor > content.Length)
+                cursor = (uint)content.Length;
+        }
+
+        public void SetCursorPosition(uint cursorPos)
+        {
+            cursor = cursorPos;
+            if (cursorPos > content.Length)
+            {
+                cursor = (uint)content.Length;
+            }
+        }
+
         protected byte GetBuf()
         {
             byte value = Buffer[0];
@@ -27,6 +49,21 @@ namespace ui.input
             get => (uint)content.Length;
         }
 
+        public uint cursorPos
+        {
+            get => cursor;
+        }
+
+        protected void Deactive(RootInputHandler root)
+        {
+            SetActiveStatus(false);
+            SetLockStatus(LockStatus.NoLock);
+            root.LockChangeAnnounce(this);
+            onDeactive();
+        }
+
+        protected virtual void onDeactive() { }
+
         protected override void Handle(RootInputHandler root)
         {
             if (Buffer.Count == 0) return;
@@ -34,9 +71,7 @@ namespace ui.input
             if (!isActive) return;
             if (currBuf == (byte)KeyCode.ESC)
             {
-                SetActiveStatus(false);
-                SetLockStatus(LockStatus.NoLock);
-                root.LockChangeAnnounce(this);
+                Deactive(root);
             }
             else
             {
@@ -292,6 +327,6 @@ namespace ui.input
             loc = to2D(cursor);
             vir_loc = to2D(cursor);
         }
-        
+
     }
 }

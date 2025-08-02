@@ -39,7 +39,7 @@ namespace ui.components
 
         private bool _isActive = false;
 
-        private bool _active_lock = false; // When onDeactive, calling setActive would have the unintend side-effect, 
+        private bool _active_lock = false; // When onDeactive, calling setActive would have the unintend side-effect,
                                            // where _isActive would is still depend on onDeactive return result, not the calling of onActive
                                            // Or under undiscover side effect (UB)
                                            // Therefore the usage of such is restricted with apporiate error message
@@ -381,6 +381,7 @@ namespace ui.components
         protected void setInactive()
         {
             if (activeHandler.getCurrActive() != this) return;
+            this._isActive = false;
             activeHandler.setInactive(this);
         }
 
@@ -394,9 +395,6 @@ namespace ui.components
         {
             return null;
         }
-
-        
-
 
 
         public string Debug_WriteStructure()
@@ -412,7 +410,7 @@ namespace ui.components
                     .Select(
                         x =>
                         $"    {x.component.GetType().Name} (x={x.location.x}, y={x.location.y}, allocX={x.location.allocX}, allocY={x.location.allocY}) - {x.component.Debug_Info() ?? ""}\r\n" +
-                        String.Join("\r\n", x.component.Debug_WriteStructure().Split('\n').Select(y=>"    " + y.TrimEnd('\r')))
+                        String.Join("\r\n", x.component.Debug_WriteStructure().Split('\n').Select(y => "    " + y.TrimEnd('\r')))
                     )
             );
 
@@ -423,6 +421,24 @@ namespace ui.components
         public virtual string Debug_Info()
         {
             return "";
+        }
+
+        public (int row, int col) getAbsolutePos((int row, int col) pos, IComponent childComp)
+        {
+            if (!Contains(childComp))
+            {
+                throw new InvalidOperationException("The childComp given is not the child of the given component");
+            }
+            (uint x, uint y, uint allocX, uint allocY) = GetMapping().Where(v => v.component == childComp).First().location;
+            pos = (pos.row + (int)y, pos.col + (int)x);
+            return getAbsolutePos(pos);
+        }
+
+        public (int row, int col) getAbsolutePos((int row, int col) pos)
+        {
+            IComponent parent = getParent();
+            if (parent is null) return pos;
+            return parent.getAbsolutePos(pos, this);
         }
     }
 }

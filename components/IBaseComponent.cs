@@ -17,5 +17,7 @@ namespace ui.components
         ConsoleContent[,] Render();
         bool isInit();
         void Init(ComponentConfig config);
+        (int row, int col) getAbsolutePos((int row, int col) pos, IComponent childComp);
+        (int row, int col) getAbsolutePos((int row, int col) pos);
     }
 }

@@ -3,6 +3,9 @@ namespace ui.components
 
     public abstract class NoChildComponent : Component
     {
+        protected NoChildComponent() : base()
+        {
+        }
 
         protected NoChildComponent(ComponentConfig config) : base(config)
         {

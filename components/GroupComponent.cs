@@ -29,7 +29,7 @@ namespace ui.components
         ) => new GroupComponentConfig(config.component, config.splitAmount);
 
         public static implicit operator GroupComponentConfig(Component component) => new GroupComponentConfig(component, (Fraction)1);
-    
+
     }
 
     public abstract class GroupComponent : Component, IEnumerable<GroupComponentConfig>
