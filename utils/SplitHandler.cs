@@ -51,7 +51,7 @@ namespace ui.utils
 
     public class InvalidCastException : InvalidOperationException
     {
-        
+
     }
 
     public sealed class SplitAmount
@@ -165,6 +165,7 @@ namespace ui.utils
                     curr -= alloc;
                 }
                 Fraction totalFrac = fracElements.Sum(x => x.Value.GetFraction());
+                if (totalFrac == 0) continue;
                 Fraction mul = new Fraction(1);
                 if (totalFrac > 1 || i == totalPrioityTier - 1)
                 {
