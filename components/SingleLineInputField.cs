@@ -34,7 +34,7 @@ namespace ui.components
 
         protected override void Handle(RootInputHandler root)
         {
-            this.Handle(root);
+            base.Handle(root);
             if (postHandler != null)
                 postHandler();
         }
