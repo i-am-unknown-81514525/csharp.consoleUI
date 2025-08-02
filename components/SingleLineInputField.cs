@@ -42,6 +42,12 @@ namespace ui.components
         protected override void onEnter()
         {
             base.onEnter();
+            this.Deactive(Global.InputHandler);
+        }
+
+        protected override void onDeactive()
+        {
+            base.onDeactive();
             if (exitHandler != null)
                 exitHandler(new TypeEvent('\n'));
         }
@@ -53,7 +59,7 @@ namespace ui.components
         public string content { get => inputFieldHandler.GetContent(); set { inputFieldHandler.SetContent(content); SetHasUpdate(); } }
 
         //Reactive of active with type (ForegroundColor foreground, BackgroundColor background) and default value: `(ForegroundColorEnum.BLACK, BackgroundColorEnum.WHITE)`, Trigger: SetHasUpdate();
-        private (ForegroundColor foreground, BackgroundColor background) _active = (ForegroundColorEnum.BLACK, BackgroundColorEnum.WHITE);
+        private (ForegroundColor foreground, BackgroundColor background) _active = (ForegroundColorEnum.BLACK, BackgroundColorEnum.YELLOW);
         public (ForegroundColor foreground, BackgroundColor background) active { get => _active; set { _active = value; SetHasUpdate(); } }
 
         //Reactive of deactive with type (ForegroundColor foreground, BackgroundColor background) and default value: `(ForegroundColorEnum.WHITE, BackgroundColorEnum.BLACK)`, Trigger: SetHasUpdate();
@@ -64,7 +70,8 @@ namespace ui.components
 
         public SingleLineInputField(string content = "") : base()
         {
-            inputFieldHandler.SetHandler(SetHasUpdate);
+            inputFieldHandler.SetHandler(OnTypeEventTrigger);
+            inputFieldHandler.SetHandler(OnExitEventTrigger);
             this.content = content ?? "";
             SetHasUpdate();
         }
@@ -79,7 +86,7 @@ namespace ui.components
             }
         }
 
-        protected void onExitEventTrigger(Event curr)
+        protected void OnExitEventTrigger(Event curr)
         {
             if (IsActive())
             {
