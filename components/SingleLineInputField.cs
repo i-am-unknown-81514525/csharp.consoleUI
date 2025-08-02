@@ -99,6 +99,7 @@ namespace ui.components
         protected override void onActive()
         {
             Global.InputHandler.Add(inputFieldHandler);
+            inputFieldHandler.SetActiveStatus(true);
             SetHasUpdate();
             Global.consoleCanva.cursorPosition = getAbsolutePos((0, 0));
         }
