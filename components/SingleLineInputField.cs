@@ -186,6 +186,7 @@ namespace ui.components
                     };
                 }
             }
+            setCursorPos();
             return content;
         }
 
