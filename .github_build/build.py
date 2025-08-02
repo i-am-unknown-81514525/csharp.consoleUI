@@ -3,7 +3,8 @@ name: dict[str, str] = {
     "Test": "StdinRepeat.exe",
     "FracParseTest": "FracParseTest.exe",
     "ButtonTest": "ButtonTest.exe",
-    "GroupItemTest": "MultiButtonTest.exe"
+    "GroupItemTest": "MultiButtonTest.exe",
+    "InputFieldTest": "InputFieldTest.exe",
 }
 
 import pathlib
@@ -54,6 +55,3 @@ for cls_name, out_name in name.items():
             continue
         shutil.move(file, build_dir / file.name)
         print(f"Moved {file.as_posix()} -> {(build_dir / file.name).as_posix()}")
-
-
-    
