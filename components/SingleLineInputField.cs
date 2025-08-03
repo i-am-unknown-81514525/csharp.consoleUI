@@ -57,15 +57,15 @@ namespace ui.components
     public class SingleLineInputField : NoChildComponent
     {
         //Reactive of content with type string and default value: `""`, Trigger: SetHasUpdate();
-        public string content { get => inputFieldHandler.GetContent(); set { inputFieldHandler.SetContent(content); SetHasUpdate(); } }
+        public string content { get => inputFieldHandler.GetContent(); set { inputFieldHandler.SetContent(content); setHasUpdate(); } }
 
         //Reactive of active with type (ForegroundColor foreground, BackgroundColor background) and default value: `(ForegroundColorEnum.BLACK, BackgroundColorEnum.WHITE)`, Trigger: SetHasUpdate();
         private (ForegroundColor foreground, BackgroundColor background) _active = (ForegroundColorEnum.BLACK, BackgroundColorEnum.YELLOW);
-        public (ForegroundColor foreground, BackgroundColor background) active { get => _active; set { _active = value; SetHasUpdate(); } }
+        public (ForegroundColor foreground, BackgroundColor background) active { get => _active; set { _active = value; setHasUpdate(); } }
 
         //Reactive of deactive with type (ForegroundColor foreground, BackgroundColor background) and default value: `(ForegroundColorEnum.WHITE, BackgroundColorEnum.BLACK)`, Trigger: SetHasUpdate();
         private (ForegroundColor foreground, BackgroundColor background) _deactive = (ForegroundColorEnum.WHITE, BackgroundColorEnum.BLACK);
-        public (ForegroundColor foreground, BackgroundColor background) deactive { get => _deactive; set { _deactive = value; SetHasUpdate(); } }
+        public (ForegroundColor foreground, BackgroundColor background) deactive { get => _deactive; set { _deactive = value; setHasUpdate(); } }
 
         protected ComponentInputFieldHandler inputFieldHandler = new ComponentInputFieldHandler();
 
@@ -74,12 +74,12 @@ namespace ui.components
             inputFieldHandler.SetHandler(OnTypeEventTrigger);
             inputFieldHandler.SetHandler(OnExitEventTrigger);
             this.content = content ?? "";
-            SetHasUpdate();
+            setHasUpdate();
         }
 
         protected void OnTypeEventTrigger()
         {
-            SetHasUpdate();
+            setHasUpdate();
             bool isActive = IsActive();
             if (!isActive) // This would have been a toggle of state since type event only occur on change in active/deactive, or a type event
             {
@@ -92,22 +92,22 @@ namespace ui.components
         {
             if (IsActive())
             {
-                setInactive();
+                SetInactive();
                 inputFieldHandler.SetCursorPosition((uint)inputFieldHandler.GetContent().Length);
-                SetHasUpdate();
+                setHasUpdate();
             }
         }
 
-        protected override void onActive()
+        protected override void OnActive()
         {
             if (!Global.InputHandler.Contains(inputFieldHandler))
                 Global.InputHandler.Add(inputFieldHandler);
             inputFieldHandler.SetActiveStatus(true);
-            SetHasUpdate();
+            setHasUpdate();
             setCursorPos();
         }
 
-        protected override bool onDeactive(Event deactiveEvent)
+        protected override bool OnDeactive(Event deactiveEvent)
         {
             bool canConvertToTypeEvent = !((deactiveEvent as TypeEvent) is null);
             DEBUG.DebugStore.Append($"input field deactive event: {canConvertToTypeEvent}\r\n");
@@ -122,7 +122,7 @@ namespace ui.components
             {
                 DEBUG.DebugStore.Append($"input field handler already missing\r\n");
             }
-            SetHasUpdate();
+            setHasUpdate();
             return true;
         }
 
@@ -196,17 +196,17 @@ namespace ui.components
             return content;
         }
 
-        public override void onClick(ConsoleLocation consoleLocation)
+        public override void OnClick(ConsoleLocation consoleLocation)
         {
-            (int y, int x) = this.getAbsolutePos((consoleLocation.y, consoleLocation.x));
-            bool isActive = !IsActive() ? setActive(new ClickEvent(new ConsoleLocation(x, y))) : true;
+            (int y, int x) = this.GetAbsolutePos((consoleLocation.y, consoleLocation.x));
+            bool isActive = !IsActive() ? SetActive(new ClickEvent(new ConsoleLocation(x, y))) : true;
             if (isActive)
             {
                 int startIdx = getStartIdx();
                 inputFieldHandler.SetCursorPosition((uint)(startIdx + x));
                 setCursorPos();
             }
-            SetHasUpdate();
+            setHasUpdate();
         }
 
         protected void setCursorPos()
@@ -214,7 +214,7 @@ namespace ui.components
             if (IsActive())
             {
                 (string _, int cursorPos) = getRenderContent();
-                (int row, int col) = this.getAbsolutePos((0, cursorPos));
+                (int row, int col) = this.GetAbsolutePos((0, cursorPos));
                 Global.consoleCanva.cursorPosition = (row + 1, col + 1);
             }
         }

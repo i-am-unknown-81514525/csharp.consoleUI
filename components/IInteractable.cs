@@ -4,8 +4,8 @@ namespace ui.components
 {
     public interface IInteractable
     {
-        void onClick(ConsoleLocation pressLocation);
-        void onHover(ConsoleLocation location);
+        void OnClick(ConsoleLocation pressLocation);
+        void OnHover(ConsoleLocation location);
 
     }
 }

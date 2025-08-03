@@ -15,25 +15,25 @@ namespace ui.components
         {
             noParent = true;
             Add(component);
-            setSize(component, (0, 0, GetAllocSize().x, GetAllocSize().y), 1);
+            SetSize(component, (0, 0, GetAllocSize().x, GetAllocSize().y), 1);
         }
 
         protected App(Component component, ActiveStatusHandler activeStatusHandler) : base(new ComponentConfig(activeStatusHandler))
         {
             noParent = true;
             Add(component);
-            setSize(component, (0, 0, GetAllocSize().x, GetAllocSize().y), 1);
+            SetSize(component, (0, 0, GetAllocSize().x, GetAllocSize().y), 1);
         }
 
-        protected override (bool isAdd, (IComponent, (uint, uint, uint, uint), int) data) onAddHandler((IComponent, (uint, uint, uint, uint), int) child)
+        protected override (bool isAdd, (IComponent, (uint, uint, uint, uint), int) data) OnAddHandler((IComponent, (uint, uint, uint, uint), int) child)
         {
             return (GetMapping().Count == 0, child);
         }
 
-        protected override void onResize()
+        protected override void OnResize()
         {
             if (GetMapping().Count == 0) throw new InvalidOperationException("An App must have a child component");
-            setSize(GetMapping()[0].component, (0, 0, GetAllocSize().x, GetAllocSize().y), 1);
+            SetSize(GetMapping()[0].component, (0, 0, GetAllocSize().x, GetAllocSize().y), 1);
         }
     }
 }

@@ -12,9 +12,9 @@ namespace ui.test
     {
         public ExitButton(string text = null) : base(text) { }
 
-        public override void onClick(ConsoleLocation loc)
+        public override void OnClick(ConsoleLocation loc)
         {
-            base.onClick(loc);
+            base.OnClick(loc);
             Global.InputHandler.LocalDispatch((byte)KeyCode.INTERRUPT);
         }
     }

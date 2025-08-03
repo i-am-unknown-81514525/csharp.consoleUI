@@ -16,14 +16,14 @@ namespace ui.components
         {
         }
 
-        protected override (bool isAdd, (IComponent, (uint, uint, uint, uint), int) data) onAddHandler((IComponent, (uint, uint, uint, uint), int) child)
+        protected override (bool isAdd, (IComponent, (uint, uint, uint, uint), int) data) OnAddHandler((IComponent, (uint, uint, uint, uint), int) child)
         {
             return (GetMapping().Count == 0, child);
         }
 
         public void Add(Component component)
         {
-            if (component.getParent() != null && component.getParent() != this) throw new InvalidOperationException("The component already have a parent");
+            if (component.GetParent() != null && component.GetParent() != this) throw new InvalidOperationException("The component already have a parent");
             (uint allocX, uint allocY) = GetAllocSize();
             AddChildComponent(component, (0, 0, allocX, allocY), 1);
         }

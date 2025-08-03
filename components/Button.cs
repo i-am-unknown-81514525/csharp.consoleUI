@@ -18,12 +18,12 @@ namespace ui.components
             background = BackgroundColorEnum.WHITE;
         }
 
-        public override void onClick(ConsoleLocation loc)
+        public override void OnClick(ConsoleLocation loc)
         {
-            if (activeHandler.getCurrActive() != null && activeHandler.getCurrActive() != this)
+            if (activeHandler.GetCurrActive() != null && activeHandler.GetCurrActive() != this)
             {
-                bool r = setActive(new ClickEvent(loc)); // Attempt to reset activity handler status
-                if (r) setInactive();
+                bool r = SetActive(new ClickEvent(loc)); // Attempt to reset activity handler status
+                if (r) SetInactive();
             }
             onClickHandler(loc);
         }

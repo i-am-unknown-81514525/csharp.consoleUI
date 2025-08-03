@@ -39,13 +39,13 @@ namespace ui.components
 
         private bool _isActive = false;
 
-        private bool _active_lock = false; // When onDeactive, calling setActive would have the unintend side-effect,
-                                           // where _isActive would is still depend on onDeactive return result, not the calling of onActive
-                                           // Or under undiscover side effect (UB)
-                                           // Therefore the usage of such is restricted with apporiate error message
-                                           // To ask the developer to return false instead.
+        private bool _activeLock = false; // When onDeactive, calling setActive would have the unintend side-effect,
+                                          // where _isActive would is still depend on onDeactive return result, not the calling of onActive
+                                          // Or under undiscover side effect (UB)
+                                          // Therefore the usage of such is restricted with apporiate error message
+                                          // To ask the developer to return false instead.
 
-        private bool _frame_recurr_lock = false;
+        private bool _frameRecurrLock = false;
 
         private bool _isInit = false;
 
@@ -59,15 +59,15 @@ namespace ui.components
             _isInit = false;
         }
 
-        public bool isInit() => _isInit;
+        public bool IsInit() => _isInit;
 
         public void Init(ComponentConfig config)
         {
-            if (isInit()) throw new AlreadyInitException();
+            if (IsInit()) throw new AlreadyInitException();
             activeHandler = config.activeStatusHandler;
             _isInit = true;
             foreach (IComponent component in GetMapping().Select(x => x.component))
-                if (!component.isInit())
+                if (!component.IsInit())
                     component.Init(config);
         }
 
@@ -81,22 +81,22 @@ namespace ui.components
             return allocSize;
         }
 
-        protected virtual void onFrameInternal() { }
+        protected virtual void OnFrameInternal() { }
 
-        public void onFrame()
+        public void OnFrame()
         {
-            if (_frame_recurr_lock) return;
+            if (_frameRecurrLock) return;
             try
             {
-                _frame_recurr_lock = true;
-                onFrameInternal();
+                _frameRecurrLock = true;
+                OnFrameInternal();
                 if (childsMapping != null)
                     foreach (var compLoc in childsMapping)
-                        compLoc.component.onFrame();
+                        compLoc.component.OnFrame();
             }
             finally
             {
-                _frame_recurr_lock = false;
+                _frameRecurrLock = false;
             }
         }
 
@@ -105,7 +105,7 @@ namespace ui.components
             return _localHasUpdate || childsMapping.Any(x => x.component.GetHasUpdate());
         }
 
-        protected void SetHasUpdate()
+        protected void setHasUpdate()
         {
             _localHasUpdate = true;
         }
@@ -118,12 +118,12 @@ namespace ui.components
             }
         }
 
-        public IComponent getParent()
+        public IComponent GetParent()
         {
             return root;
         }
 
-        public void setParent(IComponent component)
+        public void SetParent(IComponent component)
         {
             CheckLock();
             if (component == null)
@@ -142,12 +142,12 @@ namespace ui.components
         }
 
 
-        protected virtual void onHoverInternal(ConsoleLocation location) { }
+        protected virtual void OnHoverInternal(ConsoleLocation location) { }
 
-        public virtual void onHover(ConsoleLocation location)
+        public virtual void OnHover(ConsoleLocation location)
         {
             CheckLock();
-            onHoverInternal(location);
+            OnHoverInternal(location);
             foreach (var compLoc in childsMapping.OrderByDescending(x => x.prioity))
             {
                 (uint lx, uint ly) = (compLoc.location.x, compLoc.location.y);
@@ -157,7 +157,7 @@ namespace ui.components
                     _lock = true;
                     try
                     {
-                        compLoc.component.onHover(location);
+                        compLoc.component.OnHover(location);
                     }
                     finally
                     {
@@ -166,7 +166,7 @@ namespace ui.components
                 }
             }
         }
-        protected bool onClickPropagate(ConsoleLocation pressLocation)
+        protected bool OnClickPropagate(ConsoleLocation pressLocation)
         {
             foreach (var compLoc in childsMapping.OrderByDescending(x => x.prioity))
             {
@@ -174,16 +174,16 @@ namespace ui.components
                 (uint hx, uint hy) = (lx + compLoc.location.allocX, ly + compLoc.location.allocY);
                 if (lx <= pressLocation.x && pressLocation.x < hx && ly <= pressLocation.y && pressLocation.y < hy)
                 {
-                    compLoc.component.onClick(new ConsoleLocation(pressLocation.x - (int)lx, pressLocation.y - (int)ly));
+                    compLoc.component.OnClick(new ConsoleLocation(pressLocation.x - (int)lx, pressLocation.y - (int)ly));
                     return true;
                 }
             }
             return false;
         }
 
-        public virtual void onClick(ConsoleLocation pressLocation)
+        public virtual void OnClick(ConsoleLocation pressLocation)
         {
-            bool isPropagate = onClickPropagate(pressLocation);
+            bool isPropagate = OnClickPropagate(pressLocation);
         }
 
         public (uint x, uint y) GetChildAllocatedSize(IComponent component)
@@ -221,29 +221,29 @@ namespace ui.components
             }
             if (old != allocSize)
             {
-                SetHasUpdate();
-                onResize();
+                setHasUpdate();
+                OnResize();
                 return true;
             }
             return false;
         }
 
-        protected virtual void onResize() { }
+        protected virtual void OnResize() { }
 
-        protected void setSize(IComponent component, (uint x, uint y, uint allocX, uint allocY) loc, int? prioity = null)
+        protected void SetSize(IComponent component, (uint x, uint y, uint allocX, uint allocY) loc, int? prioity = null)
         {
             if (!Contains(component))
             {
                 if (prioity == null) prioity = 0;
                 childsMapping.Add((component, loc, (int)prioity));
-                SetHasUpdate();
+                setHasUpdate();
             }
             else
             {
                 int idx = IndexOf(component);
                 if (prioity == null) prioity = childsMapping[idx].prioity;
                 if (loc != childsMapping[idx].location || prioity != childsMapping[idx].prioity)
-                    SetHasUpdate();
+                    setHasUpdate();
                 childsMapping[idx] = (component, loc, (int)prioity);
             }
         }
@@ -258,7 +258,7 @@ namespace ui.components
             childsMapping.RemoveAt(idx);
         }
 
-        protected virtual (bool isAdd, (IComponent, (uint, uint, uint, uint), int) data) onAddHandler((IComponent, (uint, uint, uint, uint), int) child)
+        protected virtual (bool isAdd, (IComponent, (uint, uint, uint, uint), int) data) OnAddHandler((IComponent, (uint, uint, uint, uint), int) child)
         {
             return (true, child);
         }
@@ -266,16 +266,16 @@ namespace ui.components
         public bool AddChildComponent(IComponent component, (uint x, uint y, uint allocX, uint allocY) loc, int prioity)
         {
             CheckLock();
-            (bool isAdd, (IComponent, (uint, uint, uint, uint), int) data) = onAddHandler((component, loc, prioity));
+            (bool isAdd, (IComponent, (uint, uint, uint, uint), int) data) = OnAddHandler((component, loc, prioity));
             if (!isAdd)
             {
                 return false;
             }
             childsMapping.Add(data);
-            component.setParent(this);
+            component.SetParent(this);
             if (activeHandler != null)
                 component.Init(new ComponentConfig(activeHandler));
-            SetHasUpdate();
+            setHasUpdate();
             return true;
         }
 
@@ -336,63 +336,63 @@ namespace ui.components
         {
             try
             {
-                _active_lock = true;
-                return onDeactive(deactiveEvent);
+                _activeLock = true;
+                return OnDeactive(deactiveEvent);
             }
             finally
             {
-                _active_lock = false;
+                _activeLock = false;
             }
         }
 
         public bool IsActive()
         {
-            return activeHandler.getCurrActive() == this;
+            return activeHandler.GetCurrActive() == this;
         }
 
-        protected virtual bool onDeactive(Event deactiveEvent)
+        protected virtual bool OnDeactive(Event deactiveEvent)
         {
             return true;
         }
 
-        public bool isRequestingActive()
+        public bool IsRequestingActive()
         {
             return _isActive;
         }
 
-        protected bool setActive(Event activeEvent)
+        protected bool SetActive(Event activeEvent)
         {
-            if (_active_lock) throw new InvalidOperationException("Cannot setActive when running onDeactive handler, return false instead.");
+            if (_activeLock) throw new InvalidOperationException("Cannot setActive when running onDeactive handler, return false instead.");
             try
             {
                 _isActive = true;
-                _isActive = activeHandler.setActive(this);
+                _isActive = activeHandler.SetActive(this);
             }
             catch
             {
                 _isActive = false;
-                if (activeHandler.getCurrActive() == this) activeHandler.setInactive(this);
+                if (activeHandler.GetCurrActive() == this) activeHandler.SetInactive(this);
                 throw;
             }
             if (_isActive)
             {
-                onActive();
+                OnActive();
             }
             return _isActive;
         }
 
-        protected virtual void onActive() { }
+        protected virtual void OnActive() { }
 
-        protected void setInactive()
+        protected void SetInactive()
         {
-            if (activeHandler.getCurrActive() != this) return;
+            if (activeHandler.GetCurrActive() != this) return;
             this._isActive = false;
-            activeHandler.setInactive(this);
-            onDeactive(null);
+            activeHandler.SetInactive(this);
+            OnDeactive(null);
         }
 
 
-        public bool isRequestingDeactive()
+        public bool IsRequestingDeactive()
         {
             return !_isActive;
         }
@@ -429,7 +429,7 @@ namespace ui.components
             return "";
         }
 
-        public (int row, int col) getAbsolutePos((int row, int col) pos, IComponent childComp)
+        public (int row, int col) GetAbsolutePos((int row, int col) pos, IComponent childComp)
         {
             if (!Contains(childComp))
             {
@@ -437,14 +437,14 @@ namespace ui.components
             }
             (uint x, uint y, uint allocX, uint allocY) = GetMapping().Where(v => v.component == childComp).First().location;
             pos = (pos.row + (int)y, pos.col + (int)x);
-            return getAbsolutePos(pos);
+            return GetAbsolutePos(pos);
         }
 
-        public (int row, int col) getAbsolutePos((int row, int col) pos)
+        public (int row, int col) GetAbsolutePos((int row, int col) pos)
         {
-            IComponent parent = getParent();
+            IComponent parent = GetParent();
             if (parent is null) return pos;
-            return parent.getAbsolutePos(pos, this);
+            return parent.GetAbsolutePos(pos, this);
         }
     }
 }

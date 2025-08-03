@@ -45,7 +45,7 @@ namespace ui.components
         public void Add(GroupComponentConfig componentConfig)
         {
             IComponent component = componentConfig.component;
-            if (component.getParent() != null && component.getParent() != this) throw new InvalidOperationException("The component already have a parent");
+            if (component.GetParent() != null && component.GetParent() != this) throw new InvalidOperationException("The component already have a parent");
             (uint allocX, uint allocY) = GetAllocSize();
             bool isSuccess = AddChildComponent(component, (0, 0, allocX, allocY), 1);
             if (isSuccess)
@@ -121,7 +121,7 @@ namespace ui.components
 
         }
 
-        protected override void onResize()
+        protected override void OnResize()
         {
             if (splitHandler == null) return;
             if (direction == Direction.VERTICAL)
@@ -134,7 +134,7 @@ namespace ui.components
             }
             splitHandler.Update();
             UpdateSize();
-            SetHasUpdate();
+            setHasUpdate();
         }
 
         IEnumerator<GroupComponentConfig> IEnumerable<GroupComponentConfig>.GetEnumerator()

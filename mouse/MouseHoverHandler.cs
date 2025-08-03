@@ -9,13 +9,14 @@ namespace ui.mouse
     public class MouseHoverHandler : MouseInteractionHandler
     {
         public readonly App app;
-        public MouseHoverHandler(App app) : base((int)MouseOpCode.HOVER) {
+        public MouseHoverHandler(App app) : base((int)MouseOpCode.HOVER)
+        {
             this.app = app;
         }
 
         public override void onActive(int opCode, ConsoleLocation loc)
         {
-            app.onHover(loc);
+            app.OnHover(loc);
         }
 
         public override void onInactive(int opCode, ConsoleLocation loc) { }
