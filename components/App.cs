@@ -15,14 +15,14 @@ namespace ui.components
         {
             noParent = true;
             Add(component);
-            SetSize(component, (0, 0, GetAllocSize().x, GetAllocSize().y), 1);
+            SetChildAllocatedSize(component, (0, 0, GetAllocSize().x, GetAllocSize().y), 1);
         }
 
         protected App(Component component, ActiveStatusHandler activeStatusHandler) : base(new ComponentConfig(activeStatusHandler))
         {
             noParent = true;
             Add(component);
-            SetSize(component, (0, 0, GetAllocSize().x, GetAllocSize().y), 1);
+            SetChildAllocatedSize(component, (0, 0, GetAllocSize().x, GetAllocSize().y), 1);
         }
 
         protected override (bool isAdd, (IComponent, (uint, uint, uint, uint), int) data) OnAddHandler((IComponent, (uint, uint, uint, uint), int) child)
@@ -33,7 +33,7 @@ namespace ui.components
         protected override void OnResize()
         {
             if (GetMapping().Count == 0) throw new InvalidOperationException("An App must have a child component");
-            SetSize(GetMapping()[0].component, (0, 0, GetAllocSize().x, GetAllocSize().y), 1);
+            SetChildAllocatedSize(GetMapping()[0].component, (0, 0, GetAllocSize().x, GetAllocSize().y), 1);
         }
     }
 }

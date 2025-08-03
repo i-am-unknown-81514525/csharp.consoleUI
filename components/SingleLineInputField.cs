@@ -57,15 +57,15 @@ namespace ui.components
     public class SingleLineInputField : NoChildComponent
     {
         //Reactive of content with type string and default value: `""`, Trigger: SetHasUpdate();
-        public string content { get => inputFieldHandler.GetContent(); set { inputFieldHandler.SetContent(content); setHasUpdate(); } }
+        public string content { get => inputFieldHandler.GetContent(); set { inputFieldHandler.SetContent(content); SetHasUpdate(); } }
 
         //Reactive of active with type (ForegroundColor foreground, BackgroundColor background) and default value: `(ForegroundColorEnum.BLACK, BackgroundColorEnum.WHITE)`, Trigger: SetHasUpdate();
         private (ForegroundColor foreground, BackgroundColor background) _active = (ForegroundColorEnum.BLACK, BackgroundColorEnum.YELLOW);
-        public (ForegroundColor foreground, BackgroundColor background) active { get => _active; set { _active = value; setHasUpdate(); } }
+        public (ForegroundColor foreground, BackgroundColor background) active { get => _active; set { _active = value; SetHasUpdate(); } }
 
         //Reactive of deactive with type (ForegroundColor foreground, BackgroundColor background) and default value: `(ForegroundColorEnum.WHITE, BackgroundColorEnum.BLACK)`, Trigger: SetHasUpdate();
         private (ForegroundColor foreground, BackgroundColor background) _deactive = (ForegroundColorEnum.WHITE, BackgroundColorEnum.BLACK);
-        public (ForegroundColor foreground, BackgroundColor background) deactive { get => _deactive; set { _deactive = value; setHasUpdate(); } }
+        public (ForegroundColor foreground, BackgroundColor background) deactive { get => _deactive; set { _deactive = value; SetHasUpdate(); } }
 
         protected ComponentInputFieldHandler inputFieldHandler = new ComponentInputFieldHandler();
 
@@ -74,12 +74,12 @@ namespace ui.components
             inputFieldHandler.SetHandler(OnTypeEventTrigger);
             inputFieldHandler.SetHandler(OnExitEventTrigger);
             this.content = content ?? "";
-            setHasUpdate();
+            SetHasUpdate();
         }
 
         protected void OnTypeEventTrigger()
         {
-            setHasUpdate();
+            SetHasUpdate();
             bool isActive = IsActive();
             if (!isActive) // This would have been a toggle of state since type event only occur on change in active/deactive, or a type event
             {
@@ -94,7 +94,7 @@ namespace ui.components
             {
                 SetInactive();
                 inputFieldHandler.SetCursorPosition((uint)inputFieldHandler.GetContent().Length);
-                setHasUpdate();
+                SetHasUpdate();
             }
         }
 
@@ -103,7 +103,7 @@ namespace ui.components
             if (!Global.InputHandler.Contains(inputFieldHandler))
                 Global.InputHandler.Add(inputFieldHandler);
             inputFieldHandler.SetActiveStatus(true);
-            setHasUpdate();
+            SetHasUpdate();
             setCursorPos();
         }
 
@@ -122,7 +122,7 @@ namespace ui.components
             {
                 DEBUG.DebugStore.Append($"input field handler already missing\r\n");
             }
-            setHasUpdate();
+            SetHasUpdate();
             return true;
         }
 
@@ -206,7 +206,7 @@ namespace ui.components
                 inputFieldHandler.SetCursorPosition((uint)(startIdx + x));
                 setCursorPos();
             }
-            setHasUpdate();
+            SetHasUpdate();
         }
 
         protected void setCursorPos()

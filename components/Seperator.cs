@@ -7,11 +7,11 @@ namespace ui.components
     {
         //Reactive of foreground with type ForegroundColor and default value: `ForegroundColorEnum.WHITE`, Trigger: SetHasUpdate();
         private ForegroundColor _foreground = ForegroundColorEnum.WHITE;
-        public ForegroundColor foreground { get => _foreground; set { _foreground = value; setHasUpdate(); } }
+        public ForegroundColor foreground { get => _foreground; set { _foreground = value; SetHasUpdate(); } }
 
         //Reactive of background with type BackgroundColor and default value: `BackgroundColorEnum.BLACK`, Trigger: SetHasUpdate();
         private BackgroundColor _background = BackgroundColorEnum.BLACK;
-        public BackgroundColor background { get => _background; set { _background = value; setHasUpdate(); } }
+        public BackgroundColor background { get => _background; set { _background = value; SetHasUpdate(); } }
 
         protected virtual ConsoleContent[,] RenderSelf()
         {

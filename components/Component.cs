@@ -81,7 +81,27 @@ namespace ui.components
             return allocSize;
         }
 
-        protected virtual void OnFrameInternal() { }
+        public bool UpdateAllocSize()
+        {
+            CheckLock();
+            (uint x, uint y) old = allocSize;
+            if (root == null)
+            {
+                ConsoleSize size = Global.consoleCanva.GetConsoleSize();
+                allocSize = ((uint)size.Width, (uint)size.Height);
+            }
+            else
+            {
+                allocSize = root.GetChildAllocatedSize(this);
+            }
+            if (old != allocSize)
+            {
+                SetHasUpdate();
+                OnResize();
+                return true;
+            }
+            return false;
+        }
 
         public void OnFrame()
         {
@@ -100,12 +120,14 @@ namespace ui.components
             }
         }
 
+        protected virtual void OnFrameInternal() { }
+
         public bool GetHasUpdate()
         {
             return _localHasUpdate || childsMapping.Any(x => x.component.GetHasUpdate());
         }
 
-        protected void setHasUpdate()
+        protected void SetHasUpdate()
         {
             _localHasUpdate = true;
         }
@@ -196,6 +218,24 @@ namespace ui.components
             return (allocX, allocY);
         }
 
+        protected void SetChildAllocatedSize(IComponent component, (uint x, uint y, uint allocX, uint allocY) loc, int? prioity = null)
+        {
+            if (!Contains(component))
+            {
+                if (prioity == null) prioity = 0;
+                childsMapping.Add((component, loc, (int)prioity));
+                SetHasUpdate();
+            }
+            else
+            {
+                int idx = IndexOf(component);
+                if (prioity == null) prioity = childsMapping[idx].prioity;
+                if (loc != childsMapping[idx].location || prioity != childsMapping[idx].prioity)
+                    SetHasUpdate();
+                childsMapping[idx] = (component, loc, (int)prioity);
+            }
+        }
+
         public bool Contains(IComponent component)
         {
             return childsMapping.Select(x => x.component).Count(x => x == component) > 0;
@@ -206,57 +246,7 @@ namespace ui.components
             return childsMapping.Select(x => x.component).ToList().IndexOf(component);
         }
 
-        public bool UpdateAllocSize()
-        {
-            CheckLock();
-            (uint x, uint y) old = allocSize;
-            if (root == null)
-            {
-                ConsoleSize size = Global.consoleCanva.GetConsoleSize();
-                allocSize = ((uint)size.Width, (uint)size.Height);
-            }
-            else
-            {
-                allocSize = root.GetChildAllocatedSize(this);
-            }
-            if (old != allocSize)
-            {
-                setHasUpdate();
-                OnResize();
-                return true;
-            }
-            return false;
-        }
-
         protected virtual void OnResize() { }
-
-        protected void SetSize(IComponent component, (uint x, uint y, uint allocX, uint allocY) loc, int? prioity = null)
-        {
-            if (!Contains(component))
-            {
-                if (prioity == null) prioity = 0;
-                childsMapping.Add((component, loc, (int)prioity));
-                setHasUpdate();
-            }
-            else
-            {
-                int idx = IndexOf(component);
-                if (prioity == null) prioity = childsMapping[idx].prioity;
-                if (loc != childsMapping[idx].location || prioity != childsMapping[idx].prioity)
-                    setHasUpdate();
-                childsMapping[idx] = (component, loc, (int)prioity);
-            }
-        }
-
-        protected void Remove(IComponent component)
-        {
-            if (!Contains(component))
-            {
-                throw new InvalidOperationException("The component is not the direct child of the current component and cannot be removed");
-            }
-            int idx = IndexOf(component);
-            childsMapping.RemoveAt(idx);
-        }
 
         protected virtual (bool isAdd, (IComponent, (uint, uint, uint, uint), int) data) OnAddHandler((IComponent, (uint, uint, uint, uint), int) child)
         {
@@ -275,8 +265,18 @@ namespace ui.components
             component.SetParent(this);
             if (activeHandler != null)
                 component.Init(new ComponentConfig(activeHandler));
-            setHasUpdate();
+            SetHasUpdate();
             return true;
+        }
+
+        protected void Remove(IComponent component)
+        {
+            if (!Contains(component))
+            {
+                throw new InvalidOperationException("The component is not the direct child of the current component and cannot be removed");
+            }
+            int idx = IndexOf(component);
+            childsMapping.RemoveAt(idx);
         }
 
         public ConsoleContent[,] Render()

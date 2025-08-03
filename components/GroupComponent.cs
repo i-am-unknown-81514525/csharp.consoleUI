@@ -134,7 +134,7 @@ namespace ui.components
             }
             splitHandler.Update();
             UpdateSize();
-            setHasUpdate();
+            SetHasUpdate();
         }
 
         IEnumerator<GroupComponentConfig> IEnumerable<GroupComponentConfig>.GetEnumerator()
