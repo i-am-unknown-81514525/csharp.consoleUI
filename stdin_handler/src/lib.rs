@@ -213,7 +213,7 @@ pub extern "cdecl" fn stdin_data_remain() -> bool {
         if #[cfg(target_family = "unix")] {
             let delay = 400;
         } else {
-            let delay = 1000; // 2.5x the unix delay because it is funky on mouse movement
+            let delay = 4000; // 10x the unix delay because poor windows time allocation skill + debug mode make code even slower
         }
     }
     let result: bool = match r.recv_timeout(Duration::from_micros(delay)) {
@@ -242,7 +242,7 @@ pub extern "cdecl" fn read_stdin_end() -> *const c_char {
             if #[cfg(target_family = "unix")] {
                 let delay = 1000;
             } else {
-                let delay = 2500; // 2.5x the unix delay because it is funky on mouse movement
+                let delay = 10000; // 10x the unix delay because poor windows time allocation skill + debug mode make code even slower
             }
         }
         match r.recv_timeout(Duration::from_micros(delay)) {
