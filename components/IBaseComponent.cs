@@ -7,17 +7,20 @@ namespace ui.components
         (uint x, uint y) GetAllocSize();
         void OnFrame();
         bool GetHasUpdate();
+        void SetHasUpdate();
         IComponent GetMount();
         (uint x, uint y) GetChildAllocatedSize(IComponent component);
         bool Contains(IComponent component);
         int IndexOf(IComponent component);
         bool UpdateAllocSize();
         bool AddChildComponent(IComponent component, (uint x, uint y, uint allocX, uint allocY) loc, int prioity);
+        void RemoveChildComponent(IComponent component);
         void Mount(IComponent component);
         bool Dismount();
         ConsoleContent[,] Render();
         bool IsInit();
         void Init(ComponentConfig config);
+        void UnInit();
         (int row, int col) GetAbsolutePos((int row, int col) pos, IComponent childComp);
         (int row, int col) GetAbsolutePos((int row, int col) pos);
     }

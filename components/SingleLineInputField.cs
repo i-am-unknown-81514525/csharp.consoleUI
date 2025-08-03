@@ -122,6 +122,7 @@ namespace ui.components
             {
                 DEBUG.DebugStore.Append($"input field handler already missing\r\n");
             }
+            Global.consoleCanva.cursorPosition = null;
             SetHasUpdate();
             return true;
         }

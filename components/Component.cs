@@ -73,6 +73,14 @@ namespace ui.components
                     component.Init(config);
         }
 
+        public void UnInit()
+        {
+            if (GetMount() is null || GetMount().IsInit() == false)
+                _isInit = false;
+            foreach (IComponent component in GetMapping().Select(x => x.component))
+                component.UnInit();
+        }
+
         protected List<(IComponent component, (uint x, uint y, uint allocX, uint allocY) location, int prioity)> GetMapping()
         {
             return childsMapping.ToList();
@@ -129,7 +137,7 @@ namespace ui.components
             return _localHasUpdate || childsMapping.Any(x => x.component.GetHasUpdate());
         }
 
-        protected void SetHasUpdate()
+        public void SetHasUpdate()
         {
             _localHasUpdate = true;
         }
@@ -249,7 +257,7 @@ namespace ui.components
             return (true, child);
         }
 
-        protected void RemoveChildComponent(IComponent component)
+        public void RemoveChildComponent(IComponent component)
         {
             if (!Contains(component))
             {
@@ -258,6 +266,7 @@ namespace ui.components
             int idx = IndexOf(component);
             childsMapping.RemoveAt(idx);
             component.Dismount();
+            component.UnInit();
             ReRender();
             SetHasUpdate();
         }
@@ -395,7 +404,6 @@ namespace ui.components
         {
             _rerender = true;
         }
-
 
         public bool Deactive(Event deactiveEvent)
         {

@@ -53,6 +53,8 @@ namespace ui.components
                 SplitConfig config = splitHandler.AddSplit(componentConfig.splitAmount);
                 splitMapping[component] = config;
             }
+            UpdateSize();
+            SetHasUpdate();
         }
 
         public new bool Contains(IComponent component)

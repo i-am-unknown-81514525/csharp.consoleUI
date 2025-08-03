@@ -118,7 +118,7 @@ namespace ui.utils
 
         public void SetTotalSize(int totalSize)
         {
-            if (totalSize <= 0) throw new ArgumentOutOfRangeException();
+            if (totalSize < 0) throw new ArgumentOutOfRangeException();
             this.totalSize = totalSize;
             Update();
         }
