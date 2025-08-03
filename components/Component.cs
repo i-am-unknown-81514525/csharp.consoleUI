@@ -49,6 +49,8 @@ namespace ui.components
 
         private bool _isInit = false;
 
+        private bool _rerender = false;
+
         public Component(ComponentConfig config)
         {
             Init(config);
@@ -237,6 +239,7 @@ namespace ui.components
             component.Mount(this);
             if (activeHandler != null)
                 component.Init(new ComponentConfig(activeHandler));
+            ReRender();
             SetHasUpdate();
             return true;
         }
@@ -255,6 +258,7 @@ namespace ui.components
             int idx = IndexOf(component);
             childsMapping.RemoveAt(idx);
             component.Dismount();
+            ReRender();
             SetHasUpdate();
         }
 
@@ -334,6 +338,7 @@ namespace ui.components
         public ConsoleContent[,] Render()
         {
             CheckLock();
+            _rerender = false;
             UpdateAllocSize();
             if (!GetHasUpdate())
             {
@@ -342,12 +347,15 @@ namespace ui.components
             _localHasUpdate = false;
             ConsoleContent[,] content = RenderInternal();
             contentPlace = content;
+            if (_rerender)
+            {
+                return Render();
+            }
             return content;
         }
 
         protected virtual ConsoleContent[,] RenderInternal()
         {
-            CheckLock();
             ConsoleContent[,] newArr = new ConsoleContent[allocSize.x, allocSize.y];
             newArr = RenderPre(newArr);
             if (newArr.GetLength(0) != allocSize.x || newArr.GetLength(1) != allocSize.y) throw new InvalidOperationException("Cannot change size of ConsoleContent array on RenderPre");
@@ -382,6 +390,11 @@ namespace ui.components
         protected virtual ConsoleContent[,] RenderPre(ConsoleContent[,] content) => content;
 
         protected virtual ConsoleContent[,] RenderPost(ConsoleContent[,] content) => content;
+
+        protected void ReRender()
+        {
+            _rerender = true;
+        }
 
 
         public bool Deactive(Event deactiveEvent)
