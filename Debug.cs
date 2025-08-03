@@ -1,4 +1,5 @@
 using System;
+using System.Text;
 
 namespace ui
 {
@@ -7,5 +8,6 @@ namespace ui
         public const bool InputHandler_IgnoreHanlderValidateException = false;
         public const bool InputHandler_IgnoreHandlerHandleException = false;
         public const bool FracConverter_AlternativeLowerScopeCheck = false;
+        public static readonly StringBuilder DebugStore = new StringBuilder();
     }
 }

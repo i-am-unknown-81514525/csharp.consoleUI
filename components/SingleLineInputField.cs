@@ -100,7 +100,8 @@ namespace ui.components
 
         protected override void onActive()
         {
-            Global.InputHandler.Add(inputFieldHandler);
+            if (!Global.InputHandler.Contains(inputFieldHandler))
+                Global.InputHandler.Add(inputFieldHandler);
             inputFieldHandler.SetActiveStatus(true);
             SetHasUpdate();
             setCursorPos();
@@ -109,9 +110,18 @@ namespace ui.components
         protected override bool onDeactive(Event deactiveEvent)
         {
             bool canConvertToTypeEvent = !((deactiveEvent as TypeEvent) is null);
+            DEBUG.DebugStore.Append($"input field deactive event: {canConvertToTypeEvent}\r\n");
             if (canConvertToTypeEvent)
                 return false;
-            Global.InputHandler.Remove(inputFieldHandler);
+            if (Global.InputHandler.Contains(inputFieldHandler))
+            {
+                Global.InputHandler.Remove(inputFieldHandler);
+                DEBUG.DebugStore.Append($"input field removed handler\r\n");
+            }
+            else
+            {
+                DEBUG.DebugStore.Append($"input field handler already missing\r\n");
+            }
             SetHasUpdate();
             return true;
         }
@@ -142,17 +152,14 @@ namespace ui.components
             return (content.Substring(startIdx, (int)Math.Min(size, content.Length - startIdx)), displayCursorPos);
         }
 
-        public bool IsActive()
-        {
-            return activeHandler.getCurrActive() == this;
-        }
-
         protected override ConsoleContent[,] RenderPost(ConsoleContent[,] content)
         {
+            (uint x, uint y) size = GetAllocSize();
+            if (size.x < 1 || size.y < 1) return content;
             bool isActive = IsActive();
             (ForegroundColor fore, BackgroundColor back) = isActive ? active : deactive;
             (string renderContent, int cursorPos) = getRenderContent();
-            for (int x = 0; x < renderContent.Length; x++)
+            for (int x = 0; x < renderContent.Length && x < size.x; x++)
             {
                 content[x, 0] = new ConsoleContent
                 {
@@ -162,7 +169,6 @@ namespace ui.components
                     isContent = true
                 };
             }
-            (uint x, uint y) size = GetAllocSize();
             for (int x = renderContent.Length; x < size.x; x++)
             {
                 content[x, 0] = new ConsoleContent

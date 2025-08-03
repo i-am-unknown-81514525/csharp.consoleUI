@@ -345,6 +345,11 @@ namespace ui.components
             }
         }
 
+        public bool IsActive()
+        {
+            return activeHandler.getCurrActive() == this;
+        }
+
         protected virtual bool onDeactive(Event deactiveEvent)
         {
             return true;
@@ -383,6 +388,7 @@ namespace ui.components
             if (activeHandler.getCurrActive() != this) return;
             this._isActive = false;
             activeHandler.setInactive(this);
+            onDeactive(null);
         }
 
 
