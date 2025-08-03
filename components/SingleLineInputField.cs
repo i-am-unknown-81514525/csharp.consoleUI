@@ -126,9 +126,9 @@ namespace ui.components
             return true;
         }
 
-        protected override void OnDismount()
+        protected override void OnHideInternal()
         {
-            base.OnDismount();
+            base.OnHide();
             Deactive(new NotRenderEvent());
         }
 
