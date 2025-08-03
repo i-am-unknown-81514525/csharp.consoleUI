@@ -214,7 +214,8 @@ namespace ui.components
             if (IsActive())
             {
                 (string _, int cursorPos) = getRenderContent();
-                Global.consoleCanva.cursorPosition = this.getAbsolutePos((0, cursorPos));
+                (int row, int col) = this.getAbsolutePos((0, cursorPos));
+                Global.consoleCanva.cursorPosition = (row + 1, col + 1);
             }
         }
     }
