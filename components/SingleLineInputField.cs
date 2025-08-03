@@ -126,6 +126,12 @@ namespace ui.components
             return true;
         }
 
+        protected override void OnDismount()
+        {
+            base.OnDismount();
+            Deactive(new NotRenderEvent());
+        }
+
         protected int getStartIdx()
         {
             uint cursorIdx = inputFieldHandler.cursorPos;

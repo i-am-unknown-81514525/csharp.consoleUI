@@ -45,7 +45,7 @@ namespace ui.components
         public void Add(GroupComponentConfig componentConfig)
         {
             IComponent component = componentConfig.component;
-            if (component.GetParent() != null && component.GetParent() != this) throw new InvalidOperationException("The component already have a parent");
+            if (component.GetMount() != null && component.GetMount() != this) throw new InvalidOperationException("The component already have a parent");
             (uint allocX, uint allocY) = GetAllocSize();
             bool isSuccess = AddChildComponent(component, (0, 0, allocX, allocY), 1);
             if (isSuccess)
@@ -60,7 +60,7 @@ namespace ui.components
             return childsMapping.Select(x => x.component).Count(x => x == component) > 0;
         }
 
-        protected new void Remove(IComponent component)
+        protected new void RemoveChildComponent(IComponent component)
         {
             if (!Contains(component))
             {

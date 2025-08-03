@@ -140,32 +140,6 @@ namespace ui.components
             }
         }
 
-        public IComponent GetParent()
-        {
-            return root;
-        }
-
-        public void SetParent(IComponent component)
-        {
-            CheckLock();
-            if (component == null)
-            {
-                throw new InvalidOperationException("Cannot set parent to empty");
-            }
-            if (root != null)
-            {
-                throw new InvalidOperationException("A parent already exist for the component, cannot modify");
-            }
-            if (noParent)
-            {
-                throw new InvalidOperationException("The component reject having a parent");
-            }
-            root = component;
-        }
-
-
-        protected virtual void OnHoverInternal(ConsoleLocation location) { }
-
         public virtual void OnHover(ConsoleLocation location)
         {
             CheckLock();
@@ -188,6 +162,14 @@ namespace ui.components
                 }
             }
         }
+
+        protected virtual void OnHoverInternal(ConsoleLocation location) { }
+
+        public virtual void OnClick(ConsoleLocation pressLocation)
+        {
+            bool isPropagate = OnClickPropagate(pressLocation);
+        }
+
         protected bool OnClickPropagate(ConsoleLocation pressLocation)
         {
             foreach (var compLoc in childsMapping.OrderByDescending(x => x.prioity))
@@ -201,11 +183,6 @@ namespace ui.components
                 }
             }
             return false;
-        }
-
-        public virtual void OnClick(ConsoleLocation pressLocation)
-        {
-            bool isPropagate = OnClickPropagate(pressLocation);
         }
 
         public (uint x, uint y) GetChildAllocatedSize(IComponent component)
@@ -248,11 +225,6 @@ namespace ui.components
 
         protected virtual void OnResize() { }
 
-        protected virtual (bool isAdd, (IComponent, (uint, uint, uint, uint), int) data) OnAddHandler((IComponent, (uint, uint, uint, uint), int) child)
-        {
-            return (true, child);
-        }
-
         public bool AddChildComponent(IComponent component, (uint x, uint y, uint allocX, uint allocY) loc, int prioity)
         {
             CheckLock();
@@ -262,14 +234,19 @@ namespace ui.components
                 return false;
             }
             childsMapping.Add(data);
-            component.SetParent(this);
+            component.Mount(this);
             if (activeHandler != null)
                 component.Init(new ComponentConfig(activeHandler));
             SetHasUpdate();
             return true;
         }
 
-        protected void Remove(IComponent component)
+        protected virtual (bool isAdd, (IComponent, (uint, uint, uint, uint), int) data) OnAddHandler((IComponent, (uint, uint, uint, uint), int) child)
+        {
+            return (true, child);
+        }
+
+        protected void RemoveChildComponent(IComponent component)
         {
             if (!Contains(component))
             {
@@ -277,7 +254,82 @@ namespace ui.components
             }
             int idx = IndexOf(component);
             childsMapping.RemoveAt(idx);
+            component.Dismount();
+            SetHasUpdate();
         }
+
+        public IComponent GetMount()
+        {
+            return root;
+        }
+
+        public void Mount(IComponent component)
+        {
+            CheckLock();
+            if (component == null)
+            {
+                throw new InvalidOperationException("Cannot set mount to nothingness");
+            }
+            if (root != null)
+            {
+                throw new InvalidOperationException("The component is already mount, cannot modify");
+            }
+            if (noParent)
+            {
+                throw new InvalidOperationException("The component reject from being mount(usually occur to root node)");
+            }
+            root = component;
+            OnMount();
+            OnVisible();
+        }
+
+        protected virtual void OnMount()
+        {
+
+        }
+
+        internal void OnVisible()
+        {
+            OnVisibleInternal();
+            foreach (Component comp in this.GetMapping().Select(x => x.component))
+            {
+                comp.OnVisible();
+            }
+        }
+
+        protected virtual void OnVisibleInternal()
+        {
+
+        }
+
+        public bool Dismount()
+        {
+            if (root is null) throw new InvalidOperationException("The item is already dismounted");
+            if (!root.Contains(this))
+            {
+                OnDismount();
+                OnHide();
+                root = null;
+                return true;
+            }
+            return false;
+        }
+
+        protected virtual void OnDismount()
+        {
+
+        }
+
+        internal void OnHide()
+        {
+            OnVisibleInternal();
+            foreach (Component comp in this.GetMapping().Select(x => x.component))
+            {
+                comp.OnVisible();
+            }
+        }
+
+        protected virtual void OnHideInternal() { }
 
         public ConsoleContent[,] Render()
         {
@@ -442,7 +494,7 @@ namespace ui.components
 
         public (int row, int col) GetAbsolutePos((int row, int col) pos)
         {
-            IComponent parent = GetParent();
+            IComponent parent = GetMount();
             if (parent is null) return pos;
             return parent.GetAbsolutePos(pos, this);
         }

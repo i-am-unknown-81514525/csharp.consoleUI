@@ -23,7 +23,7 @@ namespace ui.components
 
         public void Add(Component component)
         {
-            if (component.GetParent() != null && component.GetParent() != this) throw new InvalidOperationException("The component already have a parent");
+            if (component.GetMount() != null && component.GetMount() != this) throw new InvalidOperationException("The component already have a parent");
             (uint allocX, uint allocY) = GetAllocSize();
             AddChildComponent(component, (0, 0, allocX, allocY), 1);
         }
