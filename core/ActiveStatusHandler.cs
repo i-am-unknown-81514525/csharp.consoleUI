@@ -28,7 +28,7 @@ namespace ui.core
                 activeItem = item;
                 return true;
             }
-            bool result = item.Deactive(activeItem.ActiveRequest());
+            bool result = activeItem.Deactive(activeItem.ActiveRequest());
             if (!result) return false;
             activeItem = item;
             return true;
