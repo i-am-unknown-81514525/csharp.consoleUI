@@ -92,7 +92,7 @@ namespace ui.components
         {
             if (IsActive())
             {
-                SetInactive();
+                Deactive(null);
                 inputFieldHandler.SetCursorPosition((uint)inputFieldHandler.GetContent().Length);
                 SetHasUpdate();
             }
@@ -115,6 +115,7 @@ namespace ui.components
                 return false;
             if (Global.InputHandler.Contains(inputFieldHandler))
             {
+                Global.consoleCanva.cursorPosition = null;
                 Global.InputHandler.Remove(inputFieldHandler);
                 DEBUG.DebugStore.Append($"input field removed handler\r\n");
             }
@@ -129,8 +130,9 @@ namespace ui.components
 
         protected override void OnHideInternal()
         {
-            base.OnHide();
-            Deactive(new NotRenderEvent());
+            base.OnHideInternal();
+            if (IsActive())
+                Deactive(new NotRenderEvent());
         }
 
         protected int getStartIdx()

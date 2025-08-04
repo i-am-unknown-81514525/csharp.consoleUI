@@ -304,6 +304,7 @@ namespace ui.components
         internal void OnVisible()
         {
             OnVisibleInternal();
+            SetHasUpdate();
             foreach (Component comp in this.GetMapping().Select(x => x.component))
             {
                 comp.OnVisible();
@@ -338,7 +339,7 @@ namespace ui.components
             OnVisibleInternal();
             foreach (Component comp in this.GetMapping().Select(x => x.component))
             {
-                comp.OnVisible();
+                comp.OnHide();
             }
         }
 
@@ -407,14 +408,22 @@ namespace ui.components
 
         public bool Deactive(Event deactiveEvent)
         {
+            if (activeHandler.GetCurrActive() != this) return false;
             try
             {
                 _activeLock = true;
-                return OnDeactive(deactiveEvent);
+                bool state = OnDeactive(deactiveEvent);
+                if (state)
+                {
+                    this._isActive = false;
+                    activeHandler.SetInactive(this);
+                }
+                return state;
             }
             finally
             {
                 _activeLock = false;
+                SetHasUpdate();
             }
         }
 
@@ -450,20 +459,12 @@ namespace ui.components
             if (_isActive)
             {
                 OnActive();
+                SetHasUpdate();
             }
             return _isActive;
         }
 
         protected virtual void OnActive() { }
-
-        protected void SetInactive()
-        {
-            if (activeHandler.GetCurrActive() != this) return;
-            this._isActive = false;
-            activeHandler.SetInactive(this);
-            OnDeactive(null);
-        }
-
 
         public bool IsRequestingDeactive()
         {

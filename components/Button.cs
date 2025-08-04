@@ -23,7 +23,8 @@ namespace ui.components
             if (activeHandler.GetCurrActive() != null && activeHandler.GetCurrActive() != this)
             {
                 bool r = SetActive(new ClickEvent(loc)); // Attempt to reset activity handler status
-                if (r) SetInactive();
+                if (r) Deactive(null);
+                DEBUG.DebugStore.Append($"Attempt to deactivate handler, success: {r}");
             }
             onClickHandler(loc);
         }
