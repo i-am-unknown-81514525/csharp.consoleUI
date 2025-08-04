@@ -336,7 +336,7 @@ namespace ui.components
 
         internal void OnHide()
         {
-            OnVisibleInternal();
+            OnHideInternal();
             foreach (Component comp in this.GetMapping().Select(x => x.component))
             {
                 comp.OnHide();

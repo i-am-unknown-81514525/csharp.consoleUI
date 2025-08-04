@@ -25,6 +25,7 @@ namespace ui.test
 
         public override void OnClick(ConsoleLocation loc)
         {
+            // base.OnClick(loc);
             if (target.component.GetMount() is null)
             {
                 parent.Add(target);
