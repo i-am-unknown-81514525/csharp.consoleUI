@@ -6,6 +6,8 @@ name: dict[str, str] = {
     "GroupItemTest": "MultiButtonTest.exe",
     "InputFieldTest": "InputFieldTest.exe",
     "MultiFieldTest": "MultiFieldTest.exe",
+    "MountingTest": "MountingTest.exe",
+    "SwitcherTest": "SwitcherTest.exe"
 }
 
 import pathlib
