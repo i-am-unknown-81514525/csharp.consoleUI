@@ -81,5 +81,12 @@ namespace ui.components
         {
             return GetEnumerator();
         }
+
+        protected override void OnResize()
+        {
+            (uint allocX, uint allocY) = GetAllocSize();
+            if (!(curr is null))
+                SetChildAllocatedSize(curr, (0, 0, allocX, allocY), 1);
+        }
     }
 }
