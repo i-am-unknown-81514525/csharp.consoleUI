@@ -88,5 +88,10 @@ namespace ui.components
             if (!(curr is null))
                 SetChildAllocatedSize(curr, (0, 0, allocX, allocY), 1);
         }
+
+        public override string Debug_Info()
+        {
+            return $"[{compList.Count} total child components, Active Index: {idx}]";
+        }
     }
 }
