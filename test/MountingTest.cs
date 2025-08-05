@@ -8,7 +8,7 @@ using static ui.core.ConsoleHandler;
 
 namespace ui.test
 {
-    public class MountToggleButton : Button
+    public class MountToggleButton : Button<MountToggleButton>
     {
         internal GroupComponent parent;
         internal GroupComponentConfig target;

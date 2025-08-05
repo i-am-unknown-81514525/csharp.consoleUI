@@ -8,8 +8,8 @@ namespace ui.mouse
 {
     public class MouseHoverHandler : MouseInteractionHandler
     {
-        public readonly App app;
-        public MouseHoverHandler(App app) : base((int)MouseOpCode.HOVER)
+        public readonly IComponent app;
+        public MouseHoverHandler(IComponent app) : base((int)MouseOpCode.HOVER)
         {
             this.app = app;
         }

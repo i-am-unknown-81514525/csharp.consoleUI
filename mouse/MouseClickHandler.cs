@@ -9,9 +9,8 @@ namespace ui.mouse
 {
     public class MouseClickHandler : MouseInteractionHandler
     {
-        public readonly App app;
-        public MouseClickHandler(App app) : base((int)MouseOpCode.CLICK)
-       
+        public readonly IComponent app;
+        public MouseClickHandler(IComponent app) : base((int)MouseOpCode.CLICK)
         {
             this.app = app;
         }

@@ -3,11 +3,12 @@ using ui;
 using ui.components;
 using ui.core;
 using ui.mouse;
+using ui.components.chainExt;
 using static ui.core.ConsoleHandler;
 
 namespace ui.test
 {
-    public class CounterButton : Button
+    public class CounterButton : Button<CounterButton>
     {
         internal string _base_text;
         internal int _count;
@@ -33,7 +34,7 @@ namespace ui.test
         {
             base_text = baseText;
             count = Count;
-            onClickHandler = (ConsoleLocation _) => { count++; };
+            this.WithHandler((_) => { count++; });
         }
 
         public override string Debug_Info() => text;
