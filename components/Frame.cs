@@ -73,11 +73,14 @@ namespace ui.components
             {
                 titleContainer.RemoveChildComponent(original);
                 titleContainer.Add(comp.component);
+                titleContainer.SetHasUpdate();
             }
             if (ori_amount != comp.splitAmount)
             {
                 outerGroupComponent.UpdateSplitConfig(titleContainer, comp.splitAmount);
+                outerGroupComponent.SetHasUpdate();
             }
+            comp.component.SetHasUpdate();
             _title = (comp.component, comp.splitAmount);
             SetHasUpdate();
         }
@@ -90,8 +93,10 @@ namespace ui.components
                 if (!(original is null))
                     innerContainer.RemoveChildComponent(original);
                 innerContainer.Add(comp);
+                innerContainer.SetHasUpdate();
             }
             _inner = comp;
+            comp.SetHasUpdate();
             SetHasUpdate();
         }
     }
