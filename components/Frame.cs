@@ -32,8 +32,9 @@ namespace ui.components
             if (titlegroupConfig is null)
                 titlegroupConfig = (new TextLabel(""), 0);
             GroupComponentConfig config = (GroupComponentConfig)titlegroupConfig;
-            title = config;
             innerContainer.Add(inner);
+            _title = config;
+            titleContainer.Add(config.component);
             Add(
                 new VerticalGroupComponent() {
                     (new HorizontalGroupComponent() {
