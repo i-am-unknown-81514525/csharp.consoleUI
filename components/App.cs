@@ -80,7 +80,7 @@ namespace ui.components
                         return this;
                     }
                     Global.consoleCanva.ConsoleWindow = this.Render();
-                    Global.consoleCanva.EventLoopPost();
+                    Global.consoleCanva.EventLoopPost(GetHasUpdate());
                 }
             }
             finally

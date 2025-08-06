@@ -145,9 +145,10 @@ namespace ui.core
             return this._size;
         }
 
-        public void EventLoopPost()
+        public void EventLoopPost(bool render = true)
         {
-            Console.Write(GetContent());
+            if (render)
+                Console.Write(GetContent());
         }
 
         public static ConsoleCanva OverwriteOnCanva(ConsoleCanva canva, ConsoleContent[,] data, (int x, int y) topLeft, bool force = true)
