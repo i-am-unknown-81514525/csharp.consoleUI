@@ -75,6 +75,7 @@ namespace ui.components
                     {
                         return this;
                     }
+                    UpdateAllocSize();
                     bool haveUpdate = GetHasUpdate();
                     Global.consoleCanva.ConsoleWindow = this.Render();
                     Global.consoleCanva.EventLoopPost(haveUpdate);
