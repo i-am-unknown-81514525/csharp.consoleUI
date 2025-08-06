@@ -168,13 +168,17 @@ namespace ui.components
             bool isActive = IsActive();
             (ForegroundColor fore, BackgroundColor back) = isActive ? active : deactive;
             (string renderContent, int cursorPos) = getRenderContent();
+            string prefix = TextColorFormatter.Constructor(fore, back);
+            string postfix = TextColorFormatter.Constructor(ForegroundColorEnum.LIB_DEFAULT, BackgroundColorEnum.LIB_DEFAULT);
+            string lastlinepre = prefix + TextStyleFormatter.Constructor(EnableStyleEnum.UNDERLINE);
+            string lastlinepost = postfix + TextStyleFormatter.Constructor(DisableStyleEnum.UNDERLINE);
             for (int x = 0; x < renderContent.Length && x < size.x; x++)
             {
                 content[x, 0] = new ConsoleContent
                 {
                     content = renderContent[x].ToString(),
-                    ansiPrefix = TextFormatter.Constructor(fore, back),
-                    ansiPostfix = TextFormatter.Constructor(ForegroundColorEnum.LIB_DEFAULT, BackgroundColorEnum.LIB_DEFAULT),
+                    ansiPrefix = size.y == 1 ? lastlinepre : prefix,
+                    ansiPostfix = size.y == 1 ? lastlinepost : postfix,
                     isContent = true
                 };
             }
@@ -183,20 +187,34 @@ namespace ui.components
                 content[x, 0] = new ConsoleContent
                 {
                     content = " ",
-                    ansiPrefix = TextFormatter.Constructor(fore, back),
-                    ansiPostfix = TextFormatter.Constructor(ForegroundColorEnum.LIB_DEFAULT, BackgroundColorEnum.LIB_DEFAULT),
+                    ansiPrefix = size.y == 1 ? lastlinepre : prefix,
+                    ansiPostfix = size.y == 1 ? lastlinepost : postfix,
                     isContent = true
                 };
             }
             for (int x = 0; x < size.x; x++)
             {
-                for (int y = 1; y < size.y; y++)
+                for (int y = 1; y < size.y - 1; y++)
                 {
                     content[x, y] = new ConsoleContent
                     {
                         content = " ",
-                        ansiPrefix = TextFormatter.Constructor(fore, back),
-                        ansiPostfix = TextFormatter.Constructor(ForegroundColorEnum.LIB_DEFAULT, BackgroundColorEnum.LIB_DEFAULT),
+                        ansiPrefix = prefix,
+                        ansiPostfix = postfix,
+                        isContent = true
+                    };
+                }
+            }
+            int fy = (int)size.y - 1;
+            if (fy != 0)
+            {
+                for (int x = 0; x < size.x; x++)
+                {
+                    content[x, fy] = new ConsoleContent
+                    {
+                        content = " ",
+                        ansiPrefix = lastlinepre,
+                        ansiPostfix = lastlinepost,
                         isContent = true
                     };
                 }
@@ -226,6 +244,13 @@ namespace ui.components
                 (int row, int col) = this.GetAbsolutePos((0, cursorPos));
                 Global.consoleCanva.cursorPosition = (row + 1, col + 1);
             }
+        }
+
+        protected override void OnResize()
+        {
+            base.OnResize();
+            setCursorPos();
+            SetHasUpdate();
         }
     }
 }

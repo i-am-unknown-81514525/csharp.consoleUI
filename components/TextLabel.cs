@@ -58,8 +58,8 @@ namespace ui.components
                     content[ix, iy] = new ConsoleContent
                     {
                         content = splitedContent[iy][(int)ix].ToString(),
-                        ansiPrefix = TextFormatter.Constructor(foreground, background),
-                        ansiPostfix = TextFormatter.Constructor(ForegroundColorEnum.LIB_DEFAULT, BackgroundColorEnum.LIB_DEFAULT),
+                        ansiPrefix = TextColorFormatter.Constructor(foreground, background),
+                        ansiPostfix = TextColorFormatter.Constructor(ForegroundColorEnum.LIB_DEFAULT, BackgroundColorEnum.LIB_DEFAULT),
                         isContent = true
                     };
                 }

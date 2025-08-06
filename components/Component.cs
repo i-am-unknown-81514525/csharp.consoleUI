@@ -430,6 +430,7 @@ namespace ui.components
 
         public bool IsActive()
         {
+            if (activeHandler is null) return false;
             return activeHandler.GetCurrActive() == this;
         }
 

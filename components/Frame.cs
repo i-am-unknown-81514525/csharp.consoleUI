@@ -111,14 +111,14 @@ namespace ui.components
 
         protected override void OnResize()
         {
-            if ((GetAllocSize().x < 4 || GetAllocSize().y < 4) && this.GetInner() == frameInner && toggleCanNoFrame)
+            if ((GetAllocSize().x < 3 || GetAllocSize().y < 3) && this.GetInner() == frameInner && toggleCanNoFrame)
             {
                 this.RemoveChildComponent(frameInner);
                 innerContainer.RemoveChildComponent(inner);
                 this.Add(inner);
                 SetHasUpdate();
             }
-            else if ((GetAllocSize().x >= 4 && GetAllocSize().y >= 4 || !toggleCanNoFrame) && this.GetInner() == inner)
+            else if ((GetAllocSize().x >= 3 && GetAllocSize().y >= 3 || !toggleCanNoFrame) && this.GetInner() == inner)
             {
                 this.RemoveChildComponent(inner);
                 this.Add(frameInner);

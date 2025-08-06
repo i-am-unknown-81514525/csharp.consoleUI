@@ -20,8 +20,8 @@ namespace ui.components
             ConsoleContent item = new ConsoleContent()
             {
                 content = " ",
-                ansiPrefix = TextFormatter.Constructor(foreground, background),
-                ansiPostfix = TextFormatter.Constructor(ForegroundColorEnum.LIB_DEFAULT, BackgroundColorEnum.LIB_DEFAULT),
+                ansiPrefix = TextColorFormatter.Constructor(foreground, background),
+                ansiPostfix = TextColorFormatter.Constructor(ForegroundColorEnum.LIB_DEFAULT, BackgroundColorEnum.LIB_DEFAULT),
                 isContent = true
             };
             if (x == 0 || y == 0) return content;
