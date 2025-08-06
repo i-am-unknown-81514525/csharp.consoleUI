@@ -32,7 +32,7 @@ namespace ui.components
             if (titlegroupConfig is null)
                 titlegroupConfig = (new TextLabel(""), 0);
             GroupComponentConfig config = (GroupComponentConfig)titlegroupConfig;
-            titleContainer.Add(config.component);
+            title = config;
             innerContainer.Add(inner);
             Add(
                 new VerticalGroupComponent() {
@@ -69,7 +69,8 @@ namespace ui.components
         {
             IComponent original = title.component;
             SplitAmount ori_amount = title.splitAmount;
-            if (!(comp.component is null) && !(original == comp.component))
+            if (comp.component is null) return;
+            if (original is null || original != comp.component)
             {
                 if (!(original is null))
                     titleContainer.RemoveChildComponent(original);
@@ -89,7 +90,8 @@ namespace ui.components
         public void SwitchInner(IComponent comp)
         {
             IComponent original = inner;
-            if (!(comp is null) && !(original == comp))
+            if (comp is null) return;
+            if (original is null || original != comp)
             {
                 if (!(original is null))
                     innerContainer.RemoveChildComponent(original);
