@@ -50,7 +50,8 @@ namespace ui.components
                             (new VerticalBar('│'), 1),
                             (new VerticalBar(' '), 1),
                             (innerContainer, new Fraction(1, 1)),
-                            (new VerticalBar('│'), 2)
+                            (new VerticalBar(' '), 1),
+                            (new VerticalBar('│'), 1)
                         },
                         new Fraction(1, 1)
                     ),

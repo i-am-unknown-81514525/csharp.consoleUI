@@ -11,6 +11,14 @@ namespace ui.core
         public bool isContent { get; set; }
         public new string ToString() => (ansiPrefix ?? "") + (content ?? " ") + (ansiPostfix ?? "");
 
+        public StringBuilder AppendToStringBuilder(StringBuilder builder)
+        {
+            builder.Append(ansiPrefix ?? "");
+            builder.Append(content ?? "");
+            builder.Append(ansiPostfix ?? "");
+            return builder;
+        }
+
         public static ConsoleContent getDefault()
         {
             return new ConsoleContent
@@ -124,7 +132,8 @@ namespace ui.core
                 builder.Append(ConsoleHandler.ConsoleIntermediateHandler.ToANSI($"{y};0H"));
                 for (int x = 1; x <= ConsoleWindow.GetLength(0); x++)
                 {
-                    builder.Append(ConsoleWindow[x - 1, y - 1].ToString());
+                    ConsoleWindow[x - 1, y - 1].AppendToStringBuilder(builder);
+                    // builder.Append(ConsoleWindow[x - 1, y - 1].ToString());
                 }
             }
             builder.Append(postfix);
