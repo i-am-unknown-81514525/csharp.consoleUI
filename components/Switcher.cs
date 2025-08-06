@@ -32,6 +32,12 @@ namespace ui.components
             compList.Add(comp);
         }
 
+        public void AddMulti(IEnumerable<IComponent> comps)
+        {
+            foreach (IComponent comp in comps)
+                Add(comp);
+        }
+
         protected override (bool isAdd, (IComponent, (uint, uint, uint, uint), int) data) OnAddHandler((IComponent, (uint, uint, uint, uint), int) child)
         {
             return (child.Item1 == curr, child);

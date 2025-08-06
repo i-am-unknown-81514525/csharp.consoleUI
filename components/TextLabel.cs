@@ -39,6 +39,11 @@ namespace ui.components
             _text = text ?? "";
         }
 
+        public TextLabel(string text, ComponentConfig config) : base(config)
+        {
+            _text = text ?? "";
+        }
+
         protected virtual ConsoleContent[,] RenderSelf()
         {
             (uint x, uint y) = this.GetAllocSize();

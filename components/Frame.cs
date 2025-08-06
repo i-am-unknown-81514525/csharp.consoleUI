@@ -1,6 +1,7 @@
 using ui.components.chainExt;
 using ui.math;
 using ui.utils;
+using ui.core;
 
 namespace ui.components
 {
@@ -23,9 +24,12 @@ namespace ui.components
         private IComponent _inner = new TextLabel("");
         public IComponent inner { get => _inner; set { SwitchInner(value); SetHasUpdate(); } }
 
+        private readonly IComponent frameInner;
         private readonly Container titleContainer = new Container();
         private readonly HorizontalGroupComponent outerGroupComponent = null;
         private readonly Container innerContainer = new Container();
+
+        private const bool toggleCanNoFrame = true; // future changeable config
 
         public Frame(GroupComponentConfig? titlegroupConfig = null) : base()
         {
@@ -36,7 +40,7 @@ namespace ui.components
             _title = config;
             titleContainer.Add(config.component);
             Add(
-                new VerticalGroupComponent() {
+                frameInner = new VerticalGroupComponent() {
                     (new HorizontalGroupComponent() {
                         (new TextLabel("┌─"), 2),
                         (outerGroupComponent = new HorizontalGroupComponent() {
@@ -104,5 +108,47 @@ namespace ui.components
             comp.SetHasUpdate();
             SetHasUpdate();
         }
+
+        protected override void OnResize()
+        {
+            if ((GetAllocSize().x < 4 || GetAllocSize().y < 4) && this.GetInner() == frameInner && toggleCanNoFrame)
+            {
+                this.RemoveChildComponent(frameInner);
+                innerContainer.RemoveChildComponent(inner);
+                this.Add(inner);
+                SetHasUpdate();
+            }
+            else if ((GetAllocSize().x >= 4 && GetAllocSize().y >= 4 || !toggleCanNoFrame) && this.GetInner() == inner)
+            {
+                this.RemoveChildComponent(inner);
+                this.Add(frameInner);
+                innerContainer.Add(inner);
+                SetHasUpdate();
+            }
+            base.OnResize();
+        }
+
+        // protected override ConsoleContent[,] RenderPost(ConsoleContent[,] content)
+        // {
+        //     if ((GetAllocSize().x < 4 || GetAllocSize().y < 4) && this.GetInner() == frameInner && toggleCanNoFrame)
+        //     {
+        //         this.RemoveChildComponent(frameInner);
+        //         innerContainer.RemoveChildComponent(inner);
+        //         this.Add(inner);
+        //         SetHasUpdate();
+        //         ConsoleContent[,] result = Render();
+        //         return result;
+        //     }
+        //     else if ((GetAllocSize().x >= 4 || GetAllocSize().y >= 4 || !toggleCanNoFrame) && this.GetInner() == inner)
+        //     {
+        //         this.RemoveChildComponent(inner);
+        //         this.Add(frameInner);
+        //         innerContainer.Add(inner);
+        //         SetHasUpdate();
+        //         ConsoleContent[,] result = Render();
+        //         return result;
+        //     }
+        //     return content;
+        // }
     }
 }

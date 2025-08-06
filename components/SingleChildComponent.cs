@@ -47,7 +47,8 @@ namespace ui.components
 
         public IComponent GetInner()
         {
-            return GetMapping().Select(x => x.component).FirstOrDefault(null);
+            if (GetMapping().Count == 0) return null;
+            return GetMapping().Select(x => x.component).First();
         }
     }
 }
