@@ -65,22 +65,20 @@ namespace ui.components
                 MouseClickHandler mouseClickHandler = new MouseClickHandler(this);
                 Global.InputHandler.Add(mouseClickHandler);
                 bool isComplete = false;
+                SetHasUpdate();
                 while (!isComplete)
                 {
                     Global.consoleCanva.EventLoopPre();
                     onTickHandler(this);
                     bool status = Global.InputHandler.Handle();
-                    if (!status)
-                    {
-                        System.Threading.Thread.Sleep(1);
-                        continue;
-                    }
                     if (exitHandler.GetExitStatus())
                     {
                         return this;
                     }
+                    bool haveUpdate = GetHasUpdate();
                     Global.consoleCanva.ConsoleWindow = this.Render();
-                    Global.consoleCanva.EventLoopPost(GetHasUpdate());
+                    Global.consoleCanva.EventLoopPost(haveUpdate);
+                    System.Threading.Thread.Sleep(1);
                 }
             }
             finally
