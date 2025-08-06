@@ -31,7 +31,12 @@ namespace ui.components
 
         public TextLabel(string text = null) : base()
         {
-            _text = text;
+            _text = text ?? "";
+        }
+
+        public TextLabel(ComponentConfig config, string text = null) : base(config)
+        {
+            _text = text ?? "";
         }
 
         protected virtual ConsoleContent[,] RenderSelf()
@@ -39,7 +44,7 @@ namespace ui.components
             (uint x, uint y) = this.GetAllocSize();
             ConsoleContent[,] content = new ConsoleContent[x, y];
             if (x == 0 || y == 0) return content;
-            string iContent = text.Align((vAlign, (int)y), (hAlign, (int)x));
+            string iContent = (text ?? "").Align((vAlign, (int)y), (hAlign, (int)x));
             string[] splitedContent = iContent.Split('\n');
             for (uint ix = 0; ix < x; ix++)
             {

@@ -54,7 +54,7 @@ namespace ui.utils
 
     }
 
-    public sealed class SplitAmount
+    public sealed class SplitAmount : IComparable<SplitAmount>
     {
         private bool _isFraction;
         private Fraction frac;
@@ -93,6 +93,91 @@ namespace ui.utils
         public static implicit operator SplitAmount(Fraction frac) => new SplitAmount(frac);
         public static implicit operator SplitAmount(int abs) => new SplitAmount(abs);
         public static implicit operator SplitAmount((Fraction frac, uint prioity) value) => new SplitAmount(value.frac, value.prioity);
+
+        public static bool operator ==(SplitAmount left, SplitAmount right)
+        {
+            return (
+                (
+                    !(left is null) &&
+                    !(right is null) &&
+                    left.prioity == right.prioity &&
+                    (
+                        left.isFraction() ?
+                        (
+                            right.isFraction() && left.GetFraction() == right.GetFraction()
+                        ) : (
+                            !right.isFraction() && left.GetSize() == right.GetSize()
+                        )
+                    )
+                ) || (
+                    left is null &&
+                    right is null
+                )
+            );
+        }
+
+        public static bool operator !=(SplitAmount left, SplitAmount right) => !(left == right);
+
+        public override bool Equals(object obj)
+        {
+            if (!(obj is SplitAmount)) return false;
+            return this == (SplitAmount)obj;
+        }
+
+        public override int GetHashCode()
+        {
+            int prio_hash = (7919 * (int)prioity); // The 1000th prime number
+            return (isFraction() ? GetFraction().GetHashCode() : GetSize().GetHashCode()) ^ prio_hash;
+        }
+
+        public int CompareTo(SplitAmount right)
+        {
+            // if (this is null && right is null) return 0;
+            // if (this is null) return -1;
+            // if (right is null) return 1;
+            if (this == right)
+            {
+                return 0;
+            }
+            if (this.prioity < right.prioity)
+            {
+                return 1; // larger
+            }
+            if (this.prioity > right.prioity)
+            {
+                return -1; // smaller
+            }
+            if (!this.isFraction() && right.isFraction())
+            {
+                return 1;
+            }
+            if (this.isFraction() && !right.isFraction())
+            {
+                return -1;
+            }
+            if (this.isFraction())
+            {
+                if (this.GetFraction() < right.GetFraction())
+                {
+                    return -1;
+                }
+                else
+                {
+                    return 1;
+                }
+            }
+            else
+            {
+                if (this.GetSize() < right.GetSize())
+                {
+                    return -1;
+                }
+                else
+                {
+                    return 1;
+                }
+            }
+        }
     }
 
     public class SplitHandler

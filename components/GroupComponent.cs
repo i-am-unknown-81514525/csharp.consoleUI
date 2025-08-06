@@ -15,8 +15,8 @@ namespace ui.components
 
     public struct GroupComponentConfig
     {
-        public IComponent component;
-        public SplitAmount splitAmount;
+        public readonly IComponent component;
+        public readonly SplitAmount splitAmount;
 
         public GroupComponentConfig(IComponent component, SplitAmount splitAmount)
         {
@@ -57,6 +57,16 @@ namespace ui.components
             SetHasUpdate();
         }
 
+        public void UpdateSplitConfig(IComponent component, SplitAmount amount)
+        {
+            SplitConfig config = splitMapping[component];
+            splitHandler.Remove(config);
+            SplitConfig newConfig = splitHandler.AddSplit(amount);
+            splitMapping[component] = newConfig;
+            UpdateSize();
+            SetHasUpdate();
+        }
+
         public new bool Contains(IComponent component)
         {
             return childsMapping.Select(x => x.component).Count(x => x == component) > 0;
@@ -68,9 +78,7 @@ namespace ui.components
             {
                 throw new InvalidOperationException("The component is not the direct child of the current component and cannot be removed");
             }
-            int idx = IndexOf(component);
-            if (idx != -1)
-                childsMapping.RemoveAt(idx);
+            RemoveChildComponent(component);
             SplitConfig splitConfig = splitMapping[component];
             splitMapping.Remove(component);
             splitHandler.Remove(splitConfig);
@@ -82,7 +90,8 @@ namespace ui.components
             {
                 if (!childsMapping.Select(x => x.component).Contains(split.Key))
                 {
-                    childsMapping.Add((split.Key, (0, 0, 0, 0), 1));
+                    // childsMapping.Add((split.Key, (0, 0, 0, 0), 1));
+                    AddChildComponent(split.Key, (0, 0, 0, 0), 1);
                 }
             }
             int curr_idx = childsMapping.Count;
@@ -90,7 +99,8 @@ namespace ui.components
             {
                 if (!splitMapping.ContainsKey(childsMapping[idx].component))
                 {
-                    childsMapping.RemoveAt(idx);
+                    RemoveChildComponent(childsMapping[idx].component);
+                    // childsMapping.RemoveAt(idx);
                     idx--;
                     curr_idx--;
                 }

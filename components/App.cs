@@ -11,6 +11,13 @@ using static ui.core.ConsoleHandler;
 
 namespace ui.components
 {
+    public class App : App<App>
+    {
+        public App(Component component) : base(component) { }
+
+        protected App(Component component, ActiveStatusHandler activeStatusHandler) : base(component, activeStatusHandler) { }
+    }
+
     public class App<T> : SingleChildComponent where T : App<T>
     {
 

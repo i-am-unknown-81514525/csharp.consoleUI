@@ -5,6 +5,11 @@ using ui.fmt;
 
 namespace ui.components
 {
+    public class Button : Button<Button>
+    {
+        public Button(string text = null) : base(text) { }
+    }
+
     public class Button<T> : TextLabel where T : Button<T>
     {
 
