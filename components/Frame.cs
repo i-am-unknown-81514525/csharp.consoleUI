@@ -69,9 +69,10 @@ namespace ui.components
         {
             IComponent original = title.component;
             SplitAmount ori_amount = title.splitAmount;
-            if (!(original is null) && !(original == comp.component))
+            if (!(comp.component is null) && !(original == comp.component))
             {
-                titleContainer.RemoveChildComponent(original);
+                if (!(original is null))
+                    titleContainer.RemoveChildComponent(original);
                 titleContainer.Add(comp.component);
                 titleContainer.SetHasUpdate();
             }
@@ -88,7 +89,7 @@ namespace ui.components
         public void SwitchInner(IComponent comp)
         {
             IComponent original = inner;
-            if (!(original is null) && !(original == comp))
+            if (!(comp is null) && !(original == comp))
             {
                 if (!(original is null))
                     innerContainer.RemoveChildComponent(original);

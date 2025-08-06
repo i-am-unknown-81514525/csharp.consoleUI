@@ -404,6 +404,7 @@ namespace ui.components
         protected void ReRender()
         {
             _rerender = true;
+            SetHasUpdate();
         }
 
         public bool Deactive(Event deactiveEvent)
