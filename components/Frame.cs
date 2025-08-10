@@ -127,28 +127,5 @@ namespace ui.components
             }
             base.OnResize();
         }
-
-        // protected override ConsoleContent[,] RenderPost(ConsoleContent[,] content)
-        // {
-        //     if ((GetAllocSize().x < 4 || GetAllocSize().y < 4) && this.GetInner() == frameInner && toggleCanNoFrame)
-        //     {
-        //         this.RemoveChildComponent(frameInner);
-        //         innerContainer.RemoveChildComponent(inner);
-        //         this.Add(inner);
-        //         SetHasUpdate();
-        //         ConsoleContent[,] result = Render();
-        //         return result;
-        //     }
-        //     else if ((GetAllocSize().x >= 4 || GetAllocSize().y >= 4 || !toggleCanNoFrame) && this.GetInner() == inner)
-        //     {
-        //         this.RemoveChildComponent(inner);
-        //         this.Add(frameInner);
-        //         innerContainer.Add(inner);
-        //         SetHasUpdate();
-        //         ConsoleContent[,] result = Render();
-        //         return result;
-        //     }
-        //     return content;
-        // }
     }
 }
