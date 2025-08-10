@@ -57,6 +57,21 @@ namespace ui.components
             SetHasUpdate();
         }
 
+        public void Insert(int idx, GroupComponentConfig componentConfig)
+        {
+            IComponent component = componentConfig.component;
+            if (component.GetMount() != null && component.GetMount() != this) throw new InvalidOperationException("The component already have a parent");
+            (uint allocX, uint allocY) = GetAllocSize();
+            bool isSuccess = InsertChildComponent(idx, component, (0, 0, allocX, allocY), 1);
+            if (isSuccess)
+            {
+                SplitConfig config = splitHandler.AddSplit(componentConfig.splitAmount);
+                splitMapping[component] = config;
+            }
+            UpdateSize();
+            SetHasUpdate();
+        }
+
         public void UpdateSplitConfig(IComponent component, SplitAmount amount)
         {
             SplitConfig config = splitMapping[component];
@@ -78,7 +93,7 @@ namespace ui.components
             {
                 throw new InvalidOperationException("The component is not the direct child of the current component and cannot be removed");
             }
-            RemoveChildComponent(component);
+            base.RemoveChildComponent(component);
             SplitConfig splitConfig = splitMapping[component];
             splitMapping.Remove(component);
             splitHandler.Remove(splitConfig);

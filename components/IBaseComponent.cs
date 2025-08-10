@@ -14,6 +14,7 @@ namespace ui.components
         int IndexOf(IComponent component);
         bool UpdateAllocSize();
         bool AddChildComponent(IComponent component, (uint x, uint y, uint allocX, uint allocY) loc, int prioity);
+        bool InsertChildComponent(int idx, IComponent component, (uint x, uint y, uint allocX, uint allocY) loc, int prioity);
         void RemoveChildComponent(IComponent component);
         void Mount(IComponent component);
         bool Dismount();

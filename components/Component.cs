@@ -81,7 +81,7 @@ namespace ui.components
                 component.UnInit();
         }
 
-        protected List<(IComponent component, (uint x, uint y, uint allocX, uint allocY) location, int prioity)> GetMapping()
+        public List<(IComponent component, (uint x, uint y, uint allocX, uint allocY) location, int prioity)> GetMapping()
         {
             return childsMapping.ToList();
         }
@@ -244,6 +244,23 @@ namespace ui.components
                 return false;
             }
             childsMapping.Add(data);
+            component.Mount(this);
+            if (activeHandler != null)
+                component.Init(new ComponentConfig(activeHandler));
+            ReRender();
+            SetHasUpdate();
+            return true;
+        }
+
+        public bool InsertChildComponent(int idx, IComponent component, (uint x, uint y, uint allocX, uint allocY) loc, int prioity)
+        {
+            CheckLock();
+            (bool isAdd, (IComponent, (uint, uint, uint, uint), int) data) = OnAddHandler((component, loc, prioity));
+            if (!isAdd)
+            {
+                return false;
+            }
+            childsMapping.Insert(idx, data);
             component.Mount(this);
             if (activeHandler != null)
                 component.Init(new ComponentConfig(activeHandler));
