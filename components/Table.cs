@@ -7,7 +7,7 @@ using ui.utils;
 namespace ui.components
 {
 
-    public class Table : SingleChildComponent
+    public class Table : SingleChildComponent, ITable
     {
 
         private HorizontalGroupComponent _horizontal = new HorizontalGroupComponent();
@@ -32,6 +32,23 @@ namespace ui.components
             }
         }
 
+        public Table(SplitAmount vSplit, SplitAmount hSplit) : base()
+        {
+            Add(_horizontal);
+            for (int y = 0; y < size.y; y++)
+            {
+
+                _vSize.Append(vSplit);
+                VerticalGroupComponent vComp = new VerticalGroupComponent();
+                for (int x = 0; x < size.x; x++)
+                {
+                    vComp.Add((new Container(), vSplit));
+                }
+                _verticalGroups.Add(vComp);
+                _horizontal.Add((vComp, hSplit));
+            }
+        }
+
         public Table((int x, int y) size) : base()
         {
             Add(_horizontal);
@@ -51,6 +68,8 @@ namespace ui.components
                 _horizontal.Add(vComp);
             }
         }
+
+        public (int x, int y) GetSize() => size;
 
         public void Resize((int x, int y) newSize)
         {
@@ -88,30 +107,21 @@ namespace ui.components
             {
                 while (_verticalGroups.Count > newSize.x)
                 {
-                    IComponent comp = _verticalGroups[newSize.x];
-                    _horizontal.RemoveChildComponent(comp);
-                    _verticalGroups.RemoveAt(newSize.x);
+                    RemoveColumn(newSize.x);
                 }
             }
             if (newSize.y < size.y)
             {
-                foreach (VerticalGroupComponent vert in _verticalGroups)
+                for (int y = newSize.y; y > size.y; y--)
                 {
-                    List<IComponent> compList = vert.GetMapping().Select(x => x.component).ToList();
-                    while (compList.Count > newSize.y)
-                    {
-                        IComponent comp = compList[newSize.y];
-                        vert.RemoveChildComponent(comp);
-                        compList.RemoveAt(newSize.y);
-                    }
-                }
-                for (int y = newSize.y; y < size.y; y++)
-                {
-                    _vSize.RemoveAt(newSize.y);
+                    RemoveRow(y);
                 }
             }
             Resize(newSize);
         }
+
+        public void AddColumn(SplitAmount amount = null) => InsertColumn(size.x, amount);
+        public void AddRow(SplitAmount amount = null) => InsertRow(size.y, amount);
 
         public void InsertColumn(int idx, SplitAmount amount = null)
         {
