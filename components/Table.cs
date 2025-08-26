@@ -13,40 +13,13 @@ namespace ui.components
         private HorizontalGroupComponent _horizontal = new HorizontalGroupComponent();
         private List<VerticalGroupComponent> _verticalGroups = new List<VerticalGroupComponent>();
         private List<SplitAmount> _vSize = new List<SplitAmount>();
-        private (int x, int y) size = (1, 1);
+        private (int x, int y) size = (0, 0);
 
-        public Table() : base()
+        public Table(SplitAmount vSplit = null, SplitAmount hSplit = null) : base()
         {
             Add(_horizontal);
-            for (int y = 0; y < size.y; y++)
-            {
-
-                _vSize.Append(1);
-                VerticalGroupComponent vComp = new VerticalGroupComponent();
-                for (int x = 0; x < size.x; x++)
-                {
-                    vComp.Add((new Container(), 1));
-                }
-                _verticalGroups.Add(vComp);
-                _horizontal.Add(vComp);
-            }
-        }
-
-        public Table(SplitAmount vSplit, SplitAmount hSplit) : base()
-        {
-            Add(_horizontal);
-            for (int y = 0; y < size.y; y++)
-            {
-
-                _vSize.Append(vSplit);
-                VerticalGroupComponent vComp = new VerticalGroupComponent();
-                for (int x = 0; x < size.x; x++)
-                {
-                    vComp.Add((new Container(), vSplit));
-                }
-                _verticalGroups.Add(vComp);
-                _horizontal.Add((vComp, hSplit));
-            }
+            AddRow(vSplit);
+            AddColumn(hSplit);
         }
 
         public Table((int x, int y) size) : base()
@@ -56,16 +29,13 @@ namespace ui.components
             {
                 throw new InvalidOperationException("A table must at least have 1 by 1 cell");
             }
+            for (int x = 0; x < size.y; x++)
+            {
+                AddColumn();
+            }
             for (int y = 0; y < size.y; y++)
             {
-                _vSize.Append(1);
-                VerticalGroupComponent vComp = new VerticalGroupComponent();
-                for (int x = 0; x < size.x; x++)
-                {
-                    vComp.Add((new Container(), 1));
-                }
-                _verticalGroups.Add(vComp);
-                _horizontal.Add(vComp);
+                AddRow();
             }
         }
 
@@ -73,27 +43,17 @@ namespace ui.components
 
         public void Resize((int x, int y) newSize)
         {
-            if (newSize.x < size.x || newSize.y < size.y)
+            if (newSize.x < GetSize().x || newSize.y < GetSize().y)
             {
                 throw new InvalidOperationException("By default, resize to smaller size is not possible. Use ForceResize instead");
             }
-            foreach (VerticalGroupComponent comp in _verticalGroups)
+            for (int x = GetSize().x; x < newSize.x; x++)
             {
-                for (int x = size.x; x < newSize.x; x++)
-                {
-                    comp.Add((new Container(), 1));
-                }
+                AddColumn();
             }
-            for (int y = size.y; y < newSize.y; y++)
+            for (int y = GetSize().y; y < newSize.x; y++)
             {
-                _vSize.Append(1);
-                VerticalGroupComponent vComp = new VerticalGroupComponent();
-                for (int x = 0; x < size.x; x++)
-                {
-                    vComp.Add((new Container(), 1));
-                }
-                _verticalGroups.Add(vComp);
-                _horizontal.Add(vComp);
+                AddRow();
             }
         }
 
@@ -103,16 +63,16 @@ namespace ui.components
             {
                 throw new InvalidOperationException("A table must at least have 1 by 1 cell");
             }
-            if (newSize.x < size.x)
+            if (newSize.x < GetSize().x)
             {
-                while (_verticalGroups.Count > newSize.x)
+                for (int x = newSize.x; x > GetSize().y; x--)
                 {
-                    RemoveColumn(newSize.x);
+                    RemoveColumn(x);
                 }
             }
-            if (newSize.y < size.y)
+            if (newSize.y < GetSize().y)
             {
-                for (int y = newSize.y; y > size.y; y--)
+                for (int y = newSize.y; y > GetSize().y; y--)
                 {
                     RemoveRow(y);
                 }
@@ -155,6 +115,7 @@ namespace ui.components
         {
             if (idx < 0) throw new ArgumentOutOfRangeException("idx must be greater or equal to 0");
             if (idx >= size.x) idx = size.x - 1;
+            if (size.x == 1) throw new InvalidOperationException("Table cannot be empty");
             VerticalGroupComponent vert = _verticalGroups[idx];
             _verticalGroups.RemoveAt(idx);
             _horizontal.RemoveChildComponent(vert);
@@ -165,6 +126,7 @@ namespace ui.components
         {
             if (idx < 0) throw new ArgumentOutOfRangeException("idx must be greater or equal to 0");
             if (idx >= size.y) idx = size.y - 1;
+            if (size.y == 1) throw new InvalidOperationException("Table cannot be empty");
             for (int x = 0; x < size.x; x++)
             {
                 VerticalGroupComponent vert = _verticalGroups[x];

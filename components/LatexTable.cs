@@ -5,20 +5,21 @@ using ui.utils;
 
 namespace ui.components
 {
-    public class RegexTable : Container, ITable
+    public class LatexTable : VirtualTable<Table>
     {
         private List<int> _horizontalBarRow = new List<int>();
         private List<int> _verticalBarCol = new List<int>();
-        private Table inner = new Table((1, 1));
 
-        public RegexTable() : base()
+        internal override Table InnerConstructor()
         {
-            Add(inner);
+            return new Table((1, 1));
         }
 
-        public (int x, int y) GetSize() => inner.GetSize();
+        public LatexTable() : base()
+        {
+        }
 
-        public void InsertRow(int idx, ui.utils.SplitAmount amount = null)
+        public override void InsertRow(int idx, ui.utils.SplitAmount amount = null)
         {
             inner.InsertRow(idx, amount);
             _horizontalBarRow = _horizontalBarRow.Select(x => x > idx ? x + 1 : x).ToList();
@@ -31,18 +32,15 @@ namespace ui.components
             }
         }
 
-        public void RemoveRow(int idx)
+        public override void RemoveRow(int idx)
         {
             if (_horizontalBarRow.Contains(idx)) _horizontalBarRow.Remove(idx);
             inner.RemoveRow(idx);
             _horizontalBarRow = _horizontalBarRow.Select(x => x > idx ? x - 1 : x).ToList();
         }
 
-        private void InsertRawColumn(int idx, SplitAmount amount = null) => inner.InsertColumn(idx, amount);
 
-        private void AddRawColumn(SplitAmount amount = null) => InsertRawColumn(inner.GetSize().x);
-
-        public void InsertColumn(int idx, ui.utils.SplitAmount amount = null)
+        public override void InsertColumn(int idx, ui.utils.SplitAmount amount = null)
         {
             if (idx < 0) throw new ArgumentOutOfRangeException("idx must be greater than 0");
             // int idx_intersect, idx_normal;
@@ -70,49 +68,7 @@ namespace ui.components
             }
         }
 
-        public void AddColumn(SplitAmount amount = null) => InsertColumn(GetSize().x, amount);
-        public void AddRow(SplitAmount amount = null) => InsertRow(GetSize().y, amount);
-
-        public void Resize((int x, int y) newSize)
-        {
-            if (newSize.x < GetSize().x || newSize.y < GetSize().y)
-            {
-                throw new InvalidOperationException("By default, resize to smaller size is not possible. Use ForceResize instead");
-            }
-            for (int x = GetSize().x; x < newSize.x; x++)
-            {
-                AddColumn();
-            }
-            for (int y = GetSize().y; y < newSize.x; y++)
-            {
-                AddRow();
-            }
-        }
-
-        public void ForceResize((int x, int y) newSize)
-        {
-            if (newSize.x < 1 || newSize.y < 1)
-            {
-                throw new InvalidOperationException("A table must at least have 1 by 1 cell");
-            }
-            if (newSize.x < GetSize().x)
-            {
-                for (int x = newSize.x; x > GetSize().y; x--)
-                {
-                    RemoveColumn(x);
-                }
-            }
-            if (newSize.y < GetSize().y)
-            {
-                for (int y = newSize.y; y > GetSize().y; y--)
-                {
-                    RemoveRow(y);
-                }
-            }
-            Resize(newSize);
-        }
-
-        private void InsertHorizontalBarRow(int idx)
+        public void InsertHorizontalBarRow(int idx)
         {
             InsertRow(idx, 1);
             int y = idx;
@@ -130,9 +86,9 @@ namespace ui.components
             _horizontalBarRow.Add(idx);
         }
 
-        private void AddHorizontalBarRow() => InsertHorizontalBarRow(inner.GetSize().y);
+        public void AddHorizontalBarRow() => InsertHorizontalBarRow(inner.GetSize().y);
 
-        private void InsertVerticalBarCol(int idx)
+        public void InsertVerticalBarCol(int idx)
         {
             InsertRow(idx, 1);
             int y = idx;
@@ -150,9 +106,9 @@ namespace ui.components
             _horizontalBarRow.Add(idx);
         }
 
-        private void AddVerticalBarCol() => InsertVerticalBarCol(inner.GetSize().x);
+        public void AddVerticalBarCol() => InsertVerticalBarCol(inner.GetSize().x);
 
-        public RegexTable((int x, int y) size) : base()
+        public LatexTable((int x, int y) size) : base()
         {
             Add(inner);
             for (int x = 1; x < size.x; x++)
@@ -171,7 +127,7 @@ namespace ui.components
         }
 
 
-        public void RemoveColumn(int idx)
+        public override void RemoveColumn(int idx)
         {
             inner.RemoveColumn(idx);
             if (_verticalBarCol.Contains(idx))
@@ -181,7 +137,7 @@ namespace ui.components
             _verticalBarCol = _verticalBarCol.Select(x => x > idx ? x - 1 : x).ToList();
         }
 
-        public IComponent this[int x, int y]
+        public override IComponent this[int x, int y]
         {
             get => inner[x, y];
             set
@@ -193,12 +149,5 @@ namespace ui.components
                 inner[x, y] = value;
             }
         }
-
-        public IComponent this[(int x, int y) loc]
-        {
-            get => this[loc.x, loc.y];
-            set => this[loc.x, loc.y] = value;
-        }
-
     }
 }
