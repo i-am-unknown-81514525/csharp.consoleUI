@@ -95,6 +95,7 @@
     <Compile Include="mouse\*.cs" />
     <Compile Include="fmt\*.cs" />
     <Compile Include="events\*.cs" />
+    <Compile Include="LatexExt\*.cs" />
   </ItemGroup>
   <!-- <ItemGroup>
     <PackageReference Include="System.Text.RegularExpressions" Version="4.3.1" />
