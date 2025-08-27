@@ -91,7 +91,7 @@ namespace ui.components
             VerticalGroupComponent vert = new VerticalGroupComponent();
             for (int y = 0; y < size.y; y++)
             {
-                vert.Add((new Container(), _vSize[y]));
+                vert.Add((new Container(new Padding()), _vSize[y]));
             }
             _verticalGroups.Insert(idx, vert);
             _horizontal.Insert(idx, (vert, amount));
@@ -105,7 +105,7 @@ namespace ui.components
             if (idx > size.y) idx = size.y;
             for (int x = 0; x < size.x; x++)
             {
-                _verticalGroups[x].Insert(idx, (new Container(), amount));
+                _verticalGroups[x].Insert(idx, (new Container(new Padding()), amount));
             }
             _vSize.Insert(idx, amount);
             size = (size.x, size.y + 1);
