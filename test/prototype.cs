@@ -4,6 +4,7 @@ using ui.math;
 using ui.core;
 using ui.input;
 using System.IO;
+using System.Collections.Generic;
 
 namespace ui.test
 {
@@ -284,12 +285,47 @@ namespace ui.test
             {
                 Fraction frac = getObjFrac(newTable).Min();
                 int i = Array.IndexOf(getObjFrac(newTable), frac);
-                (int j, Fraction rhsV, Fraction fracPivot) = Enumerable.Range(1, table.GetLength(1) - 1)
-                        .Where(idx => newTable[i, idx] > new Fraction(0))
-                        .Select(idx => (idx, newTable[newTable.GetLength(0) - 1, idx] / newTable[i, idx], newTable[i, idx])) // idx, RHS/value
-                        .Where(x => x.Item2 >= new Fraction(0))
-                        .OrderBy(x => x.Item2)
-                        .First();
+                (int j, Fraction rhsV, Fraction fracPivot)[] selections = Enumerable.Range(1, table.GetLength(1) - 1)
+                    .Where(idx => newTable[i, idx] > new Fraction(0))
+                    .Select(idx => (idx, newTable[newTable.GetLength(0) - 1, idx] / newTable[i, idx], newTable[i, idx])) // idx, RHS/value
+                    .Where(x => x.Item2 >= new Fraction(0))
+                    .OrderBy(x => x.Item2).ToArray();
+                if (selections.Length == 0)
+                {
+                    string name = $"x_{i}";
+                    if (i >= table.GetLength(0) - 1)
+                    {
+                        name = $"s_{i - (table.GetLength(0) - 1)}";
+                    }
+                    Console.WriteLine($"{name} is unbounded");
+                    Console.WriteLine($"P = {newTable[newTable.GetLength(0) - 1, 0].ToString()}+inf");
+                    List<int> rowsUsed1 = new List<int>();
+                    for (int x = 0; x < newTable.GetLength(0) - 1; x++)
+                    {
+                        if (x == i) continue;
+                        string name1 = $"x_{x}";
+                        if (x >= table.GetLength(0) - 1)
+                        {
+                            name1 = $"s_{x - (table.GetLength(0) - 1)}";
+                        }
+                        int[] count1 = Enumerable.Range(1, newTable.GetLength(1) - 1).Where(y => newTable[x, y] == 1).ToArray();
+                        int[] other = Enumerable.Range(1, newTable.GetLength(1) - 1).Where(y => newTable[x, y] != 0 && newTable[x, y] != 1).ToArray();
+                        if (other.Count() == 0 && count1.Count() == 1)
+                        {
+                            int idx = count1[0];
+                            if (!rowsUsed1.Contains(idx))
+                            {
+                                Fraction rhs = newTable[newTable.GetLength(0) - 1, idx];
+                                rowsUsed1.Append(idx);
+                                Console.WriteLine($"{name1} = {rhs.ToString()}");
+                                continue;
+                            }
+                        }
+                        Console.WriteLine($"{name1} = 0");
+                    }
+                    return;
+                }
+                (int j, Fraction rhsV, Fraction fracPivot) = selections.First();
                 Console.WriteLine($"{i} ({frac.ToString()}), {j}({fracPivot.ToString()})");
                 Fraction mul = fracPivot.Invert();
                 for (int x = 0; x < newTable.GetLength(0); x++)
@@ -315,52 +351,29 @@ namespace ui.test
                 }
             }
             Console.WriteLine($"P = {newTable[newTable.GetLength(0) - 1, 0].ToString()}");
-            int[] oneFrom = new int[newTable.GetLength(0)].Select(q => -1).ToArray();
+            // int[] oneFrom = new int[newTable.GetLength(0)].Select(q => -1).ToArray();
+            List<int> rowsUsed = new List<int>();
             for (int x = 0; x < newTable.GetLength(0) - 1; x++)
             {
-                int count1 = 0;
-                Fraction frac = newTable[x, 1];
-                Fraction rhs = newTable[x, newTable.GetLength(1) - 1];
-                for (int y = 1; y < newTable.GetLength(1); y++)
-                {
-                    if (newTable[x, y] == 1)
-                    {
-                        count1++;
-                        if (oneFrom.Count(q => q == y) > 0)
-                        {
-                            count1++;
-                            continue;
-                        }
-                        oneFrom[x] = y;
-                        frac = newTable[x, y];
-                        rhs = newTable[newTable.GetLength(0) - 1, y];
-                    }
-                    else if (newTable[x, y] == 0)
-                    {
-
-                    }
-                    else
-                    {
-                        count1 += 2;
-                    }
-                }
                 string name = $"x_{x}";
                 if (x >= table.GetLength(0) - 1)
                 {
                     name = $"s_{x - (table.GetLength(0) - 1)}";
                 }
-                if (count1 == 1)
+                int[] count1 = Enumerable.Range(1, newTable.GetLength(1) - 1).Where(y => newTable[x, y] == 1).ToArray();
+                int[] other = Enumerable.Range(1, newTable.GetLength(1) - 1).Where(y => newTable[x, y] != 0 && newTable[x, y] != 1).ToArray();
+                if (other.Count() == 0 && count1.Count() == 1)
                 {
-                    Console.WriteLine($"{name} = {rhs.ToString()}");
+                    int idx = count1[0];
+                    if (!rowsUsed.Contains(idx))
+                    {
+                        Fraction rhs = newTable[newTable.GetLength(0) - 1, idx];
+                        rowsUsed.Append(idx);
+                        Console.WriteLine($"{name} = {rhs.ToString()}");
+                        continue;
+                    }
                 }
-                else if (count1 == 0)
-                {
-                    Console.WriteLine($"{name} = ?");
-                }
-                else
-                {
-                    Console.WriteLine($"{name} = 0");
-                }
+                Console.WriteLine($"{name} = 0");
             }
             Console.ReadKey();
 
