@@ -247,12 +247,12 @@ namespace ui.test
             {
                 ConsoleHandler.ConsoleIntermediateHandler.Reset();
             }
-            Fraction[,] newTable = new Fraction[table.GetLength(0)+table.GetLength(1)-1, table.GetLength(1)];
+            Fraction[,] newTable = new Fraction[table.GetLength(0) + table.GetLength(1) - 1, table.GetLength(1)];
             for (int c = 0; c < table.GetLength(0) - 1; c++)
             {
                 newTable[c, 0] = table[c, 0].asOpposeSign();
             }
-            for (int c = table.GetLength(0) - 1; c < table.GetLength(0)+table.GetLength(1)-1; c++)
+            for (int c = table.GetLength(0) - 1; c < table.GetLength(0) + table.GetLength(1) - 1; c++)
             {
                 newTable[c, 0] = new Fraction(0);
             }
@@ -285,8 +285,8 @@ namespace ui.test
                 Fraction frac = getObjFrac(newTable).Min();
                 int i = Array.IndexOf(getObjFrac(newTable), frac);
                 (int j, Fraction rhsV, Fraction fracPivot) = Enumerable.Range(1, table.GetLength(1) - 1)
-                        .Where(idx => newTable[i, idx] != new Fraction(0))
-                        .Select(idx => (idx, newTable[newTable.GetLength(0) - 1, idx] / newTable[i, idx], newTable[i, idx]))
+                        .Where(idx => newTable[i, idx] > new Fraction(0))
+                        .Select(idx => (idx, newTable[newTable.GetLength(0) - 1, idx] / newTable[i, idx], newTable[i, idx])) // idx, RHS/value
                         .Where(x => x.Item2 >= new Fraction(0))
                         .OrderBy(x => x.Item2)
                         .First();
@@ -315,7 +315,7 @@ namespace ui.test
                 }
             }
             Console.WriteLine($"P = {newTable[newTable.GetLength(0) - 1, 0].ToString()}");
-            int[] oneFrom = new int[newTable.GetLength(0)].Select(q=>-1).ToArray();
+            int[] oneFrom = new int[newTable.GetLength(0)].Select(q => -1).ToArray();
             for (int x = 0; x < newTable.GetLength(0) - 1; x++)
             {
                 int count1 = 0;
