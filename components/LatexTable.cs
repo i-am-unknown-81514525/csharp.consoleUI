@@ -149,5 +149,26 @@ namespace ui.components
                 inner[x, y] = value;
             }
         }
+
+        public override string AsLatex()
+        {
+            string table_config = Enumerable.Range(0, GetSize().y).Select(x => _verticalBarCol.Contains(x) ? '|' : 'c').AsByteBuffer().AsString();
+            int[] arrangement = Enumerable.Range(0, GetSize().y).Where(i => table_config[i] == 'c').ToArray();
+            List<string> contents = new List<string>();
+            for (int y = 0; y < GetSize().y; y++)
+            {
+                string content = "";
+                if (_horizontalBarRow.Contains(y))
+                {
+                    content = "\\hline";
+                }
+                else
+                {
+                    content = String.Join(" & ", arrangement.Select(x => this[x, y])) + "\\\\";
+                }
+                contents.Append(content);
+            }
+            return $"\\begin{{tabular}}{{ {arrangement} }}\n{String.Join("\n", contents)}\n\\end{{tabular}}";
+        }
     }
 }

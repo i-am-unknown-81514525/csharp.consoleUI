@@ -50,5 +50,17 @@ namespace ui.components
             if (GetMapping().Count == 0) return null;
             return GetMapping().Select(x => x.component).First();
         }
+
+        public override string AsLatex()
+        {
+            if (GetMapping().Count == 1)
+            {
+                return GetMapping()[1].component.AsLatex();
+            }
+            else
+            {
+                return "[EMPTY]";
+            }
+        }
     }
 }

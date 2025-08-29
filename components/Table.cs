@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using ui.math;
 using ui.utils;
+using System.Text;
 
 namespace ui.components
 {
@@ -157,6 +158,20 @@ namespace ui.components
         {
             get => this[loc.x, loc.y];
             set => this[loc.x, loc.y] = value;
+        }
+
+        public override string AsLatex()
+        {
+            StringBuilder builder = new StringBuilder();
+            for (int y = 0; y < GetSize().y; y++)
+            {
+                for (int x = 0; x < GetSize().x; x++)
+                {
+                    builder.Append($"{this[x, y].AsLatex()} ");
+                }
+                builder.Append("\\\\");
+            }
+            return builder.ToString();
         }
     }
 }

@@ -539,5 +539,10 @@ namespace ui.components
             if (parent is null) return pos;
             return parent.GetAbsolutePos(pos, this);
         }
+
+        public virtual string AsLatex()
+        {
+            return "";
+        }
     }
 }

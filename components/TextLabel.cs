@@ -72,5 +72,10 @@ namespace ui.components
         {
             return RenderSelf();
         }
+
+        public override string AsLatex()
+        {
+            return text.Replace("\n'", "\\\\");
+        }
     }
 }

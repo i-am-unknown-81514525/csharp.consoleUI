@@ -4,11 +4,11 @@ using System.Numerics;
 using System.Linq;
 using System.Collections.Generic;
 using ui.utils;
-using ui;
+using ui.LatexExt;
 
 namespace ui.math
 {
-    public struct Fraction : IComparable<Fraction>
+    public struct Fraction : IComparable<Fraction>, ILatex
     {
         public readonly BigInteger numerator, denominator;
 
@@ -62,7 +62,7 @@ namespace ui.math
 
         public Fraction(double value)
         {
-            // -5.12 -> -5/1, -0.12 -> -10/2, -0.24 -> -20/4, -0.48 
+            // -5.12 -> -5/1, -0.12 -> -10/2, -0.24 -> -20/4, -0.48
             // -40/8, -0.96 -> -80/16, -1.92 => -81/16, -0.92, -162/32, -1.84 => -163/32, -0.84
             // -> -326/64, -1.68 => -327/64, -0.68 -> -654/128, -1.36 => -655/128, -0.36 -> -1310/256, -0.72
             // -2620/512, -1.44 => -2621/512, -0.44 -> -5242/1024, -0.88 -> -10484/2048, -1.76 => -10485/2048, -0.76
@@ -136,7 +136,7 @@ namespace ui.math
 
         public Fraction Add(Fraction other)
         {
-            // 3/4 + 5/8 = (3*8+5*4)/8*4, = 44/32 = 11/8 
+            // 3/4 + 5/8 = (3*8+5*4)/8*4, = 44/32 = 11/8
             BigInteger v1 = MathUtils.factorize(this.denominator, other.denominator);
             BigInteger denominator = this.denominator / v1 * other.denominator;
             BigInteger leftNum = denominator / this.denominator * this.numerator;
@@ -323,6 +323,8 @@ namespace ui.math
         }
 
         public (BigInteger numerator, BigInteger denominator) asTuple() => (numerator, denominator);
+
+        public string AsLatex() => $"$\\frac{numerator}{denominator}$";
     }
 
     public static class FractionExtension
