@@ -4,7 +4,7 @@ namespace ui.components
 {
     public class OverlayApp : App
     {
-        public OverlayApp(Component component) : base(component)
+        public OverlayApp(BaseComponent component) : base(component)
         { }
     }
 }

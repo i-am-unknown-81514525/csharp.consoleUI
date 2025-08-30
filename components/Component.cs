@@ -19,7 +19,8 @@ namespace ui.components
 
     public class AlreadyInitException : InvalidOperationException { }
 
-    public abstract class Component : IComponent
+
+    public abstract class BaseComponent : IComponent
     {
         protected ActiveStatusHandler activeHandler;
         private IComponent root = null;
@@ -51,12 +52,12 @@ namespace ui.components
 
         private bool _rerender = false;
 
-        public Component(ComponentConfig config)
+        public BaseComponent(ComponentConfig config)
         {
             Init(config);
         }
 
-        public Component()
+        public BaseComponent()
         {
             _isInit = false;
         }
@@ -322,7 +323,7 @@ namespace ui.components
         {
             OnVisibleInternal();
             SetHasUpdate();
-            foreach (Component comp in this.GetMapping().Select(x => x.component))
+            foreach (BaseComponent comp in this.GetMapping().Select(x => x.component))
             {
                 comp.OnVisible();
             }
@@ -354,7 +355,7 @@ namespace ui.components
         internal void OnHide()
         {
             OnHideInternal();
-            foreach (Component comp in this.GetMapping().Select(x => x.component))
+            foreach (BaseComponent comp in this.GetMapping().Select(x => x.component))
             {
                 comp.OnHide();
             }
@@ -543,6 +544,49 @@ namespace ui.components
         public virtual string AsLatex()
         {
             return "";
+        }
+    }
+
+    public abstract class Component<S> : BaseComponent where S : ComponentStore
+    {
+        public readonly S store;
+
+        public Component(S store) : base()
+        {
+            this.store = store;
+        }
+
+        public Component(ComponentConfig config, S store) : base(config)
+        {
+            this.store = store;
+        }
+
+        public virtual S ComponentStoreConstructor()
+        {
+            S store = (new EmptyStore() as S);
+            if (store is null)
+            {
+                throw new InvalidOperationException("To use ComponentStore without providing on constructor, ComponentStoreConstructor must be defined on the component");
+            }
+            return store;
+        }
+
+        public Component() : base()
+        {
+            this.store = ComponentStoreConstructor();
+        }
+
+        public Component(ComponentConfig config) : base(config)
+        {
+            this.store = ComponentStoreConstructor();
+        }
+    }
+
+    public abstract class Component : Component<EmptyStore>
+    {
+        public override EmptyStore ComponentStoreConstructor()
+        {
+            return new EmptyStore();
         }
     }
 }

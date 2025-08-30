@@ -6,13 +6,20 @@ using System.Collections;
 namespace ui.components
 {
 
-    public abstract class SingleChildComponent : Component, IEnumerable<IComponent>
+    public abstract class SingleChildComponent<T> : Component<T>, IEnumerable<IComponent> where T : ComponentStore
     {
 
         protected SingleChildComponent() : base()
         {
         }
         protected SingleChildComponent(ComponentConfig config) : base(config)
+        {
+        }
+
+        protected SingleChildComponent(T store) : base(store)
+        {
+        }
+        protected SingleChildComponent(ComponentConfig config, T store) : base(config, store)
         {
         }
 

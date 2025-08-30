@@ -11,28 +11,35 @@ using static ui.core.ConsoleHandler;
 
 namespace ui.components
 {
-    public class App : App<App>
+    public class App : App<EmptyStore>
     {
-        public App(Component component) : base(component) { }
+        public App(BaseComponent component) : base(component) { }
 
-        protected App(Component component, ActiveStatusHandler activeStatusHandler) : base(component, activeStatusHandler) { }
+        protected App(BaseComponent component, ActiveStatusHandler activeStatusHandler) : base(component, activeStatusHandler) { }
     }
 
-    public class App<T> : SingleChildComponent where T : App<T>
+    public class App<S> : App<S, App<S>> where S : ComponentStore
+    {
+        public App(BaseComponent component) : base(component) { }
+
+        protected App(BaseComponent component, ActiveStatusHandler activeStatusHandler) : base(component, activeStatusHandler) { }
+    }
+
+    public class App<S, T> : SingleChildComponent<S> where T : App<S, T> where S : ComponentStore
     {
 
-        public Action<App<T>> onTickHandler = (_) => { };
+        public Action<App<S, T>> onTickHandler = (_) => { };
 
-        public Action<App<T>> onExitHandler = (_) => { };
+        public Action<App<S, T>> onExitHandler = (_) => { };
 
-        public App(Component component) : base(new ComponentConfig(new ActiveStatusHandler()))
+        public App(BaseComponent component) : base(new ComponentConfig(new ActiveStatusHandler()))
         {
             noParent = true;
             Add(component);
             SetChildAllocatedSize(component, (0, 0, GetAllocSize().x, GetAllocSize().y), 1);
         }
 
-        protected App(Component component, ActiveStatusHandler activeStatusHandler) : base(new ComponentConfig(activeStatusHandler))
+        protected App(BaseComponent component, ActiveStatusHandler activeStatusHandler) : base(new ComponentConfig(activeStatusHandler))
         {
             noParent = true;
             Add(component);
@@ -50,7 +57,7 @@ namespace ui.components
             SetChildAllocatedSize(GetMapping()[0].component, (0, 0, GetAllocSize().x, GetAllocSize().y), 1);
         }
 
-        public App<T> Run()
+        public App<S, T> Run()
         {
             try
             {

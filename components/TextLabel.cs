@@ -6,7 +6,7 @@ using ui.utils;
 
 namespace ui.components
 {
-    public class TextLabel : NoChildComponent
+    public class TextLabel<T> : NoChildComponent<T> where T : ComponentStore
     {
         //Reactive of text with type string, Trigger SetHasUpdate();
         private string _text;
@@ -40,6 +40,21 @@ namespace ui.components
         }
 
         public TextLabel(string text, ComponentConfig config) : base(config)
+        {
+            _text = text ?? "";
+        }
+
+        public TextLabel(T store, string text = null) : base(store)
+        {
+            _text = text ?? "";
+        }
+
+        public TextLabel(ComponentConfig config, T store, string text = null) : base(config, store)
+        {
+            _text = text ?? "";
+        }
+
+        public TextLabel(string text, ComponentConfig config, T store) : base(config, store)
         {
             _text = text ?? "";
         }
@@ -78,4 +93,6 @@ namespace ui.components
             return text.Replace("\n'", "\\\\");
         }
     }
+
+    public class TextLabel : TextLabel<EmptyStore> { }
 }

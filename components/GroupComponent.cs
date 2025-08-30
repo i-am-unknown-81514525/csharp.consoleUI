@@ -28,17 +28,29 @@ namespace ui.components
             (IComponent component, SplitAmount splitAmount) config
         ) => new GroupComponentConfig(config.component, config.splitAmount);
 
-        public static implicit operator GroupComponentConfig(Component component) => new GroupComponentConfig(component, (Fraction)1);
+        public static implicit operator GroupComponentConfig(BaseComponent component) => new GroupComponentConfig(component, (Fraction)1);
 
     }
 
-    public abstract class GroupComponent : Component, IEnumerable<GroupComponentConfig>
+    public abstract class GroupComponent<T> : Component<T>, IEnumerable<GroupComponentConfig> where T : ComponentStore
     {
         protected SplitHandler splitHandler = new SplitHandler(120); // Need to be update on initial
         protected Direction direction;
         protected Dictionary<IComponent, SplitConfig> splitMapping = new Dictionary<IComponent, SplitConfig>();
 
         protected GroupComponent() : base()
+        {
+        }
+
+        protected GroupComponent(T store) : base(store)
+        {
+        }
+
+        protected GroupComponent(ComponentConfig config) : base(config)
+        {
+        }
+
+        protected GroupComponent(ComponentConfig config, T store) : base(config, store)
         {
         }
 
@@ -173,5 +185,9 @@ namespace ui.components
         {
             return GetEnumerator();
         }
+    }
+
+    public abstract class GroupComponent : GroupComponent<EmptyStore>
+    {
     }
 }
