@@ -588,5 +588,8 @@ namespace ui.components
         {
             return new EmptyStore();
         }
+
+        public Component() : base() { }
+        public Component(ComponentConfig config) : base(config) { }
     }
 }

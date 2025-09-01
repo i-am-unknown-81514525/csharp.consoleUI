@@ -4,7 +4,7 @@ using ui.core;
 
 namespace ui.components
 {
-    public class Container : SingleChildComponent
+    public class Container<S> : SingleChildComponent<S> where S : ComponentStore
     {
 
         public Container() : base()
@@ -28,5 +28,13 @@ namespace ui.components
         {
             return (GetMapping().Count == 0, (child.Item1, (0, 0, GetAllocSize().x, GetAllocSize().y), 1));
         }
+    }
+
+    public class Container : Container<EmptyStore>
+    {
+        public Container() : base() { }
+        public Container(IComponent component) : base(component) { }
+        public Container(ComponentConfig config) : base(config) { }
+        public Container(IComponent component, ComponentConfig config) : base(component, config) { }
     }
 }

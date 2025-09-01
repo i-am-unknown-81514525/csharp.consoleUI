@@ -44,7 +44,7 @@ namespace ui.input
             return value;
         }
 
-        protected uint size
+        public uint size
         {
             get => (uint)content.Length;
         }
@@ -235,21 +235,51 @@ namespace ui.input
 
     public class MultiLineInputFieldHandler : InputFieldHandler
     {
-        protected (uint row, uint column) loc = (0, 0);
         protected (uint row, uint column) vir_loc = (0, 0); // Suggestive location in multiline tranversal, which might not be valid
 
-        protected uint to1D((uint row, uint column) loc)
+        public (uint row, uint column) size2D
+        {
+            get => to2D(size);
+        }
+
+        public (uint row, uint column) cursorPos2D
+        {
+            get => loc;
+        }
+
+        // private (uint row, uint column) _loc = (0, 0);
+
+        protected (uint row, uint column) loc
+        {
+            get => to2D(cursor);
+            set
+            {
+                cursor = to1D(value);
+            }
+        }
+
+        public uint to1D((uint row, uint column) loc)
         {
             string[] op = content.Split('\n');
             uint idx = 0;
-            for (uint i = 0; i < loc.row; i++)
+            uint col = loc.column;
+            uint row = loc.row;
+            if (row >= op.Length)
+            {
+                row = (uint)op.Length - 1;
+            }
+            if (col > op[row].Length)
+            {
+                col = (uint)op[row].Length;
+            }
+            for (uint i = 0; i < row; i++)
             {
                 idx += (uint)op[i].Length + 1;
             }
-            idx += loc.column;
+            idx += col;
             return idx;
         }
-        protected (uint row, uint column) to2D(uint idx)
+        public (uint row, uint column) to2D(uint idx)
         {
             uint row = 0;
             uint column = 0;
@@ -271,27 +301,28 @@ namespace ui.input
 
         protected (uint row, uint column) Correct((uint row, uint column) loc)
         {
-            string[] strArr = content.Split('\n');
-            uint row = loc.row;
-            uint col = loc.column;
-            if (row < 0) row = 0;
-            if (col < 0) col = 0;
-            if (row >= strArr.Length)
-            {
-                if (strArr.Length > 0)
-                    row = (uint)strArr.Length - 1;
-                else
-                    row = (uint)strArr.Length;
-            }
-            string data = strArr[row];
-            if (col >= data.Length)
-            {
-                if (data.Length > 0)
-                    col = (uint)data.Length - 1;
-                else
-                    col = (uint)data.Length;
-            }
-            return (row, col);
+            return to2D(to1D(loc));
+            // string[] strArr = content.Split('\n');
+            // uint row = loc.row;
+            // uint col = loc.column;
+            // if (row < 0) row = 0;
+            // if (col < 0) col = 0;
+            // if (row >= strArr.Length)
+            // {
+            //     if (strArr.Length > 0)
+            //         row = (uint)strArr.Length - 1;
+            //     else
+            //         row = (uint)strArr.Length;
+            // }
+            // string data = strArr[row];
+            // if (col >= data.Length)
+            // {
+            //     if (data.Length > 0)
+            //         col = (uint)data.Length - 1;
+            //     else
+            //         col = (uint)data.Length;
+            // }
+            // return (row, col);
         }
 
         protected override void Handle(byte value)
@@ -300,18 +331,41 @@ namespace ui.input
             loc = to2D(cursor);
         }
 
+        protected override void onDefault(byte value)
+        {
+            base.onDefault(value);
+            vir_loc = loc = to2D(cursor);
+        }
+
         protected override void onArrUp()
         {
-            if (vir_loc.row > 0)
+            if (vir_loc.row > 0 && loc.row > 0)
+            {
                 vir_loc = (vir_loc.row - 1, vir_loc.column);
-            loc = Correct(vir_loc);
+                loc = Correct(vir_loc);
+            }
+            else
+            {
+                cursor = 0;
+                loc = to2D(cursor);
+                vir_loc = to2D(cursor);
+            }
         }
 
         protected override void onArrDown()
         {
-            if (vir_loc.row < content.Split('\n').Length - 1)
+            if (vir_loc.row < content.Split('\n').Length - 1 && loc.row < content.Split('\n').Length - 1)
+            {
                 vir_loc = (vir_loc.row + 1, vir_loc.column);
-            loc = Correct(vir_loc);
+                loc = Correct(vir_loc);
+            }
+            else
+            {
+                cursor = size;
+                loc = to2D(cursor);
+                vir_loc = to2D(cursor);
+            }
+
         }
 
         protected override void onArrLeft()

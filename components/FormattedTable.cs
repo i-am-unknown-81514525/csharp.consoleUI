@@ -22,6 +22,7 @@ namespace ui.components
 
         public FormattedTable((int x, int y) size)
         {
+            Resize(size);
         }
 
         public override void InsertColumn(int idx, SplitAmount amount = null)
@@ -35,7 +36,7 @@ namespace ui.components
             else
             {
                 inner.InsertColumn(insert_idx, amount);
-                inner.InsertVerticalBarCol(0);
+                inner.InsertVerticalBarCol(insert_idx);
             }
             size = (size.x + 1, size.y);
         }
@@ -89,6 +90,15 @@ namespace ui.components
             if (size.y == 1)
             {
                 inner.RemoveRow(1); // the horizontal bar removed when only 1 row remaining
+            }
+        }
+
+        public override IComponent this[int x, int y]
+        {
+            get => inner[x * 2, y == 0 ? 0 : y + 1];
+            set
+            {
+                inner[x * 2, y == 0 ? 0 : y + 1] = value;
             }
         }
     }

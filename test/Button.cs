@@ -8,7 +8,7 @@ using static ui.core.ConsoleHandler;
 
 namespace ui.test
 {
-    public class CounterButton : Button<CounterButton>
+    public class CounterButton : Button<EmptyStore, CounterButton>
     {
         internal string _base_text;
         internal int _count;

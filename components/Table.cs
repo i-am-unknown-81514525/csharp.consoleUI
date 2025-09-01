@@ -8,7 +8,7 @@ using System.Text;
 namespace ui.components
 {
 
-    public class Table : SingleChildComponent, ITable
+    public class Table<S> : SingleChildComponent<S>, ITable where S : ComponentStore
     {
 
         private HorizontalGroupComponent _horizontal = new HorizontalGroupComponent();
@@ -173,5 +173,11 @@ namespace ui.components
             }
             return builder.ToString();
         }
+    }
+
+    public class Table : Table<EmptyStore>
+    {
+        public Table(SplitAmount vSplit = null, SplitAmount hSplit = null) : base(vSplit, hSplit) { }
+        public Table((int x, int y) size) : base(size) { }
     }
 }

@@ -3,7 +3,7 @@ using ui.fmt;
 
 namespace ui.components
 {
-    public class HorizontalBar : TextLabel
+    public class HorizontalBar : TextLabel<EmptyStore>
     {
         // vAlign is ignored
 
@@ -56,7 +56,7 @@ namespace ui.components
         }
     }
 
-    public class VerticalBar : TextLabel
+    public class VerticalBar : TextLabel<EmptyStore>
     {
         // vAlign is ignored
 

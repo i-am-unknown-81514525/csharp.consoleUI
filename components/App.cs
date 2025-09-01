@@ -11,7 +11,7 @@ using static ui.core.ConsoleHandler;
 
 namespace ui.components
 {
-    public class App : App<EmptyStore>
+    public class App : App<EmptyStore, App>
     {
         public App(BaseComponent component) : base(component) { }
 

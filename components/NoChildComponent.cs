@@ -25,5 +25,14 @@ namespace ui.components
         }
     }
 
-    public abstract class NoChildComponent : Component<EmptyStore> { }
+    public abstract class NoChildComponent : Component<EmptyStore>
+    {
+        protected NoChildComponent() : base()
+        {
+        }
+
+        protected NoChildComponent(ComponentConfig config) : base(config)
+        {
+        }
+    }
 }

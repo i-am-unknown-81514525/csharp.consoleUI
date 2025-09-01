@@ -30,5 +30,29 @@ namespace ui.components.chainExt
             v.onClickHandler = (_, loc) => { onClickHandler(loc); };
             return v;
         }
+
+        public static T WithHandler<T>(this T v, Action<Button<EmptyStore, T>, ConsoleLocation> onClickHandler) where T : Button<EmptyStore, T>
+        {
+            v.onClickHandler = onClickHandler;
+            return v;
+        }
+
+        public static T WithHandler<T>(this T v, Action<ConsoleLocation> onClickHandler) where T : Button<EmptyStore, T>
+        {
+            v.onClickHandler = (_, loc) => onClickHandler(loc);
+            return v;
+        }
+
+        public static T WithHandler<T, R>(this T v, Func<Button<EmptyStore, T>, ConsoleLocation, R> onClickHandler) where T : Button<EmptyStore, T>
+        {
+            v.onClickHandler = (b, loc) => { onClickHandler(b, loc); };
+            return v;
+        }
+
+        public static T WithHandler<T, R>(this T v, Func<ConsoleLocation, R> onClickHandler) where T : Button<EmptyStore, T>
+        {
+            v.onClickHandler = (_, loc) => { onClickHandler(loc); };
+            return v;
+        }
     }
 }

@@ -6,7 +6,7 @@ using ui.core;
 
 namespace ui.components
 {
-    public class Switcher<T> : Component<T>, IEnumerable<IComponent> where T : ComponentStore
+    public class Switcher<S, T> : Component<S>, IEnumerable<IComponent> where S : ComponentStore where T : Switcher<S, T>
     {
         List<IComponent> compList = new List<IComponent>();
         private int idx = 0;
@@ -17,9 +17,9 @@ namespace ui.components
 
         public Switcher(ComponentConfig config) : base(config) { }
 
-        public Switcher(T store) : base(store) { }
+        public Switcher(S store) : base(store) { }
 
-        public Switcher(ComponentConfig config, T store) : base(config, store) { }
+        public Switcher(ComponentConfig config, S store) : base(config, store) { }
 
         public Switcher(IEnumerable<IComponent> components) : base()
         {
@@ -105,5 +105,7 @@ namespace ui.components
         }
     }
 
-    public class Switcher : Switcher<EmptyStore> { }
+    public class Switcher<S> : Switcher<S, Switcher<S>> where S : ComponentStore { }
+
+    public class Switcher : Switcher<EmptyStore, Switcher> { }
 }

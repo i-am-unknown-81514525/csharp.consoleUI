@@ -21,13 +21,14 @@ namespace ui.components
 
         public override void InsertRow(int idx, ui.utils.SplitAmount amount = null)
         {
+            if (idx > size.y) idx = size.y;
             inner.InsertRow(idx, amount);
             _horizontalBarRow = _horizontalBarRow.Select(x => x > idx ? x + 1 : x).ToList();
             for (int x = 0; x < GetSize().x; x++)
             {
                 if (_verticalBarCol.Contains(x))
                 {
-                    inner[(x, idx)] = new TextLabel("│");
+                    inner[(x, idx)] = new VerticalBar('│');
                 }
             }
         }
@@ -43,33 +44,38 @@ namespace ui.components
         public override void InsertColumn(int idx, ui.utils.SplitAmount amount = null)
         {
             if (idx < 0) throw new ArgumentOutOfRangeException("idx must be greater than 0");
+            if (idx > size.x) idx = size.x;
             // int idx_intersect, idx_normal;
             // int idx_normal;
-            if (idx >= GetSize().x)
-            {
-                // Add barrier then add data column at the end (not insert)
-                // AddRawColumn(1);
-                // idx_intersect = inner.GetSize().x - 1;
-                inner.AddColumn(amount);
-                // idx_normal = inner.GetSize().x - 1;
-            }
-            else
-            {
-                // Barrier then the data column on new_idx = idx*2
-                // InsertRawColumn(idx * 2, 1);
-                inner.InsertColumn(idx * 2, amount);
-                // idx_normal = idx * 2;
-                // idx_intersect = idx_normal + 1;
-            }
+            // if (idx >= GetSize().x)
+            // {
+            //     // Add barrier then add data column at the end (not insert)
+            //     // AddRawColumn(1);
+            //     // idx_intersect = inner.GetSize().x - 1;
+            //     inner.AddColumn(amount);
+            //     // idx_normal = inner.GetSize().x - 1;
+            // }
+            // else
+            // {
+            //     // Barrier then the data column on new_idx = idx*2
+            //     // InsertRawColumn(idx * 2, 1);
+            //     // inner.InsertColumn(idx, amount);
+            //     // idx_normal = idx * 2;
+            //     // idx_intersect = idx_normal + 1;
+            // }
+            inner.InsertColumn(idx, amount);
+            _verticalBarCol = _verticalBarCol.Select(y => y > idx ? y + 1 : y).ToList();
+
             foreach (int y in _horizontalBarRow)
             {
-                inner[(idx, y)] = new TextLabel("─");
+                inner[(idx, y)] = new HorizontalBar('─');
                 // inner[(idx_intersect, y)] = new HorizontalBar('┼');
             }
         }
 
         public void InsertHorizontalBarRow(int idx)
         {
+            if (idx > size.y) idx = size.y;
             InsertRow(idx, 1);
             int y = idx;
             for (int x = 0; x < inner.GetSize().x; x++)
@@ -80,7 +86,8 @@ namespace ui.components
                 }
                 else
                 {
-                    inner[(x, y)] = new TextLabel("│");
+                    inner[(x, y)] = new HorizontalBar('─');
+                    // inner[(x, y)] = new VerticalBar('│');
                 }
             }
             _horizontalBarRow.Add(idx);
@@ -90,20 +97,28 @@ namespace ui.components
 
         public void InsertVerticalBarCol(int idx)
         {
+            int curr_idx = idx;
+            int curr = size.x;
+            if (idx > size.x) idx = size.x;
             InsertRow(idx, 1);
-            int y = idx;
-            for (int x = 0; x < inner.GetSize().x; x++)
+            int x = idx;
+            if (x >= inner.GetSize().x)
             {
-                if (_horizontalBarRow.Contains(x))
+                throw new InvalidOperationException($"DEBUG: x={x}, inner.GetSize().x={inner.GetSize().x} prev,size.x={curr} size.x={size.x} prev,idx={idx}");
+            }
+            for (int y = 0; y < inner.GetSize().y; y++)
+            {
+                if (_horizontalBarRow.Contains(y))
                 {
                     inner[(x, y)] = new TextLabel("┼");
                 }
                 else
                 {
-                    inner[(x, y)] = new TextLabel("─");
+                    // inner[(x, y)] = new HorizontalBar('─');
+                    inner[(x, y)] = new VerticalBar('│');
                 }
             }
-            _horizontalBarRow.Add(idx);
+            _verticalBarCol.Add(idx);
         }
 
         public void AddVerticalBarCol() => InsertVerticalBarCol(inner.GetSize().x);

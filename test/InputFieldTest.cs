@@ -8,7 +8,7 @@ using static ui.core.ConsoleHandler;
 
 namespace ui.test
 {
-    public class ExitButton : Button<ExitButton>
+    public class ExitButton : Button<EmptyStore, ExitButton>
     {
         public ExitButton(string text = null) : base(text) { }
 

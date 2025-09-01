@@ -94,5 +94,10 @@ namespace ui.components
         }
     }
 
-    public class TextLabel : TextLabel<EmptyStore> { }
+    public class TextLabel : TextLabel<EmptyStore>
+    {
+        public TextLabel(string text = null) : base(text) { }
+        public TextLabel(ComponentConfig config, string text = null) : base(config, text) { }
+        public TextLabel(string text, ComponentConfig config) : base(text, config) { }
+    }
 }
