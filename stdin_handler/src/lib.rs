@@ -211,9 +211,9 @@ pub extern "cdecl" fn stdin_data_remain() -> bool {
     });
     cfg_if::cfg_if! {
         if #[cfg(target_family = "unix")] {
-            let delay = 400;
+            let delay = 1600;
         } else {
-            let delay = 4000; // 10x the unix delay because poor windows time allocation skill + debug mode make code even slower
+            let delay = 8000; // 5x the unix delay because poor windows time allocation skill + debug mode make code even slower
         }
     }
     let result: bool = match r.recv_timeout(Duration::from_micros(delay)) {
@@ -240,9 +240,9 @@ pub extern "cdecl" fn read_stdin_end() -> *const c_char {
         });
         cfg_if::cfg_if! {
             if #[cfg(target_family = "unix")] {
-                let delay = 1000;
+                let delay = 4000;
             } else {
-                let delay = 10000; // 10x the unix delay because poor windows time allocation skill + debug mode make code even slower
+                let delay = 20000; // 5x the unix delay because poor windows time allocation skill + debug mode make code even slower
             }
         }
         match r.recv_timeout(Duration::from_micros(delay)) {

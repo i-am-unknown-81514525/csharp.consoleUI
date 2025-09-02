@@ -5,9 +5,9 @@ namespace ui.components
 {
     public class FormattedTable : VirtualTable<LatexTable>
     {
-        internal override (int x, int y) size { get; set; } = (1, 1);
+        protected override (int x, int y) size { get; set; } = (1, 1);
 
-        internal override LatexTable InnerConstructor()
+        protected override LatexTable InnerConstructor()
         {
             LatexTable table = new LatexTable((1, 1));
             size = (1, 1);
@@ -45,9 +45,18 @@ namespace ui.components
         {
             if (size.y == 1)
             {
-                inner.AddHorizontalBarRow();
+                inner.InsertHorizontalBarRow(1);
             }
-            inner.InsertRow(idx + 1, amount);
+            if (idx == 0)
+            {
+                inner.RemoveRow(1);
+                inner.InsertRow(idx, amount);
+                inner.InsertHorizontalBarRow(1);
+            }
+            else
+            {
+                inner.InsertRow(idx + 1, amount);
+            }
             size = (size.x, size.y + 1);
         }
 
@@ -100,6 +109,16 @@ namespace ui.components
             {
                 inner[x * 2, y == 0 ? 0 : y + 1] = value;
             }
+        }
+
+        public override (int x, int y) GetSize()
+        {
+            (int x, int y) = inner.GetSize();
+            if (y > 1)
+            {
+                y--;
+            }
+            return ((x + 1) / 2, y);
         }
     }
 }

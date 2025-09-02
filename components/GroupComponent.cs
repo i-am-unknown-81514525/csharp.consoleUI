@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using ui.utils;
 using ui.math;
+using ui.core;
 
 namespace ui.components
 {
@@ -184,6 +185,24 @@ namespace ui.components
         public IEnumerator GetEnumerator()
         {
             return GetEnumerator();
+        }
+
+        protected override ConsoleContent[,] RenderPre(ConsoleContent[,] content)
+        {
+            for (int x = 0; x < GetAllocSize().x; x++)
+            {
+                for (int y = 0; y < GetAllocSize().y; y++)
+                {
+                    content[x, y] = new ConsoleContent
+                    {
+                        content = " ",
+                        ansiPrefix = "",
+                        ansiPostfix = "",
+                        isContent = true
+                    };
+                }
+            }
+            return content;
         }
     }
 

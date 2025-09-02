@@ -10,7 +10,7 @@ namespace ui.components
         private List<int> _horizontalBarRow = new List<int>();
         private List<int> _verticalBarCol = new List<int>();
 
-        internal override Table InnerConstructor()
+        protected override Table InnerConstructor()
         {
             return new Table((1, 1));
         }
@@ -68,6 +68,7 @@ namespace ui.components
 
             foreach (int y in _horizontalBarRow)
             {
+                DEBUG.DebugStore.AppendLine($"Write horizontal to {y}");
                 inner[(idx, y)] = new HorizontalBar('─');
                 // inner[(idx_intersect, y)] = new HorizontalBar('┼');
             }
@@ -78,6 +79,7 @@ namespace ui.components
             if (idx > size.y) idx = size.y;
             InsertRow(idx, 1);
             int y = idx;
+            DEBUG.DebugStore.AppendLine($"Write horizontal to {y} from bar insert");
             for (int x = 0; x < inner.GetSize().x; x++)
             {
                 if (_verticalBarCol.Contains(x))
@@ -97,15 +99,15 @@ namespace ui.components
 
         public void InsertVerticalBarCol(int idx)
         {
-            int curr_idx = idx;
-            int curr = size.x;
+            // int curr_idx = idx;
+            // int curr = size.x;
             if (idx > size.x) idx = size.x;
-            InsertRow(idx, 1);
+            InsertColumn(idx, 1);
             int x = idx;
-            if (x >= inner.GetSize().x)
-            {
-                throw new InvalidOperationException($"DEBUG: x={x}, inner.GetSize().x={inner.GetSize().x} prev,size.x={curr} size.x={size.x} prev,idx={idx}");
-            }
+            // if (x >= inner.GetSize().x)
+            // {
+            //     throw new InvalidOperationException($"DEBUG: x={x}, inner.GetSize().x={inner.GetSize().x} prev,size.x={curr} size.x={size.x} prev,idx={idx}");
+            // }
             for (int y = 0; y < inner.GetSize().y; y++)
             {
                 if (_horizontalBarRow.Contains(y))
@@ -184,6 +186,11 @@ namespace ui.components
                 contents.Append(content);
             }
             return $"\\begin{{tabular}}{{ {arrangement} }}\n{String.Join("\n", contents)}\n\\end{{tabular}}";
+        }
+
+        public override string Debug_Info()
+        {
+            return $"horizontal_row={String.Join(", ", _horizontalBarRow)} vertical_column={String.Join(", ", _verticalBarCol)}";
         }
     }
 }

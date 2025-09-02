@@ -69,6 +69,10 @@ namespace ui.components
 
         protected ComponentInputFieldHandler inputFieldHandler = new ComponentInputFieldHandler();
 
+        //Reactive of underline with type bool and default value: `true`, Trigger: SetHasUpdate();
+        private bool _underline = true;
+        public bool underline { get => _underline; set { _underline = value; SetHasUpdate(); } }
+
         public SingleLineInputField(string content = "") : base()
         {
             inputFieldHandler.SetHandler(OnTypeEventTrigger);
@@ -170,8 +174,13 @@ namespace ui.components
             (string renderContent, int cursorPos) = getRenderContent();
             string prefix = TextColorFormatter.Constructor(fore, back);
             string postfix = TextColorFormatter.Constructor(ForegroundColorEnum.LIB_DEFAULT, BackgroundColorEnum.LIB_DEFAULT);
-            string lastlinepre = prefix + TextStyleFormatter.Constructor(EnableStyleEnum.UNDERLINE);
-            string lastlinepost = postfix + TextStyleFormatter.Constructor(DisableStyleEnum.UNDERLINE);
+            string lastlinepre = prefix;
+            string lastlinepost = postfix;
+            if (underline)
+            {
+                lastlinepre = prefix + TextStyleFormatter.Constructor(EnableStyleEnum.UNDERLINE);
+                lastlinepost = postfix + TextStyleFormatter.Constructor(DisableStyleEnum.UNDERLINE);
+            }
             for (int x = 0; x < renderContent.Length && x < size.x; x++)
             {
                 content[x, 0] = new ConsoleContent

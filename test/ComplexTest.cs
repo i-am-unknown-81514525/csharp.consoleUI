@@ -13,9 +13,9 @@ namespace ui.test
                 new VerticalGroupComponent() {
                     (new Frame().WithInner(new Button("Button 1")), new Fraction(1, 4)),
                     (new Padding(), 1),
-                    (new Frame().WithInner(new Button("Button 2")), new Fraction(1, 4)),
+                    (new Frame().WithInner(new Button("Test table").WithHandler((_)=>switcher.SwitchTo(2))), new Fraction(1, 4)),
                     (new Padding(), 1),
-                    (new Frame().WithInner(new SingleLineInputField()), 3),
+                    (new Frame().WithInner(new Button("Test multi-line input").WithHandler((_)=>switcher.SwitchTo(1))), new Fraction(1, 4)),
                     // (new Frame().WithInner(new Button("Button 3")), new Fraction(1, 4)),
                     (new Padding(), 1),
                     (new Frame().WithInner(new ExitButton("Exit")), new Fraction(1, 4)),
@@ -59,8 +59,28 @@ namespace ui.test
                 switcher
             );
             switcher.AddMulti(
-                new[] {
-                    new TestOuterMenu(switcher)
+                new IComponent[] {
+                    new TestOuterMenu(switcher),
+                    new VerticalGroupComponent() {
+                        new MultiLineInputField(),
+                        (new Button("Back")
+                            .WithHandler(
+                                (_)=>switcher.SwitchTo(0)
+                            ), 1)
+                    },
+                    new VerticalGroupComponent() {
+                        (
+                            new FormattedTable(
+                                (5, 5)
+                            ) {}
+                        ).WithComponentConstructor(
+                            () => new SingleLineInputField().WithChange((c) => c.underline = false)
+                        ),
+                        (new Button("Back")
+                            .WithHandler(
+                                (_)=>switcher.SwitchTo(0)
+                            ), 1)
+                    }
                 }
             );
             app.WithExitHandler((appObj) =>

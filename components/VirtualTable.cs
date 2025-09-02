@@ -9,8 +9,8 @@ namespace ui.components
 
     public abstract class VirtualTable<T> : Container, ITable where T : ITable
     {
-        internal readonly T inner;
-        internal virtual (int x, int y) size
+        protected readonly T inner;
+        protected virtual (int x, int y) size
         {
             get => GetSize();
             set
@@ -18,7 +18,7 @@ namespace ui.components
                 throw new InvalidOperationException("size cannot be directly overwritten");
             }
         }
-        internal abstract T InnerConstructor();
+        protected abstract T InnerConstructor();
 
         public VirtualTable() : base()
         {
