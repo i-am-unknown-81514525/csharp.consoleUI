@@ -38,7 +38,7 @@ namespace ui.components
             {
                 AddColumn();
             }
-            for (int y = GetSize().y; y < newSize.x; y++)
+            for (int y = GetSize().y; y < newSize.y; y++)
             {
                 AddRow();
             }
@@ -52,18 +52,19 @@ namespace ui.components
             }
             if (newSize.x < GetSize().x)
             {
-                for (int x = newSize.x; x > GetSize().y; x--)
+                for (int x = GetSize().x - 1; x >= newSize.x; x--)
                 {
                     RemoveColumn(x);
                 }
             }
             if (newSize.y < GetSize().y)
             {
-                for (int y = newSize.y; y > GetSize().y; y--)
+                for (int y = GetSize().y - 1; y >= newSize.y; y--)
                 {
                     RemoveRow(y);
                 }
             }
+            DEBUG.DebugStore.AppendLine($"{newSize}, {GetSize()}");
             Resize(newSize);
         }
 

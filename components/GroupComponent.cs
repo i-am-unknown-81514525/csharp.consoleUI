@@ -110,6 +110,7 @@ namespace ui.components
             SplitConfig splitConfig = splitMapping[component];
             splitMapping.Remove(component);
             splitHandler.Remove(splitConfig);
+            UpdateSize();
         }
 
         protected void SyncMapping()

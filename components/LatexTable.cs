@@ -21,7 +21,6 @@ namespace ui.components
 
         public override void InsertRow(int idx, ui.utils.SplitAmount amount = null)
         {
-            if (idx > size.y) idx = size.y;
             inner.InsertRow(idx, amount);
             _horizontalBarRow = _horizontalBarRow.Select(x => x > idx ? x + 1 : x).ToList();
             for (int x = 0; x < GetSize().x; x++)
@@ -46,7 +45,6 @@ namespace ui.components
         public override void InsertColumn(int idx, ui.utils.SplitAmount amount = null)
         {
             if (idx < 0) throw new ArgumentOutOfRangeException("idx must be greater than 0");
-            if (idx > size.x) idx = size.x;
             // int idx_intersect, idx_normal;
             // int idx_normal;
             // if (idx >= GetSize().x)
