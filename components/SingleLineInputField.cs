@@ -54,7 +54,7 @@ namespace ui.components
         }
     }
 
-    public class SingleLineInputField : NoChildComponent
+    public class SingleLineInputField<T> : NoChildComponent<T> where T : ComponentStore
     {
         //Reactive of content with type string and default value: `""`, Trigger: SetHasUpdate();
         public string content { get => inputFieldHandler.GetContent(); set { inputFieldHandler.SetContent(content); SetHasUpdate(); } }
@@ -98,8 +98,14 @@ namespace ui.components
             {
                 Deactive(null);
                 inputFieldHandler.SetCursorPosition((uint)inputFieldHandler.GetContent().Length);
+                OnExitHandler();
                 SetHasUpdate();
             }
+        }
+
+        protected virtual void OnExitHandler()
+        {
+
         }
 
         protected override void OnActive()
@@ -261,5 +267,10 @@ namespace ui.components
             setCursorPos();
             SetHasUpdate();
         }
+    }
+
+    public class SingleLineInputField : SingleLineInputField<EmptyStore>
+    {
+        public SingleLineInputField(string content = "") : base(content) { }
     }
 }

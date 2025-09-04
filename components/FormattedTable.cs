@@ -5,6 +5,8 @@ namespace ui.components
 {
     public class FormattedTable : VirtualTable<LatexTable>
     {
+
+
         protected override (int x, int y) size { get; set; } = (1, 1);
 
         protected override LatexTable InnerConstructor()
@@ -39,6 +41,7 @@ namespace ui.components
                 inner.InsertVerticalBarCol(insert_idx);
             }
             size = (size.x + 1, size.y);
+            SetHasUpdate();
         }
 
         public override void InsertRow(int idx, SplitAmount amount = null)
@@ -77,6 +80,7 @@ namespace ui.components
                 inner.RemoveColumn(remove_idx);
             }
             size = (size.x - 1, size.y);
+            SetHasUpdate();
         }
 
         public override void RemoveRow(int idx)
@@ -100,6 +104,7 @@ namespace ui.components
             {
                 inner.RemoveRow(1); // the horizontal bar removed when only 1 row remaining
             }
+            SetHasUpdate();
         }
 
         public override IComponent this[int x, int y]

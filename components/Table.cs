@@ -97,6 +97,7 @@ namespace ui.components
             _verticalGroups.Insert(idx, vert);
             _horizontal.Insert(idx, (vert, amount));
             size = (size.x + 1, size.y);
+            SetHasUpdate();
         }
 
         public void InsertRow(int idx, SplitAmount amount = null)
@@ -110,6 +111,7 @@ namespace ui.components
             }
             _vSize.Insert(idx, amount);
             size = (size.x, size.y + 1);
+            SetHasUpdate();
         }
 
         public void RemoveColumn(int idx)
@@ -121,6 +123,7 @@ namespace ui.components
             _verticalGroups.RemoveAt(idx);
             _horizontal.RemoveChildComponent(vert);
             size = (size.x - 1, size.y);
+            SetHasUpdate();
         }
 
         public void RemoveRow(int idx)
@@ -135,6 +138,7 @@ namespace ui.components
             }
             _vSize.RemoveAt(idx);
             size = (size.x, size.y - 1);
+            SetHasUpdate();
         }
 
 
@@ -151,6 +155,7 @@ namespace ui.components
                 }
                 container.RemoveChildComponent(container.GetInner());
                 container.Add(value);
+                SetHasUpdate();
             }
         }
 

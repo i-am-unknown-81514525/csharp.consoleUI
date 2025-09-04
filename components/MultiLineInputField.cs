@@ -99,8 +99,14 @@ namespace ui.components
             {
                 Deactive(null);
                 inputFieldHandler.SetCursorPosition((uint)inputFieldHandler.GetContent().Length);
+                OnExitHandler();
                 SetHasUpdate();
             }
+        }
+
+        protected virtual void OnExitHandler()
+        {
+
         }
 
         protected override void OnActive()

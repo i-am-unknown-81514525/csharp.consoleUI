@@ -244,9 +244,11 @@ namespace ui.math
         public static Fraction operator +(Fraction left, Fraction right) => left.Add(right);
         public static Fraction operator +(Fraction left, long right) => left + new Fraction(right);
         public static Fraction operator +(long left, Fraction right) => new Fraction(left) + right;
+        public static Fraction operator +(Fraction right) => right;
         public static Fraction operator -(Fraction left, Fraction right) => left.Subtract(right);
         public static Fraction operator -(Fraction left, long right) => left - new Fraction(right);
         public static Fraction operator -(long left, Fraction right) => new Fraction(left) - right;
+        public static Fraction operator -(Fraction right) => right.asOpposeSign();
         public static Fraction operator *(Fraction left, Fraction right) => left.Multiply(right);
         public static Fraction operator *(Fraction left, long right) => left * new Fraction(right);
         public static Fraction operator *(long left, Fraction right) => new Fraction(left) * right;

@@ -31,6 +31,7 @@ namespace ui.components
                     inner[(x, idx)] = new VerticalBar('│');
                 }
             }
+            SetHasUpdate();
         }
 
         public override void RemoveRow(int idx)
@@ -38,6 +39,7 @@ namespace ui.components
             if (_horizontalBarRow.Contains(idx)) _horizontalBarRow.Remove(idx);
             inner.RemoveRow(idx);
             _horizontalBarRow = _horizontalBarRow.Select(x => x > idx ? x - 1 : x).ToList();
+            SetHasUpdate();
         }
 
 
@@ -72,6 +74,7 @@ namespace ui.components
                 inner[(idx, y)] = new HorizontalBar('─');
                 // inner[(idx_intersect, y)] = new HorizontalBar('┼');
             }
+            SetHasUpdate();
         }
 
         public void InsertHorizontalBarRow(int idx)
@@ -152,6 +155,7 @@ namespace ui.components
                 _verticalBarCol.Remove(idx);
             }
             _verticalBarCol = _verticalBarCol.Select(x => x > idx ? x - 1 : x).ToList();
+            SetHasUpdate();
         }
 
         public override IComponent this[int x, int y]
