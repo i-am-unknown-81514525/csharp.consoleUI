@@ -22,7 +22,7 @@ namespace ui.components
         public override void InsertRow(int idx, ui.utils.SplitAmount amount = null)
         {
             inner.InsertRow(idx, amount);
-            _horizontalBarRow = _horizontalBarRow.Select(x => x > idx ? x + 1 : x).ToList();
+            _horizontalBarRow = _horizontalBarRow.Select(x => x >= idx ? x + 1 : x).ToList();
             for (int x = 0; x < GetSize().x; x++)
             {
                 if (_verticalBarCol.Contains(x))
@@ -64,7 +64,7 @@ namespace ui.components
             //     // idx_intersect = idx_normal + 1;
             // }
             inner.InsertColumn(idx, amount);
-            _verticalBarCol = _verticalBarCol.Select(y => y > idx ? y + 1 : y).ToList();
+            _verticalBarCol = _verticalBarCol.Select(y => y >= idx ? y + 1 : y).ToList();
 
             foreach (int y in _horizontalBarRow)
             {

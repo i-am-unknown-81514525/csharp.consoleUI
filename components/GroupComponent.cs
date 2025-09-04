@@ -100,7 +100,7 @@ namespace ui.components
             return childsMapping.Select(x => x.component).Count(x => x == component) > 0;
         }
 
-        protected new void RemoveChildComponent(IComponent component)
+        public new void RemoveChildComponent(IComponent component)
         {
             if (!Contains(component))
             {
