@@ -79,7 +79,10 @@ namespace ui.components
 
         public abstract void RemoveRow(int idx);
 
-
+        public override string AsLatex()
+        {
+            return inner.AsLatex();
+        }
 
         public virtual IComponent this[int x, int y]
         {

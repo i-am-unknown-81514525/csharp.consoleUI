@@ -62,7 +62,7 @@ namespace ui.components
         {
             if (GetMapping().Count == 1)
             {
-                return GetMapping()[1].component.AsLatex();
+                return GetMapping()[0].component.AsLatex();
             }
             else
             {

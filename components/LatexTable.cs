@@ -171,8 +171,8 @@ namespace ui.components
 
         public override string AsLatex()
         {
-            string table_config = Enumerable.Range(0, GetSize().y).Select(x => _verticalBarCol.Contains(x) ? '|' : 'c').AsByteBuffer().AsString();
-            int[] arrangement = Enumerable.Range(0, GetSize().y).Where(i => table_config[i] == 'c').ToArray();
+            string table_config = Enumerable.Range(0, GetSize().x).Select(x => _verticalBarCol.Contains(x) ? '|' : 'c').AsByteBuffer().AsString();
+            int[] arrangement = Enumerable.Range(0, GetSize().x).Where(i => table_config[i] == 'c').ToArray();
             List<string> contents = new List<string>();
             for (int y = 0; y < GetSize().y; y++)
             {
@@ -183,11 +183,11 @@ namespace ui.components
                 }
                 else
                 {
-                    content = String.Join(" & ", arrangement.Select(x => this[x, y])) + "\\\\";
+                    content = String.Join(" & ", arrangement.Select(x => this[x, y].AsLatex())) + "\\\\";
                 }
-                contents.Append(content);
+                contents.Add(content);
             }
-            return $"\\begin{{tabular}}{{ {arrangement} }}\n{String.Join("\n", contents)}\n\\end{{tabular}}";
+            return $"\\begin{{tabular}}{{ {table_config} }}\n{String.Join("\n", contents)}\n\\end{{tabular}}";
         }
 
         public override string Debug_Info()

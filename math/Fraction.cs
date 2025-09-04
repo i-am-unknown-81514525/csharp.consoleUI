@@ -326,7 +326,7 @@ namespace ui.math
 
         public (BigInteger numerator, BigInteger denominator) asTuple() => (numerator, denominator);
 
-        public string AsLatex() => $"$\\frac{numerator}{denominator}$";
+        public string AsLatex() => denominator != 1 ? $"$\\frac{{{numerator}}}{{{denominator}}}$" : $"${numerator}$";
     }
 
     public static class FractionExtension

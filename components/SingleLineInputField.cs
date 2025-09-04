@@ -267,6 +267,11 @@ namespace ui.components
             setCursorPos();
             SetHasUpdate();
         }
+
+        public override string AsLatex()
+        {
+            return $"\\text{{{content}}}";
+        }
     }
 
     public class SingleLineInputField : SingleLineInputField<EmptyStore>
