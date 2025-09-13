@@ -133,7 +133,7 @@ namespace ui.components
             {
                 AddColumn();
             }
-            for (int y = 0; y < size.y; y++)
+            for (int y = 1; y < size.y; y++)
             {
                 AddRow();
             }
