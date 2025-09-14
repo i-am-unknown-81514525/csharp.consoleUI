@@ -18,11 +18,59 @@ namespace ui.components
             };
         }
 
-        public PageSwitcher(Switcher switcher, int page) : base($"Go To Page {page}")
+        public PageSwitcher(Switcher switcher, int page, string content = null) : base(content ?? $"Go To Page {page}")
         {
             onClickHandler = (_, __) =>
             {
                 if (required())
+                {
+                    switcher.SwitchTo(page);
+                }
+            };
+        }
+
+        public PageSwitcher(Switcher switcher, Func<bool> required, string content, int page) : base(content)
+        {
+            this.required = required;
+            onClickHandler = (_, __) =>
+            {
+                if (this.required())
+                {
+                    switcher.SwitchTo(page);
+                }
+            };
+        }
+
+        public PageSwitcher(Switcher switcher, Func<bool> required, int page, string content = null) : base(content ?? $"Go To Page {page}")
+        {
+            this.required = required;
+            onClickHandler = (_, __) =>
+            {
+                if (this.required())
+                {
+                    switcher.SwitchTo(page);
+                }
+            };
+        }
+
+        public PageSwitcher(Switcher switcher, string content, Func<bool> required, int page) : base(content)
+        {
+            this.required = required;
+            onClickHandler = (_, __) =>
+            {
+                if (this.required())
+                {
+                    switcher.SwitchTo(page);
+                }
+            };
+        }
+
+        public PageSwitcher(Switcher switcher, int page, Func<bool> required, string content = null) : base(content ?? $"Go To Page {page}")
+        {
+            this.required = required;
+            onClickHandler = (_, __) =>
+            {
+                if (this.required())
                 {
                     switcher.SwitchTo(page);
                 }
