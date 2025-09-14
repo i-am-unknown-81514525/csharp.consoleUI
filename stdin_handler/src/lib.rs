@@ -1,7 +1,7 @@
-use cli_clipboard::get_contents;
+use cli_clipboard::{get_contents, set_contents};
 use core::sync::atomic::{AtomicBool, Ordering};
 use crossbeam_channel::bounded;
-use std::ffi::{CString, c_char};
+use std::ffi::{CStr, CString, c_char};
 use std::io::{self, BufRead};
 use std::io::{Read, Write};
 use std::thread;
@@ -277,6 +277,17 @@ pub extern "cdecl" fn read_clipboard() -> *const c_char {
     let ptr: *const c_char = c_string.as_ptr();
     std::mem::forget(c_string);
     ptr
+}
+
+#[unsafe(no_mangle)]
+pub extern "cdecl" fn write_clipboard(ptr: *const c_char) -> () {
+    let c_str = unsafe {
+        assert!(!ptr.is_null());
+
+        CStr::from_ptr(ptr)
+    };
+    let content = c_str.to_str().unwrap();
+    set_contents(content.to_string()).unwrap();
 }
 
 // Old:
