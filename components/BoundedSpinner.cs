@@ -3,7 +3,8 @@ using ui.components.chainExt;
 using ui.fmt;
 using ui.utils;
 
-namespace ui.components {
+namespace ui.components
+{
     public class DisableStore : ComponentStore
     {
         public bool disabled { get; set; } = false;
@@ -70,6 +71,18 @@ namespace ui.components {
         public DisableButton ascButton = new DisableButton("[+]");
 
         private HorizontalGroupComponent group = new HorizontalGroupComponent();
+
+        public void HiddenChange(int value)
+        {
+            if (_amount != value)
+            {
+                valueLabel.text = value.ToString();
+                _amount = value;
+                SetHasUpdate();
+                UpdateColor();
+            }
+
+        }
 
         private void LoadComponents()
         {
