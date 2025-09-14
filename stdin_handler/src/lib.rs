@@ -287,7 +287,7 @@ pub extern "cdecl" fn write_clipboard(ptr: *const c_char) -> () {
         CStr::from_ptr(ptr)
     };
     let content = c_str.to_str().unwrap();
-    set_contents(content.to_string()).unwrap();
+    let _ = set_contents(content.to_string()); // Ignore potential error and do it oppotunisticly
 }
 
 // Old:

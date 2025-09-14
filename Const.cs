@@ -31,7 +31,7 @@ namespace ui
 
     public static class SpecialChar
     {
-        public const char SINGLE_CHAR_ELLIPSIS = '\u206f';
+        public const char SINGLE_CHAR_ELLIPSIS = '>';// '\u206f';
     }
 
 
