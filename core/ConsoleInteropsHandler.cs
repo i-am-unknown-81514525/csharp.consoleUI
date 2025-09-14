@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -33,6 +33,9 @@ namespace ui.core
             [DllImport("libstdin_handler.dll", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
             private static extern string read_clipboard();
 
+            [DllImport("libstdin_handler.dll", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
+            private static extern void write_clipboard(string ptr);
+
             public static byte readStdin() => read_stdin();
 
             public static void Setup()
@@ -59,6 +62,8 @@ namespace ui.core
             }
 
             public static string ReadClipboard() => read_clipboard();
+
+            public static void WriteClipboard(string content) => write_clipboard(content);
         }
 
         private static class PosixConsoleHandler
@@ -84,6 +89,8 @@ namespace ui.core
             [DllImport("libstdin_handler", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
             private static extern string read_clipboard();
 
+            [DllImport("libstdin_handler", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
+            private static extern void write_clipboard(string ptr);
             public static byte readStdin() => read_stdin();
 
             private static void addPath(string name)
@@ -126,6 +133,8 @@ namespace ui.core
             }
 
             public static string ReadClipboard() => read_clipboard();
+
+            public static void WriteClipboard(string content) => write_clipboard(content);
         }
 
         public static class ConsoleIntermediateHandler
@@ -248,6 +257,18 @@ namespace ui.core
                 else
                 {
                     return PosixConsoleHandler.ReadClipboard();
+                }
+            }
+
+            public static void WriteClipboard(string content)
+            {
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                {
+                    WindowConsoleHandler.WriteClipboard(content);
+                }
+                else
+                {
+                    PosixConsoleHandler.WriteClipboard(content);
                 }
             }
         }
