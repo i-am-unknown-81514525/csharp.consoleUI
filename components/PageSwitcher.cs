@@ -1,6 +1,6 @@
 namespace ui.components
 {
-    class PageSwitcher : Button
+    public class PageSwitcher : Button
     {
         public PageSwitcher(Switcher switcher, string content, int page) : base(content)
         {
