@@ -28,6 +28,15 @@ namespace ui.components
         {
             return (GetMapping().Count == 0, (child.Item1, (0, 0, GetAllocSize().x, GetAllocSize().y), 1));
         }
+
+        public void Set(IComponent comp)
+        {
+            if (!(GetInner() is null))
+            {
+                RemoveChildComponent(GetInner());
+            }
+            Add(comp);
+        }
     }
 
     public class Container : Container<EmptyStore>
