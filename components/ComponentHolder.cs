@@ -7,7 +7,7 @@ namespace ui.components
         public UninitComponentException(string err = null) : base(err ?? "Using component from ComponentHolder that is not initialized") { }
     }
 
-    public struct ComponentHolder<T> where T : IComponent
+    public sealed class ComponentHolder<T> where T : IComponent
     {
         public T raw_inner { get; set; }
         public T inner
