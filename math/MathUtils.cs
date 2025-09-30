@@ -21,8 +21,17 @@ namespace ui.math
         //         }
         //     }
         //     return factor;
-            
+
         // }
+
+        public static BigInteger Abs(this BigInteger v)
+        {
+            if (v >= 0)
+            {
+                return v;
+            }
+            return -v;
+        }
 
         public static long factorize(long num1, long num2)
         {

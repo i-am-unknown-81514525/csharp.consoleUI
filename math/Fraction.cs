@@ -327,6 +327,105 @@ namespace ui.math
         public (BigInteger numerator, BigInteger denominator) asTuple() => (numerator, denominator);
 
         public string AsLatex() => denominator != 1 ? $"$\\frac{{{numerator}}}{{{denominator}}}$" : $"${numerator}$";
+
+        public Fraction Abs() => this >= 0 ? this : -this;
+
+        public (BigInteger integer, BigInteger length_0, BigInteger remaining) RepresentSigFig(BigInteger amount)
+        {
+            if (amount < 0)
+            {
+                throw new InvalidOperationException("Cannot have negative amount of significant figure");
+            }
+            BigInteger integer = numerator / denominator;
+            if (this < 0)
+            {
+                integer--;
+            }
+            Fraction remaining = this - integer;
+            if (remaining < 0)
+            {
+                throw new InvalidOperationException("Fraction:RepresentSigFig idk how it give negative remaining");
+            }
+            if (amount < integer.Abs().ToString().Length || remaining == 0)
+            {
+                if (remaining.Abs() > new Fraction(1, 2))
+                {
+                    integer += (remaining.numerator * 2) / remaining.denominator;
+                }
+                return (integer, 0, 0);
+            }
+            amount -= integer.Abs().ToString().Length - 2;
+            BigInteger length_0 = -1;
+            while (remaining < 1)
+            {
+                length_0++;
+                remaining *= 10;
+                amount--;
+                if (amount < 0)
+                {
+                    return (integer, length_0, 0);
+                }
+            }
+            BigInteger left_over = 0;
+            while (amount >= 0)
+            {
+                if (remaining > 1)
+                {
+                    BigInteger curr = remaining.numerator / remaining.denominator;
+                    remaining -= curr;
+                    left_over = left_over * 10 + curr;
+                }
+            }
+            return (integer, length_0, left_over);
+        }
+
+        public (BigInteger integer, BigInteger length_0, BigInteger remaining) RepresentDp(BigInteger amount)
+        {
+            if (amount < 0)
+            {
+                throw new InvalidOperationException("Cannot have negative amount of significant figure");
+            }
+            BigInteger integer = numerator / denominator;
+            if (this < 0)
+            {
+                integer--;
+            }
+            Fraction remaining = this - integer;
+            if (remaining < 0)
+            {
+                throw new InvalidOperationException("Fraction:RepresentSigFig idk how it give negative remaining");
+            }
+            if (remaining == 0)
+            {
+                if (remaining.Abs() > new Fraction(1, 2))
+                {
+                    integer += (remaining.numerator * 2) / remaining.denominator;
+                }
+                return (integer, 0, 0);
+            }
+            BigInteger length_0 = -1;
+            while (remaining < 1)
+            {
+                length_0++;
+                remaining *= 10;
+                amount--;
+                if (amount < 0)
+                {
+                    return (integer, length_0, 0);
+                }
+            }
+            BigInteger left_over = 0;
+            while (amount >= 0)
+            {
+                if (remaining > 1)
+                {
+                    BigInteger curr = remaining.numerator / remaining.denominator;
+                    remaining -= curr;
+                    left_over = left_over * 10 + curr;
+                }
+            }
+            return (integer, length_0, left_over);
+        }
     }
 
     public static class FractionExtension
