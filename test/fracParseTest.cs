@@ -12,7 +12,10 @@ namespace ui.test
                 Console.Write("Fraction: ");
                 if (Fraction.TryParse(Console.ReadLine(), out Fraction frac))
                 {
+                    Console.Write("Success: ");
                     Console.WriteLine(frac.ToString());
+                    Console.WriteLine(frac.RepresentSigFig(13));
+                    Console.WriteLine(frac.ReprString());
                 }
                 else
                 {

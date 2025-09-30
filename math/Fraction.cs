@@ -5,6 +5,7 @@ using System.Linq;
 using System.Collections.Generic;
 using ui.utils;
 using ui.LatexExt;
+using System.Text;
 
 namespace ui.math
 {
@@ -336,6 +337,7 @@ namespace ui.math
             {
                 throw new InvalidOperationException("Cannot have negative amount of significant figure");
             }
+            bool have_initial = this.Abs() >= 1;
             BigInteger integer = numerator / denominator;
             if (this < 0)
             {
@@ -360,7 +362,10 @@ namespace ui.math
             {
                 length_0++;
                 remaining *= 10;
-                amount--;
+                if (have_initial)
+                {
+                    amount--;
+                }
                 if (amount < 0)
                 {
                     return (integer, length_0, 0);
@@ -375,6 +380,8 @@ namespace ui.math
                     remaining -= curr;
                     left_over = left_over * 10 + curr;
                 }
+                remaining *= 10;
+                amount--;
             }
             return (integer, length_0, left_over);
         }
@@ -423,8 +430,81 @@ namespace ui.math
                     remaining -= curr;
                     left_over = left_over * 10 + curr;
                 }
+                remaining *= 10;
+                amount--;
             }
             return (integer, length_0, left_over);
+        }
+
+        public string ReprString()
+        {
+            int length = 17;
+            StringBuilder builder = new StringBuilder(30);
+            (BigInteger integer, BigInteger length_0, BigInteger remaining) value = RepresentSigFig(length);
+            if (value.integer == 0 && value.remaining != 0)
+            {
+                string content = value.remaining.ToString();
+                builder.Append(content[0]);
+                if (content.Length > 1)
+                {
+                    builder.Append(".");
+                    builder.Append(content.Substring(1, content.Length - 1));
+                }
+                builder.Append("e");
+                builder.Append((-value.length_0 - 1).ToString());
+                return builder.ToString();
+            }
+            if (
+                (value.integer.Abs().ToString().Length + value.length_0 + value.remaining.ToString().Length +
+                (value.remaining == 0 ? -1 : 1)) < length
+            )
+            {
+                builder.Append(value.integer.ToString());
+                if (value.remaining > 0)
+                {
+                    builder.Append(".");
+                    builder.Append(new string('.', (int)value.length_0));
+                    builder.Append(value.remaining.ToString());
+                }
+                return builder.ToString();
+            }
+            else if (
+                (value.integer.Abs().ToString().Length + value.length_0 +
+                (value.remaining == 0 ? -1 : 1)) < length
+            )
+            {
+                builder.Append(value.integer.ToString());
+                if (value.remaining > 0)
+                {
+                    builder.Append(".");
+                    builder.Append(new string('.', (int)value.length_0));
+                    int left = length - (int)(value.integer.Abs().ToString().Length + value.length_0);
+                    builder.Append((value.remaining / MathUtils.Pow(10, value.remaining.ToString().Length - left)).ToString());
+                }
+                return builder.ToString();
+            }
+            else if (
+                value.integer.Abs().ToString().Length < length
+            )
+            {
+                return value.integer.Abs().ToString();
+            }
+            else
+            {
+                bool is_neg = value.integer < 0;
+                string content = value.integer.Abs().ToString();
+                BigInteger pow = value.integer.Abs().ToString().Length - 1;
+                builder.Append(is_neg ? "-" : "");
+                builder.Append(content[0]);
+                if (content.Length > 1)
+                {
+                    builder.Append(".");
+                    builder.Append(content.Substring(1, Math.Min(length, content.Length) - 1));
+                }
+                builder.Append("e");
+                builder.Append(pow.ToString());
+                return builder.ToString();
+            }
         }
     }
 
