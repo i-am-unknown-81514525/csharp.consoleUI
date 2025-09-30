@@ -436,9 +436,12 @@ namespace ui.math
             return (integer, length_0, left_over);
         }
 
-        public string ReprString()
+        public string ReprString(int length = 17)
         {
-            int length = 17;
+            if (length < 5)
+            {
+                throw new InvalidOperationException("Length must be at least 5");
+            }
             StringBuilder builder = new StringBuilder(30);
             (BigInteger integer, BigInteger length_0, BigInteger remaining) value = RepresentSigFig(length);
             if (value.integer == 0 && value.remaining != 0)
@@ -463,7 +466,7 @@ namespace ui.math
                 if (value.remaining > 0)
                 {
                     builder.Append(".");
-                    builder.Append(new string('.', (int)value.length_0));
+                    builder.Append(new string('0', (int)value.length_0));
                     builder.Append(value.remaining.ToString());
                 }
                 return builder.ToString();
@@ -477,7 +480,7 @@ namespace ui.math
                 if (value.remaining > 0)
                 {
                     builder.Append(".");
-                    builder.Append(new string('.', (int)value.length_0));
+                    builder.Append(new string('0', (int)value.length_0));
                     int left = length - (int)(value.integer.Abs().ToString().Length + value.length_0);
                     builder.Append((value.remaining / MathUtils.Pow(10, value.remaining.ToString().Length - left)).ToString());
                 }
