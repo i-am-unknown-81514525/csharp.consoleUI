@@ -352,13 +352,13 @@ namespace ui.math
             {
                 if (remaining.Abs() > new Fraction(1, 2))
                 {
-                    integer += (remaining.numerator * 2) / remaining.denominator;
+                    integer += remaining.numerator * 2 / remaining.denominator;
                 }
                 return (integer, 0, 0);
             }
             amount -= integer.Abs().ToString().Length - 2;
             BigInteger length_0 = -1;
-            while (remaining < 1)
+            while (remaining < 1 && remaining != 0)
             {
                 length_0++;
                 remaining *= 10;
@@ -374,11 +374,12 @@ namespace ui.math
             BigInteger left_over = 0;
             while (amount >= 0)
             {
+                left_over = left_over * 10;
                 if (remaining > 1)
                 {
                     BigInteger curr = remaining.numerator / remaining.denominator;
                     remaining -= curr;
-                    left_over = left_over * 10 + curr;
+                    left_over += curr;
                 }
                 remaining *= 10;
                 amount--;
@@ -406,7 +407,7 @@ namespace ui.math
             {
                 if (remaining.Abs() > new Fraction(1, 2))
                 {
-                    integer += (remaining.numerator * 2) / remaining.denominator;
+                    integer += remaining.numerator * 2 / remaining.denominator;
                 }
                 return (integer, 0, 0);
             }
@@ -424,11 +425,12 @@ namespace ui.math
             BigInteger left_over = 0;
             while (amount >= 0)
             {
+                left_over = left_over * 10;
                 if (remaining > 1)
                 {
                     BigInteger curr = remaining.numerator / remaining.denominator;
                     remaining -= curr;
-                    left_over = left_over * 10 + curr;
+                    left_over += curr;
                 }
                 remaining *= 10;
                 amount--;

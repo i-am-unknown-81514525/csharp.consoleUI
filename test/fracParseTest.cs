@@ -14,7 +14,7 @@ namespace ui.test
                 {
                     Console.Write("Success: ");
                     Console.WriteLine(frac.ToString());
-                    Console.WriteLine(frac.RepresentSigFig(13));
+                    Console.WriteLine(frac.RepresentSigFig(17)); // 1000000000000001/10000000000000000 ???
                     Console.WriteLine(frac.ReprString());
                 }
                 else
