@@ -374,12 +374,11 @@ namespace ui.math
             BigInteger left_over = 0;
             while (amount >= 0)
             {
-                left_over = left_over * 10;
                 if (remaining > 1)
                 {
                     BigInteger curr = remaining.numerator / remaining.denominator;
                     remaining -= curr;
-                    left_over += curr;
+                    left_over = left_over * 10 + curr;
                 }
                 remaining *= 10;
                 amount--;
@@ -412,7 +411,7 @@ namespace ui.math
                 return (integer, 0, 0);
             }
             BigInteger length_0 = -1;
-            while (remaining < 1)
+            while (remaining < 1 && remaining != 0)
             {
                 length_0++;
                 remaining *= 10;
@@ -425,12 +424,11 @@ namespace ui.math
             BigInteger left_over = 0;
             while (amount >= 0)
             {
-                left_over = left_over * 10;
                 if (remaining > 1)
                 {
                     BigInteger curr = remaining.numerator / remaining.denominator;
                     remaining -= curr;
-                    left_over += curr;
+                    left_over = left_over * 10 + curr;
                 }
                 remaining *= 10;
                 amount--;
