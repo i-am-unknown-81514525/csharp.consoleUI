@@ -58,7 +58,7 @@ namespace ui.components
     public class MultiLineInputField : NoChildComponent
     {
         //Reactive of content with type string and default value: `""`, Trigger: SetHasUpdate();
-        public string content { get => inputFieldHandler.GetContent(); set { inputFieldHandler.SetContent(content); SetHasUpdate(); } }
+        public string content { get => inputFieldHandler.GetContent(); set { inputFieldHandler.SetContent(value); SetHasUpdate(); } }
 
         //Reactive of active with type (ForegroundColor foreground, BackgroundColor background) and default value: `(ForegroundColorEnum.BLACK, BackgroundColorEnum.WHITE)`, Trigger: SetHasUpdate();
         private (ForegroundColor foreground, BackgroundColor background) _active = (ForegroundColorEnum.BLACK, BackgroundColorEnum.YELLOW);

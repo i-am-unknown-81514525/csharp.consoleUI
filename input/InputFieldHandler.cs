@@ -228,7 +228,9 @@ namespace ui.input
 
         protected virtual void onEnter()
         {
-            content += "\n";
+            List<byte> byteArr = content.AsByteBuffer().AsList();
+            byteArr.Insert((int)cursor, (byte)'\n');
+            content = byteArr.AsByteBuffer().AsString();
             cursor += 1;
         }
     }
