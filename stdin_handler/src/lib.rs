@@ -6,6 +6,7 @@ use std::io::{self, BufRead};
 use std::io::{Read, Write};
 use std::thread;
 use std::time::Duration;
+use webbrowser;
 
 cfg_if::cfg_if! {
     if #[cfg(target_family = "unix")] {
@@ -288,6 +289,17 @@ pub extern "cdecl" fn write_clipboard(ptr: *const c_char) -> () {
     };
     let content = c_str.to_str().unwrap();
     let _ = set_contents(content.to_string()); // Ignore potential error and do it oppotunisticly
+}
+
+#[unsafe(no_mangle)]
+pub extern "cdecl" fn open_website(ptr: *const c_char) -> () {
+    let c_str = unsafe {
+        assert!(!ptr.is_null());
+
+        CStr::from_ptr(ptr)
+    };
+    let content = c_str.to_str().unwrap();
+    let _ = webbrowser::open(content);
 }
 
 // Old:
