@@ -36,6 +36,9 @@ namespace ui.core
             [DllImport("libstdin_handler.dll", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
             private static extern void write_clipboard(string ptr);
 
+            [DllImport("libstdin_handler.dll", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
+            private static extern void open_website(string ptr);
+
             public static byte readStdin() => read_stdin();
 
             public static void Setup()
@@ -64,6 +67,8 @@ namespace ui.core
             public static string ReadClipboard() => read_clipboard();
 
             public static void WriteClipboard(string content) => write_clipboard(content);
+
+            public static void OpenWebsite(string content) => open_website(content);
         }
 
         private static class PosixConsoleHandler
@@ -91,6 +96,9 @@ namespace ui.core
 
             [DllImport("libstdin_handler", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
             private static extern void write_clipboard(string ptr);
+
+            [DllImport("libstdin_handler", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
+            private static extern void open_website(string ptr);
             public static byte readStdin() => read_stdin();
 
             private static void addPath(string name)
@@ -135,6 +143,8 @@ namespace ui.core
             public static string ReadClipboard() => read_clipboard();
 
             public static void WriteClipboard(string content) => write_clipboard(content);
+
+            public static void OpenWebsite(string content) => open_website(content);
         }
 
         public static class ConsoleIntermediateHandler
@@ -269,6 +279,18 @@ namespace ui.core
                 else
                 {
                     PosixConsoleHandler.WriteClipboard(content);
+                }
+            }
+
+            public static void OpenWebsite(string content)
+            {
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                {
+                    WindowConsoleHandler.OpenWebsite(content);
+                }
+                else
+                {
+                    PosixConsoleHandler.OpenWebsite(content);
                 }
             }
         }
