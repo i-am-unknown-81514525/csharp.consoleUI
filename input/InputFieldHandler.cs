@@ -120,6 +120,9 @@ namespace ui.input
                 case KeyCode.BACKSPACE:
                     onBackspace();
                     break;
+                case KeyCode.TAB:
+                    onTab();
+                    break;
                 case KeyCode.DEL:
                     onDelete();
                     break;
@@ -134,6 +137,10 @@ namespace ui.input
                     break;
                 case KeyCode.PASTE:
                     onPaste();
+                    break;
+                case KeyCode.NUL:
+                case KeyCode.CTRLZ:
+                    // Ignore
                     break;
                 default:
                     onDefault(value);
@@ -186,6 +193,11 @@ namespace ui.input
                 data.RemoveAt((int)cursor);
                 content = data.AsByteBuffer().AsString();
             }
+        }
+
+        protected virtual void onTab()
+        {
+            onDefault((byte)' ');
         }
 
         protected virtual void onDelete()

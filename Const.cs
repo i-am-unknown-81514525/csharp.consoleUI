@@ -2,10 +2,12 @@ namespace ui
 {
     public enum KeyCode : byte
     {
+        NUL = 0,
         INTERRUPT = 3,
         TAB = 9,
         NEWLINE = 13,
         PASTE = 22,
+        CTRLZ = 26,
         ESC = 27,
         SPACE = 32,
         BACKSPACE = 127,
