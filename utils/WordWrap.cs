@@ -164,11 +164,11 @@ namespace ui.utils
                     }
                     if (y + 1 == vAlign.space && vLength > vAlign.space && hIdx + 1 == hLength) // Final line, with more line exist that is truncated, and the final character
                     {
-                        v = SpecialChar.SINGLE_CHAR_ELLIPSIS;
+                        v = SpecialChar.SingleCharEllipsis;
                     }
                     if (x + 1 == hAlign.space && hLength > hAlign.space) // Final character with more character exist that is truncated
                     {
-                        v = SpecialChar.SINGLE_CHAR_ELLIPSIS;
+                        v = SpecialChar.SingleCharEllipsis;
                     }
                     outputStringBuilder.Append(v);
                 }

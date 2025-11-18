@@ -6,7 +6,7 @@ namespace ui.components
     {
         public VerticalGroupComponent() : base()
         {
-            direction = Direction.VERTICAL;
+            Direction = Direction.VERTICAL;
         }
     }
 }

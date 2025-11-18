@@ -3,15 +3,15 @@ using ui.utils;
 
 namespace ui.core
 {
-    public class KeyCodeTranslationHandler : ANSIInputHandler
+    public class KeyCodeTranslationHandler : AnsiInputHandler
     {
-        private RootInputHandler handler;
+        private RootInputHandler _handler;
         public KeyCodeTranslationHandler(RootInputHandler handler)
         {
-            this.handler = handler;
+            this._handler = handler;
         }
 
-        private static readonly Dictionary<string, KeyCode> translation = new Dictionary<string, KeyCode> {
+        private static readonly Dictionary<string, KeyCode> Translation = new Dictionary<string, KeyCode> {
             { "\x1b[2~", KeyCode.INSERT },
             { "\x1b[5~", KeyCode.PG_UP },
             { "\x1b[6~" , KeyCode.PG_DOWN },
@@ -32,9 +32,9 @@ namespace ui.core
         public override bool Handle(byte[] buf)
         {
             string conv = buf.AsByteBuffer().AsString();
-            if (translation.ContainsKey(conv))
+            if (Translation.ContainsKey(conv))
             {
-                handler.LocalDispatch((byte)translation[conv]);
+                _handler.LocalDispatch((byte)Translation[conv]);
                 return true;
             }
             return false;

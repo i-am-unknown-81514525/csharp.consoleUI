@@ -32,7 +32,7 @@ namespace ui.math
 
         public static Fraction ParseNumber(string number)
         {
-            if (DEBUG.FracConverter_AlternativeLowerScopeCheck && !RegexChecker.IsNumber(number) && (RegexChecker.IsDecimal(number) || RegexChecker.IsInteger(number)))
+            if (Debug.FracConverterAlternativeLowerScopeCheck && !RegexChecker.IsNumber(number) && (RegexChecker.IsDecimal(number) || RegexChecker.IsInteger(number)))
             {
                 throw new NotSupportedException($"Regex Error: {number} is not being consider as number but have been consider as one of decimal or integer");
             }
@@ -55,7 +55,7 @@ namespace ui.math
 
         public static Fraction Parse(string value)
         {
-            if (DEBUG.FracConverter_AlternativeLowerScopeCheck && !RegexChecker.IsNumber(value) && (RegexChecker.IsFraction(value) || RegexChecker.IsNumber(value)))
+            if (Debug.FracConverterAlternativeLowerScopeCheck && !RegexChecker.IsNumber(value) && (RegexChecker.IsFraction(value) || RegexChecker.IsNumber(value)))
             {
                 throw new NotSupportedException($"Regex Error: {value} is not being consider as parsable but have been consider as one of fraction or number");
             }

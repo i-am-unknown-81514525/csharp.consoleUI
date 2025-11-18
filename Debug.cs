@@ -3,11 +3,11 @@ using System.Text;
 
 namespace ui
 {
-    public static class DEBUG
+    public static class Debug
     {
-        public const bool InputHandler_IgnoreHanlderValidateException = false;
-        public const bool InputHandler_IgnoreHandlerHandleException = false;
-        public const bool FracConverter_AlternativeLowerScopeCheck = false;
+        public const bool InputHandlerIgnoreHanlderValidateException = false;
+        public const bool InputHandlerIgnoreHandlerHandleException = false;
+        public const bool FracConverterAlternativeLowerScopeCheck = false;
         public static readonly StringBuilder DebugStore = new StringBuilder();
     }
 }

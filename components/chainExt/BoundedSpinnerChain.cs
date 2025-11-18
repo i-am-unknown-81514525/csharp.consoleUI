@@ -6,19 +6,19 @@ namespace ui.components.chainExt
     {
         public static T WithChangeHandler<T>(this T v, Action<int> handler) where T : BoundedSpinner
         {
-            v.onChange = handler;
+            v.OnChange = handler;
             return v;
         }
 
         public static T WithChangeHandler<T>(this T v, Action<T, int> handler) where T : BoundedSpinner
         {
-            v.onChange = (i) => handler(v, i);
+            v.OnChange = (i) => handler(v, i);
             return v;
         }
 
         public static T WithTriggerChange<T>(this T v) where T : BoundedSpinner
         {
-            v.onChange(v.amount);
+            v.OnChange(v.amount);
             return v;
         }
     }

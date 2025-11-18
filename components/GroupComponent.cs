@@ -16,13 +16,13 @@ namespace ui.components
 
     public struct GroupComponentConfig
     {
-        public readonly IComponent component;
-        public readonly SplitAmount splitAmount;
+        public readonly IComponent Component;
+        public readonly SplitAmount SplitAmount;
 
         public GroupComponentConfig(IComponent component, SplitAmount splitAmount)
         {
-            this.component = component;
-            this.splitAmount = splitAmount;
+            this.Component = component;
+            this.SplitAmount = splitAmount;
         }
 
         public static implicit operator GroupComponentConfig(
@@ -35,9 +35,9 @@ namespace ui.components
 
     public abstract class GroupComponent<T> : Component<T>, IEnumerable<GroupComponentConfig> where T : ComponentStore
     {
-        protected SplitHandler splitHandler = new SplitHandler(120); // Need to be update on initial
-        protected Direction direction;
-        protected Dictionary<IComponent, SplitConfig> splitMapping = new Dictionary<IComponent, SplitConfig>();
+        protected SplitHandler SplitHandler = new SplitHandler(120); // Need to be update on initial
+        protected Direction Direction;
+        protected Dictionary<IComponent, SplitConfig> SplitMapping = new Dictionary<IComponent, SplitConfig>();
 
         protected GroupComponent() : base()
         {
@@ -57,14 +57,14 @@ namespace ui.components
 
         public void Add(GroupComponentConfig componentConfig)
         {
-            IComponent component = componentConfig.component;
+            IComponent component = componentConfig.Component;
             if (component.GetMount() != null && component.GetMount() != this) throw new InvalidOperationException("The component already have a parent");
             (uint allocX, uint allocY) = GetAllocSize();
             bool isSuccess = AddChildComponent(component, (0, 0, allocX, allocY), 1);
             if (isSuccess)
             {
-                SplitConfig config = splitHandler.AddSplit(componentConfig.splitAmount);
-                splitMapping[component] = config;
+                SplitConfig config = SplitHandler.AddSplit(componentConfig.SplitAmount);
+                SplitMapping[component] = config;
             }
             UpdateSize();
             SetHasUpdate();
@@ -72,14 +72,14 @@ namespace ui.components
 
         public void Insert(int idx, GroupComponentConfig componentConfig)
         {
-            IComponent component = componentConfig.component;
+            IComponent component = componentConfig.Component;
             if (component.GetMount() != null && component.GetMount() != this) throw new InvalidOperationException("The component already have a parent");
             (uint allocX, uint allocY) = GetAllocSize();
             bool isSuccess = InsertChildComponent(idx, component, (0, 0, allocX, allocY), 1);
             if (isSuccess)
             {
-                SplitConfig config = splitHandler.AddSplit(componentConfig.splitAmount);
-                splitMapping[component] = config;
+                SplitConfig config = SplitHandler.AddSplit(componentConfig.SplitAmount);
+                SplitMapping[component] = config;
             }
             UpdateSize();
             SetHasUpdate();
@@ -87,17 +87,17 @@ namespace ui.components
 
         public void UpdateSplitConfig(IComponent component, SplitAmount amount)
         {
-            SplitConfig config = splitMapping[component];
-            splitHandler.Remove(config);
-            SplitConfig newConfig = splitHandler.AddSplit(amount);
-            splitMapping[component] = newConfig;
+            SplitConfig config = SplitMapping[component];
+            SplitHandler.Remove(config);
+            SplitConfig newConfig = SplitHandler.AddSplit(amount);
+            SplitMapping[component] = newConfig;
             UpdateSize();
             SetHasUpdate();
         }
 
         public new bool Contains(IComponent component)
         {
-            return childsMapping.Select(x => x.component).Count(x => x == component) > 0;
+            return ChildsMapping.Select(x => x.component).Count(x => x == component) > 0;
         }
 
         public new void RemoveChildComponent(IComponent component)
@@ -107,54 +107,54 @@ namespace ui.components
                 throw new InvalidOperationException("The component is not the direct child of the current component and cannot be removed");
             }
             base.RemoveChildComponent(component);
-            SplitConfig splitConfig = splitMapping[component];
-            splitMapping.Remove(component);
-            splitHandler.Remove(splitConfig);
+            SplitConfig splitConfig = SplitMapping[component];
+            SplitMapping.Remove(component);
+            SplitHandler.Remove(splitConfig);
             UpdateSize();
         }
 
         protected void SyncMapping()
         {
-            foreach (var split in splitMapping)
+            foreach (var split in SplitMapping)
             {
-                if (!childsMapping.Select(x => x.component).Contains(split.Key))
+                if (!ChildsMapping.Select(x => x.component).Contains(split.Key))
                 {
                     // childsMapping.Add((split.Key, (0, 0, 0, 0), 1));
                     AddChildComponent(split.Key, (0, 0, 0, 0), 1);
                 }
             }
-            int curr_idx = childsMapping.Count;
-            for (int idx = 0; idx < curr_idx; idx++)
+            int currIdx = ChildsMapping.Count;
+            for (int idx = 0; idx < currIdx; idx++)
             {
-                if (!splitMapping.ContainsKey(childsMapping[idx].component))
+                if (!SplitMapping.ContainsKey(ChildsMapping[idx].component))
                 {
-                    RemoveChildComponent(childsMapping[idx].component);
+                    RemoveChildComponent(ChildsMapping[idx].component);
                     // childsMapping.RemoveAt(idx);
                     idx--;
-                    curr_idx--;
+                    currIdx--;
                 }
             }
         }
 
         public void UpdateSize()
         {
-            splitHandler.Update();
+            SplitHandler.Update();
             SyncMapping();
             // childsMapping = new List<(IComponent component, (uint x, uint y, uint allocX, uint allocY) location, int prioity)>();
             uint curr = 0;
-            int count = childsMapping.Count;
+            int count = ChildsMapping.Count;
             for (int idx = 0; idx < count; idx++)
             {
-                (IComponent component, (uint x, uint y, uint allocX, uint allocY) _, int prioity) = childsMapping[idx];
-                SplitConfig config = splitMapping[component];
-                uint size = (uint)splitHandler.GetSize(config);
-                if (direction == Direction.VERTICAL)
+                (IComponent component, (uint x, uint y, uint allocX, uint allocY) _, int prioity) = ChildsMapping[idx];
+                SplitConfig config = SplitMapping[component];
+                uint size = (uint)SplitHandler.GetSize(config);
+                if (Direction == Direction.VERTICAL)
                 {
-                    childsMapping[idx] = (component, (0, curr, GetAllocSize().x, size), prioity);
+                    ChildsMapping[idx] = (component, (0, curr, GetAllocSize().x, size), prioity);
                 }
                 else
                 {
-                    childsMapping[idx] = (component, (curr, 0, size, GetAllocSize().y), prioity);
+                    ChildsMapping[idx] = (component, (curr, 0, size, GetAllocSize().y), prioity);
                 }
                 curr += size;
                 component.UpdateAllocSize();
@@ -164,16 +164,16 @@ namespace ui.components
 
         protected override void OnResize()
         {
-            if (splitHandler == null) return;
-            if (direction == Direction.VERTICAL)
+            if (SplitHandler == null) return;
+            if (Direction == Direction.VERTICAL)
             {
-                splitHandler.SetTotalSize((int)GetAllocSize().y);
+                SplitHandler.SetTotalSize((int)GetAllocSize().y);
             }
             else
             {
-                splitHandler.SetTotalSize((int)GetAllocSize().x);
+                SplitHandler.SetTotalSize((int)GetAllocSize().x);
             }
-            splitHandler.Update();
+            SplitHandler.Update();
             UpdateSize();
             SetHasUpdate();
         }

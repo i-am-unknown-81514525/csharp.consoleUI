@@ -19,7 +19,7 @@ namespace ui.core
             return builder;
         }
 
-        public static ConsoleContent getDefault()
+        public static ConsoleContent GetDefault()
         {
             return new ConsoleContent
             {
@@ -38,28 +38,28 @@ namespace ui.core
         private ConsoleSize _minSize = new ConsoleSize(60, 40);
         public ConsoleContent[,] ConsoleWindow = new ConsoleContent[120, 80];
 
-        private ConsoleContent[,] previous = null;
-        public (int row, int col)? cursorPosition = null;
+        private ConsoleContent[,] _previous = null;
+        public (int row, int col)? CursorPosition = null;
 
-        protected void applyToNew((int width, int height) size)
+        protected void ApplyToNew((int width, int height) size)
         {
             ConsoleContent[,] newWindow = new ConsoleContent[size.width, size.height];
-            for (int x = 0; x < previous.GetLength(0) && x < newWindow.GetLength(0); x++)
+            for (int x = 0; x < _previous.GetLength(0) && x < newWindow.GetLength(0); x++)
             {
-                for (int y = 0; y < previous.GetLength(1) && y < newWindow.GetLength(1); y++)
+                for (int y = 0; y < _previous.GetLength(1) && y < newWindow.GetLength(1); y++)
                 {
-                    newWindow[x, y] = previous[x, y];
+                    newWindow[x, y] = _previous[x, y];
                 }
-                for (int y = previous.GetLength(1); y < newWindow.GetLength(1); y++)
+                for (int y = _previous.GetLength(1); y < newWindow.GetLength(1); y++)
                 {
-                    newWindow[x, y] = ConsoleContent.getDefault();
+                    newWindow[x, y] = ConsoleContent.GetDefault();
                 }
             }
-            for (int x = previous.GetLength(0); x < newWindow.GetLength(0); x++)
+            for (int x = _previous.GetLength(0); x < newWindow.GetLength(0); x++)
             {
                 for (int y = 0; y < newWindow.GetLength(1); y++)
                 {
-                    newWindow[x, y] = ConsoleContent.getDefault();
+                    newWindow[x, y] = ConsoleContent.GetDefault();
                 }
             }
             ConsoleWindow = newWindow;
@@ -67,8 +67,8 @@ namespace ui.core
 
         public void SetMin(ConsoleSize size)
         {
-            ConsoleSize MIN_SIZE = new ConsoleSize(5, 10);
-            if (!(size < MIN_SIZE))
+            ConsoleSize minSize = new ConsoleSize(5, 10);
+            if (!(size < minSize))
             {
                 throw new InvalidOperationException("The minimal expected size is way too small");
             }
@@ -81,7 +81,7 @@ namespace ui.core
             {
                 throw new InvalidOperationException("The defined console size is too small");
             }
-            applyToNew((size.Width, size.Height));
+            ApplyToNew((size.Width, size.Height));
         }
 
         public void SetEmpty()
@@ -90,7 +90,7 @@ namespace ui.core
             {
                 for (int y = 0; y < ConsoleWindow.GetLength(1); y++)
                 {
-                    ConsoleWindow[x, y] = ConsoleContent.getDefault();
+                    ConsoleWindow[x, y] = ConsoleContent.GetDefault();
                 }
             }
         }
@@ -98,8 +98,8 @@ namespace ui.core
         public void EventLoopPre() // Any handling required before the higher level abstraction
         {
             _size = new ConsoleSize(Console.BufferWidth, Console.BufferHeight);
-            previous = ConsoleWindow;
-            applyToNew((Console.BufferWidth, Console.BufferHeight));
+            _previous = ConsoleWindow;
+            ApplyToNew((Console.BufferWidth, Console.BufferHeight));
         }
 
         public string GetContent()
@@ -107,29 +107,29 @@ namespace ui.core
             StringBuilder builder = new StringBuilder(65536);
             string prefix = (
                 //ConsoleHandler.ConsoleIntermediateHandler.ToANSI("?1049h") + // Enable alternative buffer
-                ConsoleHandler.ConsoleIntermediateHandler.ToANSI("0m") + // Reset colour
-                ConsoleHandler.ConsoleIntermediateHandler.ToANSI("?25l") + // Hide cursor
+                ConsoleHandler.ConsoleIntermediateHandler.ToAnsi("0m") + // Reset colour
+                ConsoleHandler.ConsoleIntermediateHandler.ToAnsi("?25l") + // Hide cursor
                                                                            // ConsoleHandler.ConsoleIntermediateHandler.ToANSI("2J") + // Clear screen and move cursor to top left (Window ANSI.sys)
-                ConsoleHandler.ConsoleIntermediateHandler.ToANSI("0m") + // Reset colour                                                                                                                                           //ConsoleHandler.ConsoleIntermediateHandler.ToANSI("3J") + // Clear screen and delete all lines saved in the scrollback buffer (xterm alive)
+                ConsoleHandler.ConsoleIntermediateHandler.ToAnsi("0m") + // Reset colour                                                                                                                                           //ConsoleHandler.ConsoleIntermediateHandler.ToANSI("3J") + // Clear screen and delete all lines saved in the scrollback buffer (xterm alive)
                                                                          // ConsoleHandler.ConsoleIntermediateHandler.ToANSI("1;39m") + // Set colour to default (according to ANSI)
-                ConsoleHandler.ConsoleIntermediateHandler.ToANSI("0;0H") + // Move cursor to 0,0 (top left)
-                ConsoleHandler.ConsoleIntermediateHandler.ToANSI("37;40m") // Set default colour
+                ConsoleHandler.ConsoleIntermediateHandler.ToAnsi("0;0H") + // Move cursor to 0,0 (top left)
+                ConsoleHandler.ConsoleIntermediateHandler.ToAnsi("37;40m") // Set default colour
             );
             builder.Append(prefix);
             string postfix = (
-                ConsoleHandler.ConsoleIntermediateHandler.ToANSI("0m") + // Reset colour
-                ConsoleHandler.ConsoleIntermediateHandler.ToANSI("0;0H") // Move cursor to 0,0 (top left)
+                ConsoleHandler.ConsoleIntermediateHandler.ToAnsi("0m") + // Reset colour
+                ConsoleHandler.ConsoleIntermediateHandler.ToAnsi("0;0H") // Move cursor to 0,0 (top left)
             );
-            if (!(cursorPosition is null))
+            if (!(CursorPosition is null))
             {
-                (int row, int col) v = cursorPosition.GetValueOrDefault();
-                postfix += ConsoleHandler.ConsoleIntermediateHandler.ToANSI($"{v.row};{v.col}H");
-                postfix += ConsoleHandler.ConsoleIntermediateHandler.ToANSI("?25h"); // Show cursor
+                (int row, int col) v = CursorPosition.GetValueOrDefault();
+                postfix += ConsoleHandler.ConsoleIntermediateHandler.ToAnsi($"{v.row};{v.col}H");
+                postfix += ConsoleHandler.ConsoleIntermediateHandler.ToAnsi("?25h"); // Show cursor
             }
             // string outputBuffer = "";
             for (int y = 1; y <= ConsoleWindow.GetLength(1); y++)
             {
-                builder.Append(ConsoleHandler.ConsoleIntermediateHandler.ToANSI($"{y};0H"));
+                builder.Append(ConsoleHandler.ConsoleIntermediateHandler.ToAnsi($"{y};0H"));
                 for (int x = 1; x <= ConsoleWindow.GetLength(0); x++)
                 {
                     ConsoleWindow[x - 1, y - 1].AppendToStringBuilder(builder);
@@ -204,10 +204,10 @@ namespace ui.core
         public static ConsoleCanva WriteStringOnCanva(ConsoleCanva canva, string text, (int x, int y) topLeft, string ansiPrefix = "", string ansiPostfix = "")
         {
             if (string.IsNullOrEmpty(text)) return canva;
-            return OverwriteOnCanva(canva, getContentArr(text, ansiPrefix, ansiPostfix), topLeft, true);
+            return OverwriteOnCanva(canva, GetContentArr(text, ansiPrefix, ansiPostfix), topLeft, true);
         }
 
-        public static ConsoleContent[,] getContentArr(string text, string ansiPrefix = "", string ansiPostfix = "")
+        public static ConsoleContent[,] GetContentArr(string text, string ansiPrefix = "", string ansiPostfix = "")
         {
             if (string.IsNullOrEmpty(text)) text = "";
             ConsoleContent[,] data = new ConsoleContent[text.Length, 1];
@@ -225,7 +225,7 @@ namespace ui.core
             return data;
         }
 
-        public static ConsoleContent[] getContentArr1D(string text, string ansiPrefix = "", string ansiPostfix = "")
+        public static ConsoleContent[] GetContentArr1D(string text, string ansiPrefix = "", string ansiPostfix = "")
         {
             if (string.IsNullOrEmpty(text)) text = "";
             ConsoleContent[] data = new ConsoleContent[text.Length];

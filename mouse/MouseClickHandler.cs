@@ -9,17 +9,17 @@ namespace ui.mouse
 {
     public class MouseClickHandler : MouseInteractionHandler
     {
-        public readonly IComponent app;
+        public readonly IComponent App;
         public MouseClickHandler(IComponent app) : base((int)MouseOpCode.CLICK)
         {
-            this.app = app;
+            this.App = app;
         }
 
-        public override void onActive(int opCode, ConsoleLocation loc)
+        public override void OnActive(int opCode, ConsoleLocation loc)
         {
-            app.OnClick(loc);
+            App.OnClick(loc);
         }
 
-        public override void onInactive(int opCode, ConsoleLocation loc) { } // Dragging is not a planned feature, and therefore isn't implemented
+        public override void OnInactive(int opCode, ConsoleLocation loc) { } // Dragging is not a planned feature, and therefore isn't implemented
     }
 }

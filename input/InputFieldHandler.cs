@@ -7,33 +7,33 @@ namespace ui.input
 {
     public class InputFieldHandler : InputHandler
     {
-        protected uint cursor = 0; // Position the place/delete // -1 for position to backspace
+        protected uint Cursor = 0; // Position the place/delete // -1 for position to backspace
 
-        private bool isActive = false;
+        private bool _isActive = false;
 
-        protected byte? currBuf = null;
+        protected byte? CurrBuf = null;
 
-        protected string content = "";
+        protected string Content = "";
 
         public string GetContent()
         {
-            return content;
+            return Content;
         }
 
         public void SetContent(string v)
         {
             if (v is null) return;
-            content = v;
-            if (cursor > content.Length)
-                cursor = (uint)content.Length;
+            Content = v;
+            if (Cursor > Content.Length)
+                Cursor = (uint)Content.Length;
         }
 
         public void SetCursorPosition(uint cursorPos)
         {
-            cursor = cursorPos;
-            if (cursorPos > content.Length)
+            Cursor = cursorPos;
+            if (cursorPos > Content.Length)
             {
-                cursor = (uint)content.Length;
+                Cursor = (uint)Content.Length;
             }
         }
 
@@ -46,171 +46,171 @@ namespace ui.input
 
         public uint size
         {
-            get => (uint)content.Length;
+            get => (uint)Content.Length;
         }
 
         public uint cursorPos
         {
-            get => cursor;
+            get => Cursor;
         }
 
         protected void Deactive(RootInputHandler root)
         {
             SetActiveStatus(false);
-            SetLockStatus(LockStatus.NoLock);
+            SetLockStatus(LockStatus.NO_LOCK);
             root.LockChangeAnnounce(this);
-            onDeactive();
+            OnDeactive();
         }
 
-        protected virtual void onDeactive() { }
+        protected virtual void OnDeactive() { }
 
         protected override void Handle(RootInputHandler root)
         {
             if (Buffer.Count == 0) return;
-            currBuf = GetBuf();
-            if (!isActive) return;
-            if (currBuf == (byte)KeyCode.ESC)
+            CurrBuf = GetBuf();
+            if (!_isActive) return;
+            if (CurrBuf == (byte)KeyCode.ESC)
             {
                 Deactive(root);
             }
             else
             {
-                Handle((byte)currBuf);
+                Handle((byte)CurrBuf);
             }
         }
 
-        protected virtual void onDefault(byte value)
+        protected virtual void OnDefault(byte value)
         {
-            List<byte> byteArr = content.AsByteBuffer().AsList();
-            byteArr.Insert((int)cursor, value);
-            content = byteArr.AsByteBuffer().AsString();
-            cursor += 1;
+            List<byte> byteArr = Content.AsByteBuffer().AsList();
+            byteArr.Insert((int)Cursor, value);
+            Content = byteArr.AsByteBuffer().AsString();
+            Cursor += 1;
         }
 
         protected virtual void Handle(byte value)
         {
             if (!Enum.IsDefined(typeof(KeyCode), value))
             {
-                onDefault(value);
+                OnDefault(value);
                 return;
             }
             switch ((KeyCode)value)
             {
                 case KeyCode.ARR_LEFT:
-                    onArrLeft();
+                    OnArrLeft();
                     break;
                 case KeyCode.ARR_RIGHT:
-                    onArrRight();
+                    OnArrRight();
                     break;
                 case KeyCode.ARR_UP:
-                    onArrUp();
+                    OnArrUp();
                     break;
                 case KeyCode.ARR_DOWN:
-                    onArrDown();
+                    OnArrDown();
                     break;
                 case KeyCode.INSERT:
-                    onInsertToggle();
+                    OnInsertToggle();
                     break;
                 case KeyCode.SPECIAL_FOCUS:
-                    onApplicationFocus();
+                    OnApplicationFocus();
                     break;
                 case KeyCode.SPECIAL_UNFOCUS:
-                    onApplicationUnfocus();
+                    OnApplicationUnfocus();
                     break;
                 case KeyCode.BACKSPACE:
-                    onBackspace();
+                    OnBackspace();
                     break;
                 case KeyCode.TAB:
-                    onTab();
+                    OnTab();
                     break;
                 case KeyCode.DEL:
-                    onDelete();
+                    OnDelete();
                     break;
                 case KeyCode.PG_UP:
-                    onPgUp();
+                    OnPgUp();
                     break;
                 case KeyCode.PG_DOWN:
-                    onPgDown();
+                    OnPgDown();
                     break;
                 case KeyCode.NEWLINE:
-                    onEnter();
+                    OnEnter();
                     break;
                 case KeyCode.PASTE:
-                    onPaste();
+                    OnPaste();
                     break;
                 case KeyCode.NUL:
                 case KeyCode.CTRLZ:
                     // Ignore
                     break;
                 default:
-                    onDefault(value);
+                    OnDefault(value);
                     break;
 
             }
         }
-        protected virtual void onArrLeft()
+        protected virtual void OnArrLeft()
         {
-            if (cursor > 0) cursor--;
+            if (Cursor > 0) Cursor--;
         }
 
-        protected virtual void onArrRight()
+        protected virtual void OnArrRight()
         {
-            if (cursor < size) cursor++;
+            if (Cursor < size) Cursor++;
         }
 
-        protected virtual void onArrUp()
+        protected virtual void OnArrUp()
         {
-            cursor = 0;
+            Cursor = 0;
         }
 
-        protected virtual void onArrDown()
+        protected virtual void OnArrDown()
         {
-            cursor = size;
+            Cursor = size;
         }
 
-        protected virtual void onPgUp()
+        protected virtual void OnPgUp()
         {
-            cursor = 0;
+            Cursor = 0;
         }
 
-        protected virtual void onPgDown()
+        protected virtual void OnPgDown()
         {
-            cursor = size;
+            Cursor = size;
         }
 
-        protected virtual void onInsertToggle() { }
+        protected virtual void OnInsertToggle() { }
 
-        protected virtual void onApplicationUnfocus() { }
+        protected virtual void OnApplicationUnfocus() { }
 
-        protected virtual void onApplicationFocus() { }
+        protected virtual void OnApplicationFocus() { }
 
-        protected virtual void onBackspace()
+        protected virtual void OnBackspace()
         {
-            if (cursor > 0)
+            if (Cursor > 0)
             {
-                List<byte> data = content.AsByteBuffer().AsList();
-                cursor--;
-                data.RemoveAt((int)cursor);
-                content = data.AsByteBuffer().AsString();
+                List<byte> data = Content.AsByteBuffer().AsList();
+                Cursor--;
+                data.RemoveAt((int)Cursor);
+                Content = data.AsByteBuffer().AsString();
             }
         }
 
-        protected virtual void onTab()
+        protected virtual void OnTab()
         {
-            onDefault((byte)' ');
+            OnDefault((byte)' ');
         }
 
-        protected virtual void onDelete()
+        protected virtual void OnDelete()
         {
-            if (cursor < size)
+            if (Cursor < size)
             {
-                List<byte> data = content.AsByteBuffer().AsList();
-                data.RemoveAt((int)cursor);
-                content = data.AsByteBuffer().AsString();
+                List<byte> data = Content.AsByteBuffer().AsList();
+                data.RemoveAt((int)Cursor);
+                Content = data.AsByteBuffer().AsString();
             }
         }
 
-        protected virtual void onPaste()
+        protected virtual void OnPaste()
         {
             string content = ConsoleHandler.ConsoleIntermediateHandler.ReadClipboard();
             content = content.GetReadable();
@@ -223,37 +223,37 @@ namespace ui.input
 
         public void SetActiveStatus(bool isActive)
         {
-            this.isActive = isActive;
+            this._isActive = isActive;
         }
 
-        public bool GetActiveStatus() => isActive;
+        public bool GetActiveStatus() => _isActive;
 
         protected override LockStatus Validate()
         {
             return (
-                isActive ?
-                LockStatus.SharedLock : // Reserve Exclusive Lock for ANSI, not lock against the handler when active
-                LockStatus.NoLock
+                _isActive ?
+                LockStatus.SHARED_LOCK : // Reserve Exclusive Lock for ANSI, not lock against the handler when active
+                LockStatus.NO_LOCK
             );
         }
 
 
-        protected virtual void onEnter()
+        protected virtual void OnEnter()
         {
-            List<byte> byteArr = content.AsByteBuffer().AsList();
-            byteArr.Insert((int)cursor, (byte)'\n');
-            content = byteArr.AsByteBuffer().AsString();
-            cursor += 1;
+            List<byte> byteArr = Content.AsByteBuffer().AsList();
+            byteArr.Insert((int)Cursor, (byte)'\n');
+            Content = byteArr.AsByteBuffer().AsString();
+            Cursor += 1;
         }
     }
 
     public class MultiLineInputFieldHandler : InputFieldHandler
     {
-        protected (uint row, uint column) vir_loc = (0, 0); // Suggestive location in multiline tranversal, which might not be valid
+        protected (uint row, uint column) VirLoc = (0, 0); // Suggestive location in multiline tranversal, which might not be valid
 
         public (uint row, uint column) size2D
         {
-            get => to2D(size);
+            get => To2D(size);
         }
 
         public (uint row, uint column) cursorPos2D
@@ -265,16 +265,16 @@ namespace ui.input
 
         protected (uint row, uint column) loc
         {
-            get => to2D(cursor);
+            get => To2D(Cursor);
             set
             {
-                cursor = to1D(value);
+                Cursor = To1D(value);
             }
         }
 
-        public uint to1D((uint row, uint column) loc)
+        public uint To1D((uint row, uint column) loc)
         {
-            string[] op = content.Split('\n');
+            string[] op = Content.Split('\n');
             uint idx = 0;
             uint col = loc.column;
             uint row = loc.row;
@@ -293,13 +293,13 @@ namespace ui.input
             idx += col;
             return idx;
         }
-        public (uint row, uint column) to2D(uint idx)
+        public (uint row, uint column) To2D(uint idx)
         {
             uint row = 0;
             uint column = 0;
             for (uint i = 0; i < idx; i++)
             {
-                byte value = (byte)content[(int)i];
+                byte value = (byte)Content[(int)i];
                 if (value == '\n')
                 {
                     row++;
@@ -315,7 +315,7 @@ namespace ui.input
 
         protected (uint row, uint column) Correct((uint row, uint column) loc)
         {
-            return to2D(to1D(loc));
+            return To2D(To1D(loc));
             // string[] strArr = content.Split('\n');
             // uint row = loc.row;
             // uint col = loc.column;
@@ -342,58 +342,58 @@ namespace ui.input
         protected override void Handle(byte value)
         {
             base.Handle(value);
-            loc = to2D(cursor);
+            loc = To2D(Cursor);
         }
 
-        protected override void onDefault(byte value)
+        protected override void OnDefault(byte value)
         {
-            base.onDefault(value);
-            vir_loc = loc = to2D(cursor);
+            base.OnDefault(value);
+            VirLoc = loc = To2D(Cursor);
         }
 
-        protected override void onArrUp()
+        protected override void OnArrUp()
         {
-            if (vir_loc.row > 0 && loc.row > 0)
+            if (VirLoc.row > 0 && loc.row > 0)
             {
-                vir_loc = (vir_loc.row - 1, vir_loc.column);
-                loc = Correct(vir_loc);
+                VirLoc = (VirLoc.row - 1, VirLoc.column);
+                loc = Correct(VirLoc);
             }
             else
             {
-                cursor = 0;
-                loc = to2D(cursor);
-                vir_loc = to2D(cursor);
+                Cursor = 0;
+                loc = To2D(Cursor);
+                VirLoc = To2D(Cursor);
             }
         }
 
-        protected override void onArrDown()
+        protected override void OnArrDown()
         {
-            if (vir_loc.row < content.Split('\n').Length - 1 && loc.row < content.Split('\n').Length - 1)
+            if (VirLoc.row < Content.Split('\n').Length - 1 && loc.row < Content.Split('\n').Length - 1)
             {
-                vir_loc = (vir_loc.row + 1, vir_loc.column);
-                loc = Correct(vir_loc);
+                VirLoc = (VirLoc.row + 1, VirLoc.column);
+                loc = Correct(VirLoc);
             }
             else
             {
-                cursor = size;
-                loc = to2D(cursor);
-                vir_loc = to2D(cursor);
+                Cursor = size;
+                loc = To2D(Cursor);
+                VirLoc = To2D(Cursor);
             }
 
         }
 
-        protected override void onArrLeft()
+        protected override void OnArrLeft()
         {
-            base.onArrLeft();
-            loc = to2D(cursor);
-            vir_loc = to2D(cursor);
+            base.OnArrLeft();
+            loc = To2D(Cursor);
+            VirLoc = To2D(Cursor);
         }
 
-        protected override void onArrRight()
+        protected override void OnArrRight()
         {
-            base.onArrRight();
-            loc = to2D(cursor);
-            vir_loc = to2D(cursor);
+            base.OnArrRight();
+            loc = To2D(Cursor);
+            VirLoc = To2D(Cursor);
         }
 
     }

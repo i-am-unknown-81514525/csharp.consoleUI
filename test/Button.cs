@@ -10,31 +10,31 @@ namespace ui.test
 {
     public class CounterButton : Button<EmptyStore, CounterButton>
     {
-        internal string _base_text;
-        internal int _count;
+        internal string BaseText;
+        internal int Count;
 
         public new string text
         {
-            get => $"{_base_text} [{_count}]";
+            get => $"{BaseText} [{Count}]";
         }
 
-        public string base_text
+        public string baseText
         {
-            get => _base_text;
-            set { _base_text = value; base.text = text; }
+            get => BaseText;
+            set { BaseText = value; base.text = text; }
         }
 
         public int count
         {
-            get => _count;
-            set { _count = value; ; base.text = text; }
+            get => Count;
+            set { Count = value; ; base.text = text; }
         }
 
-        public CounterButton(string baseText = "", int Count = 0) : base($"{baseText} [{Count}]")
+        public CounterButton(string baseText = "", int count = 0) : base($"{baseText} [{count}]")
         {
-            base_text = baseText;
-            count = Count;
-            this.WithHandler((_) => { count++; });
+            this.baseText = baseText;
+            this.count = count;
+            this.WithHandler((_) => { this.count++; });
         }
 
         public override string Debug_Info() => text;
@@ -51,8 +51,8 @@ namespace ui.test
             try
             {
                 ConsoleIntermediateHandler.Setup();
-                ConsoleIntermediateHandler.ANSISetup();
-                NornalANSISkipHandler ansiSkipHandler = new NornalANSISkipHandler();
+                ConsoleIntermediateHandler.AnsiSetup();
+                NornalAnsiSkipHandler ansiSkipHandler = new NornalAnsiSkipHandler();
                 Global.InputHandler.Add(ansiSkipHandler);
                 KeyCodeTranslationHandler keyCodeHandler = new KeyCodeTranslationHandler(Global.InputHandler);
                 Global.InputHandler.Add(keyCodeHandler);
@@ -63,7 +63,7 @@ namespace ui.test
                 bool isComplete = false;
                 while (!isComplete)
                 {
-                    Global.consoleCanva.EventLoopPre();
+                    Global.ConsoleCanva.EventLoopPre();
                     bool status = Global.InputHandler.Handle();
                     if (!status)
                     {
@@ -74,8 +74,8 @@ namespace ui.test
                     {
                         return;
                     }
-                    Global.consoleCanva.ConsoleWindow = app.Render();
-                    Global.consoleCanva.EventLoopPost();
+                    Global.ConsoleCanva.ConsoleWindow = app.Render();
+                    Global.ConsoleCanva.EventLoopPost();
                 }
             }
             finally

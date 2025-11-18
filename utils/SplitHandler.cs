@@ -7,44 +7,44 @@ namespace ui.utils
 {
     public sealed class SplitConfig
     {
-        private bool isSet = false;
-        private SplitHandler handler;
-        private int amount = 0;
+        private bool _isSet = false;
+        private SplitHandler _handler;
+        private int _amount = 0;
 
         public SplitConfig(SplitHandler handler)
         {
-            this.handler = handler;
+            this._handler = handler;
         }
 
         public void Update()
         {
-            int? result = handler.GetSize(this);
+            int? result = _handler.GetSize(this);
             if (result != null)
             {
-                isSet = true;
-                amount = (int)result;
+                _isSet = true;
+                _amount = (int)result;
             }
         }
 
-        public bool isReady()
+        public bool IsReady()
         {
-            if (!isSet)
+            if (!_isSet)
             {
                 Update();
             }
-            return isSet;
+            return _isSet;
         }
 
         public int? TryGetValue()
         {
-            if (!isReady()) return null;
-            return amount;
+            if (!IsReady()) return null;
+            return _amount;
         }
 
         public int GetValue()
         {
-            if (!isReady()) throw new InvalidOperationException();
-            return amount;
+            if (!IsReady()) throw new InvalidOperationException();
+            return _amount;
         }
 
     }
@@ -57,8 +57,8 @@ namespace ui.utils
     public sealed class SplitAmount : IComparable<SplitAmount>
     {
         private bool _isFraction;
-        private Fraction frac;
-        private int size;
+        private Fraction _frac;
+        private int _size;
 
         public uint prioity { get; }
 
@@ -66,28 +66,28 @@ namespace ui.utils
         {
             if (prioity < 1) throw new ArgumentOutOfRangeException();
             _isFraction = true;
-            this.frac = frac;
+            this._frac = frac;
         }
 
         public SplitAmount(int size)
         {
             _isFraction = false;
             prioity = 0;
-            this.size = size;
+            this._size = size;
         }
 
-        public bool isFraction() => _isFraction;
+        public bool IsFraction() => _isFraction;
 
         public Fraction GetFraction()
         {
             if (!_isFraction) throw new InvalidCastException();
-            return frac;
+            return _frac;
         }
 
         public int GetSize()
         {
             if (_isFraction) throw new InvalidCastException();
-            return size;
+            return _size;
         }
 
         public static implicit operator SplitAmount(Fraction frac) => new SplitAmount(frac);
@@ -102,11 +102,11 @@ namespace ui.utils
                     !(right is null) &&
                     left.prioity == right.prioity &&
                     (
-                        left.isFraction() ?
+                        left.IsFraction() ?
                         (
-                            right.isFraction() && left.GetFraction() == right.GetFraction()
+                            right.IsFraction() && left.GetFraction() == right.GetFraction()
                         ) : (
-                            !right.isFraction() && left.GetSize() == right.GetSize()
+                            !right.IsFraction() && left.GetSize() == right.GetSize()
                         )
                     )
                 ) || (
@@ -126,8 +126,8 @@ namespace ui.utils
 
         public override int GetHashCode()
         {
-            int prio_hash = (7919 * (int)prioity); // The 1000th prime number
-            return (isFraction() ? GetFraction().GetHashCode() : GetSize().GetHashCode()) ^ prio_hash;
+            int prioHash = (7919 * (int)prioity); // The 1000th prime number
+            return (IsFraction() ? GetFraction().GetHashCode() : GetSize().GetHashCode()) ^ prioHash;
         }
 
         public int CompareTo(SplitAmount right)
@@ -147,15 +147,15 @@ namespace ui.utils
             {
                 return -1; // smaller
             }
-            if (!this.isFraction() && right.isFraction())
+            if (!this.IsFraction() && right.IsFraction())
             {
                 return 1;
             }
-            if (this.isFraction() && !right.isFraction())
+            if (this.IsFraction() && !right.IsFraction())
             {
                 return -1;
             }
-            if (this.isFraction())
+            if (this.IsFraction())
             {
                 if (this.GetFraction() < right.GetFraction())
                 {
@@ -182,44 +182,44 @@ namespace ui.utils
 
     public class SplitHandler
     {
-        protected Dictionary<SplitConfig, SplitAmount> amount = new Dictionary<SplitConfig, SplitAmount>();
-        protected Dictionary<SplitConfig, int?> size = new Dictionary<SplitConfig, int?>();
+        protected Dictionary<SplitConfig, SplitAmount> Amount = new Dictionary<SplitConfig, SplitAmount>();
+        protected Dictionary<SplitConfig, int?> Size = new Dictionary<SplitConfig, int?>();
 
-        protected int totalSize;
+        protected int TotalSize;
 
         public SplitHandler(int totalSize)
         {
             if (totalSize <= 0) throw new ArgumentOutOfRangeException();
-            this.totalSize = totalSize;
+            this.TotalSize = totalSize;
         }
 
         public int? GetSize(SplitConfig config)
         {
-            if (!size.ContainsKey(config)) throw new InvalidOperationException("The referred key doesn't exist");
-            return size[config];
+            if (!Size.ContainsKey(config)) throw new InvalidOperationException("The referred key doesn't exist");
+            return Size[config];
         }
 
-        public int GetTotalSize() => totalSize;
+        public int GetTotalSize() => TotalSize;
 
         public void SetTotalSize(int totalSize)
         {
             if (totalSize < 0) throw new ArgumentOutOfRangeException();
-            this.totalSize = totalSize;
+            this.TotalSize = totalSize;
             Update();
         }
 
         public void Remove(SplitConfig splitConfig)
         {
-            if (!amount.ContainsKey(splitConfig)) throw new InvalidOperationException("The config provided doesn't exist in the handler");
-            amount.Remove(splitConfig);
+            if (!Amount.ContainsKey(splitConfig)) throw new InvalidOperationException("The config provided doesn't exist in the handler");
+            Amount.Remove(splitConfig);
             Update();
         }
 
         public void Update()
         {
-            int curr = totalSize;
+            int curr = TotalSize;
             // List<KeyValuePair<SplitConfig, (SplitAmount amount, uint prioity)>> sorted = amount.OrderBy(x => x.Value.prioity).ToList();
-            List<(uint prioity, List<KeyValuePair<SplitConfig, SplitAmount>> elements)> sortedGrouped = amount.
+            List<(uint prioity, List<KeyValuePair<SplitConfig, SplitAmount>> elements)> sortedGrouped = Amount.
                 GroupBy(
                     x => x.Value.prioity, // Key: the prioity
                     x => new KeyValuePair<SplitConfig, SplitAmount>(x.Key, x.Value), // The element
@@ -228,17 +228,17 @@ namespace ui.utils
                 .OrderBy(x => x.Item1)
                 .ToList();
             int totalPrioityTier = sortedGrouped.Count();
-            size = new Dictionary<SplitConfig, int?>();
+            Size = new Dictionary<SplitConfig, int?>();
             for (int i = 0; i < totalPrioityTier; i++)
             {
                 (uint prioity, List<KeyValuePair<SplitConfig, SplitAmount>> elements) = sortedGrouped[i];
-                List<KeyValuePair<SplitConfig, SplitAmount>> valueElements = elements.Where(x => !x.Value.isFraction()).ToList();
-                List<KeyValuePair<SplitConfig, SplitAmount>> fracElements = elements.Where(x => x.Value.isFraction()).ToList();
+                List<KeyValuePair<SplitConfig, SplitAmount>> valueElements = elements.Where(x => !x.Value.IsFraction()).ToList();
+                List<KeyValuePair<SplitConfig, SplitAmount>> fracElements = elements.Where(x => x.Value.IsFraction()).ToList();
                 foreach (KeyValuePair<SplitConfig, SplitAmount> element in valueElements)
                 {
                     if (curr <= 0)
                     {
-                        size[element.Key] = 0;
+                        Size[element.Key] = 0;
                         continue;
                     }
                     int alloc = element.Value.GetSize();
@@ -246,7 +246,7 @@ namespace ui.utils
                     {
                         alloc = curr;
                     }
-                    size[element.Key] = alloc;
+                    Size[element.Key] = alloc;
                     curr -= alloc;
                 }
                 Fraction totalFrac = fracElements.Sum(x => x.Value.GetFraction());
@@ -263,7 +263,7 @@ namespace ui.utils
                 {
                     if (curr <= 0)
                     {
-                        size[element.Key] = 0;
+                        Size[element.Key] = 0;
                         continue;
                     }
                     Fraction frac = element.Value.GetFraction();
@@ -275,11 +275,11 @@ namespace ui.utils
                     {
                         alloc = curr;
                     }
-                    size[element.Key] = alloc;
+                    Size[element.Key] = alloc;
                     curr -= alloc;
                 }
             }
-            foreach (KeyValuePair<SplitConfig, int?> element in size)
+            foreach (KeyValuePair<SplitConfig, int?> element in Size)
             {
                 element.Key.Update();
             }
@@ -298,12 +298,12 @@ namespace ui.utils
         public SplitConfig AddSplit(SplitAmount amount)
         {
             SplitConfig config = new SplitConfig(this);
-            this.amount[config] = amount;
-            this.size[config] = null;
+            this.Amount[config] = amount;
+            this.Size[config] = null;
             Update();
             return config;
         }
 
-        public bool Contains(SplitConfig config) => amount.ContainsKey(config);
+        public bool Contains(SplitConfig config) => Amount.ContainsKey(config);
     }
 }

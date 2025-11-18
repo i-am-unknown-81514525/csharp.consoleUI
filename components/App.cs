@@ -18,30 +18,30 @@ namespace ui.components
         protected App(BaseComponent component, ActiveStatusHandler activeStatusHandler) : base(component, activeStatusHandler) { }
     }
 
-    public class App<S> : App<S, App<S>> where S : ComponentStore
+    public class App<TS> : App<TS, App<TS>> where TS : ComponentStore
     {
         public App(BaseComponent component) : base(component) { }
 
         protected App(BaseComponent component, ActiveStatusHandler activeStatusHandler) : base(component, activeStatusHandler) { }
     }
 
-    public class App<S, T> : SingleChildComponent<S> where T : App<S, T> where S : ComponentStore
+    public class App<TS, T> : SingleChildComponent<TS> where T : App<TS, T> where TS : ComponentStore
     {
 
-        public Action<App<S, T>> onTickHandler = (_) => { };
+        public Action<App<TS, T>> OnTickHandler = (_) => { };
 
-        public Action<App<S, T>> onExitHandler = (_) => { };
+        public Action<App<TS, T>> OnExitHandler = (_) => { };
 
         public App(BaseComponent component) : base(new ComponentConfig(new ActiveStatusHandler()))
         {
-            noParent = true;
+            NoParent = true;
             Add(component);
             SetChildAllocatedSize(component, (0, 0, GetAllocSize().x, GetAllocSize().y), 1);
         }
 
         protected App(BaseComponent component, ActiveStatusHandler activeStatusHandler) : base(new ComponentConfig(activeStatusHandler))
         {
-            noParent = true;
+            NoParent = true;
             Add(component);
             SetChildAllocatedSize(component, (0, 0, GetAllocSize().x, GetAllocSize().y), 1);
         }
@@ -57,13 +57,13 @@ namespace ui.components
             SetChildAllocatedSize(GetMapping()[0].component, (0, 0, GetAllocSize().x, GetAllocSize().y), 1);
         }
 
-        public App<S, T> Run()
+        public App<TS, T> Run()
         {
             try
             {
                 ConsoleIntermediateHandler.Setup();
-                ConsoleIntermediateHandler.ANSISetup();
-                NornalANSISkipHandler ansiSkipHandler = new NornalANSISkipHandler();
+                ConsoleIntermediateHandler.AnsiSetup();
+                NornalAnsiSkipHandler ansiSkipHandler = new NornalAnsiSkipHandler();
                 Global.InputHandler.Add(ansiSkipHandler);
                 KeyCodeTranslationHandler keyCodeHandler = new KeyCodeTranslationHandler(Global.InputHandler);
                 Global.InputHandler.Add(keyCodeHandler);
@@ -75,24 +75,25 @@ namespace ui.components
                 SetHasUpdate();
                 while (!isComplete)
                 {
-                    Global.consoleCanva.EventLoopPre();
-                    onTickHandler(this);
+                    Global.ConsoleCanva.EventLoopPre();
+                    OnTickHandler(this);
                     bool status = Global.InputHandler.Handle();
                     if (exitHandler.GetExitStatus())
                     {
-                        return this;
+                        // return this;
+                        isComplete = true;
                     }
                     UpdateAllocSize();
                     bool haveUpdate = GetHasUpdate();
-                    Global.consoleCanva.ConsoleWindow = this.Render();
-                    Global.consoleCanva.EventLoopPost(haveUpdate);
+                    Global.ConsoleCanva.ConsoleWindow = this.Render();
+                    Global.ConsoleCanva.EventLoopPost(haveUpdate);
                     System.Threading.Thread.Sleep(1);
                 }
             }
             finally
             {
                 ConsoleIntermediateHandler.Reset();
-                onExitHandler(this);
+                OnExitHandler(this);
             }
             return this;
         }

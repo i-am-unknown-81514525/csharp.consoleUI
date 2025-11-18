@@ -22,17 +22,17 @@ namespace ui.components
 
     public abstract class BaseComponent : IComponent
     {
-        protected ActiveStatusHandler activeHandler;
-        private IComponent root = null;
+        protected ActiveStatusHandler ActiveHandler;
+        private IComponent _root = null;
 
-        private (uint x, uint y) allocSize = (0, 0);
-        protected List<(IComponent component, (uint x, uint y, uint allocX, uint allocY) location, int prioity)> childsMapping =
+        private (uint x, uint y) _allocSize = (0, 0);
+        protected List<(IComponent component, (uint x, uint y, uint allocX, uint allocY) location, int prioity)> ChildsMapping =
                 new List<(IComponent, (uint, uint, uint, uint), int)>(); // Lower value -> earlier to render = lower prioity (being override by higher value)
                                                                          // The component writer decide itself override on other or other overide on itself by call order
 
-        protected ConsoleContent[,] contentPlace = new ConsoleContent[0, 0];
+        protected ConsoleContent[,] ContentPlace = new ConsoleContent[0, 0];
 
-        protected bool noParent = false;
+        protected bool NoParent = false;
 
         private bool _localHasUpdate = true;
 
@@ -67,7 +67,7 @@ namespace ui.components
         public void Init(ComponentConfig config)
         {
             if (IsInit()) throw new AlreadyInitException();
-            activeHandler = config.activeStatusHandler;
+            ActiveHandler = config.ActiveStatusHandler;
             _isInit = true;
             foreach (IComponent component in GetMapping().Select(x => x.component))
                 if (!component.IsInit())
@@ -84,28 +84,28 @@ namespace ui.components
 
         public List<(IComponent component, (uint x, uint y, uint allocX, uint allocY) location, int prioity)> GetMapping()
         {
-            return childsMapping.ToList();
+            return ChildsMapping.ToList();
         }
 
         public (uint x, uint y) GetAllocSize()
         {
-            return allocSize;
+            return _allocSize;
         }
 
         public bool UpdateAllocSize()
         {
             CheckLock();
-            (uint x, uint y) old = allocSize;
-            if (root == null)
+            (uint x, uint y) old = _allocSize;
+            if (_root == null)
             {
-                ConsoleSize size = Global.consoleCanva.GetConsoleSize();
-                allocSize = ((uint)size.Width, (uint)size.Height);
+                ConsoleSize size = Global.ConsoleCanva.GetConsoleSize();
+                _allocSize = ((uint)size.Width, (uint)size.Height);
             }
             else
             {
-                allocSize = root.GetChildAllocatedSize(this);
+                _allocSize = _root.GetChildAllocatedSize(this);
             }
-            if (old != allocSize)
+            if (old != _allocSize)
             {
                 SetHasUpdate();
                 OnResize();
@@ -121,8 +121,8 @@ namespace ui.components
             {
                 _frameRecurrLock = true;
                 OnFrameInternal();
-                if (childsMapping != null)
-                    foreach (var compLoc in childsMapping)
+                if (ChildsMapping != null)
+                    foreach (var compLoc in ChildsMapping)
                         compLoc.component.OnFrame();
             }
             finally
@@ -135,7 +135,7 @@ namespace ui.components
 
         public bool GetHasUpdate()
         {
-            return _localHasUpdate || childsMapping.Any(x => x.component.GetHasUpdate());
+            return _localHasUpdate || ChildsMapping.Any(x => x.component.GetHasUpdate());
         }
 
         public void SetHasUpdate()
@@ -155,11 +155,11 @@ namespace ui.components
         {
             CheckLock();
             OnHoverInternal(location);
-            foreach (var compLoc in childsMapping.OrderByDescending(x => x.prioity))
+            foreach (var compLoc in ChildsMapping.OrderByDescending(x => x.prioity))
             {
                 (uint lx, uint ly) = (compLoc.location.x, compLoc.location.y);
                 (uint hx, uint hy) = (lx + compLoc.location.allocX, ly + compLoc.location.allocY);
-                if (lx <= location.x && location.x <= lx && ly <= location.y && location.y <= hy)
+                if (lx <= location.X && location.X <= lx && ly <= location.Y && location.Y <= hy)
                 {
                     _lock = true;
                     try
@@ -183,13 +183,13 @@ namespace ui.components
 
         protected bool OnClickPropagate(ConsoleLocation pressLocation)
         {
-            foreach (var compLoc in childsMapping.OrderByDescending(x => x.prioity))
+            foreach (var compLoc in ChildsMapping.OrderByDescending(x => x.prioity))
             {
                 (uint lx, uint ly) = (compLoc.location.x, compLoc.location.y);
                 (uint hx, uint hy) = (lx + compLoc.location.allocX, ly + compLoc.location.allocY);
-                if (lx <= pressLocation.x && pressLocation.x < hx && ly <= pressLocation.y && pressLocation.y < hy)
+                if (lx <= pressLocation.X && pressLocation.X < hx && ly <= pressLocation.Y && pressLocation.Y < hy)
                 {
-                    compLoc.component.OnClick(new ConsoleLocation(pressLocation.x - (int)lx, pressLocation.y - (int)ly));
+                    compLoc.component.OnClick(new ConsoleLocation(pressLocation.X - (int)lx, pressLocation.Y - (int)ly));
                     return true;
                 }
             }
@@ -202,7 +202,7 @@ namespace ui.components
             {
                 throw new InvalidOperationException("The parent doesn't have this direct child");
             }
-            (uint _, uint _2, uint allocX, uint allocY) = childsMapping.Where(x => x.component == component).First().location;
+            (uint _, uint _2, uint allocX, uint allocY) = ChildsMapping.Where(x => x.component == component).First().location;
             return (allocX, allocY);
         }
 
@@ -211,27 +211,27 @@ namespace ui.components
             if (!Contains(component))
             {
                 if (prioity == null) prioity = 0;
-                childsMapping.Add((component, loc, (int)prioity));
+                ChildsMapping.Add((component, loc, (int)prioity));
                 SetHasUpdate();
             }
             else
             {
                 int idx = IndexOf(component);
-                if (prioity == null) prioity = childsMapping[idx].prioity;
-                if (loc != childsMapping[idx].location || prioity != childsMapping[idx].prioity)
+                if (prioity == null) prioity = ChildsMapping[idx].prioity;
+                if (loc != ChildsMapping[idx].location || prioity != ChildsMapping[idx].prioity)
                     SetHasUpdate();
-                childsMapping[idx] = (component, loc, (int)prioity);
+                ChildsMapping[idx] = (component, loc, (int)prioity);
             }
         }
 
         public bool Contains(IComponent component)
         {
-            return childsMapping.Select(x => x.component).Count(x => x == component) > 0;
+            return ChildsMapping.Select(x => x.component).Count(x => x == component) > 0;
         }
 
         public int IndexOf(IComponent component)
         {
-            return childsMapping.Select(x => x.component).ToList().IndexOf(component);
+            return ChildsMapping.Select(x => x.component).ToList().IndexOf(component);
         }
 
         protected virtual void OnResize() { }
@@ -244,10 +244,10 @@ namespace ui.components
             {
                 return false;
             }
-            childsMapping.Add(data);
+            ChildsMapping.Add(data);
             component.Mount(this);
-            if (activeHandler != null)
-                component.Init(new ComponentConfig(activeHandler));
+            if (ActiveHandler != null)
+                component.Init(new ComponentConfig(ActiveHandler));
             ReRender();
             SetHasUpdate();
             return true;
@@ -261,10 +261,10 @@ namespace ui.components
             {
                 return false;
             }
-            childsMapping.Insert(idx, data);
+            ChildsMapping.Insert(idx, data);
             component.Mount(this);
-            if (activeHandler != null)
-                component.Init(new ComponentConfig(activeHandler));
+            if (ActiveHandler != null)
+                component.Init(new ComponentConfig(ActiveHandler));
             ReRender();
             SetHasUpdate();
             return true;
@@ -282,7 +282,7 @@ namespace ui.components
                 throw new InvalidOperationException("The component is not the direct child of the current component and cannot be removed");
             }
             int idx = IndexOf(component);
-            childsMapping.RemoveAt(idx);
+            ChildsMapping.RemoveAt(idx);
             component.Dismount();
             component.UnInit();
             ReRender();
@@ -291,7 +291,7 @@ namespace ui.components
 
         public IComponent GetMount()
         {
-            return root;
+            return _root;
         }
 
         public void Mount(IComponent component)
@@ -301,15 +301,15 @@ namespace ui.components
             {
                 throw new InvalidOperationException("Cannot set mount to nothingness");
             }
-            if (root != null)
+            if (_root != null)
             {
                 throw new InvalidOperationException("The component is already mount, cannot modify");
             }
-            if (noParent)
+            if (NoParent)
             {
                 throw new InvalidOperationException("The component reject from being mount(usually occur to root node)");
             }
-            root = component;
+            _root = component;
             OnMount();
             OnVisible();
         }
@@ -336,12 +336,12 @@ namespace ui.components
 
         public bool Dismount()
         {
-            if (root is null) throw new InvalidOperationException("The item is already dismounted");
-            if (!root.Contains(this))
+            if (_root is null) throw new InvalidOperationException("The item is already dismounted");
+            if (!_root.Contains(this))
             {
                 OnDismount();
                 OnHide();
-                root = null;
+                _root = null;
                 return true;
             }
             return false;
@@ -370,11 +370,11 @@ namespace ui.components
             UpdateAllocSize();
             if (!GetHasUpdate())
             {
-                return (ConsoleContent[,])contentPlace.Clone();
+                return (ConsoleContent[,])ContentPlace.Clone();
             }
             _localHasUpdate = false;
             ConsoleContent[,] content = RenderInternal();
-            contentPlace = content;
+            ContentPlace = content;
             if (_rerender)
             {
                 return Render();
@@ -384,22 +384,22 @@ namespace ui.components
 
         protected virtual ConsoleContent[,] RenderInternal()
         {
-            ConsoleContent[,] newArr = new ConsoleContent[allocSize.x, allocSize.y];
+            ConsoleContent[,] newArr = new ConsoleContent[_allocSize.x, _allocSize.y];
             newArr = RenderPre(newArr);
-            if (newArr.GetLength(0) != allocSize.x || newArr.GetLength(1) != allocSize.y) throw new InvalidOperationException("Cannot change size of ConsoleContent array on RenderPre");
+            if (newArr.GetLength(0) != _allocSize.x || newArr.GetLength(1) != _allocSize.y) throw new InvalidOperationException("Cannot change size of ConsoleContent array on RenderPre");
             _lock = true;
             try
             {
                 foreach (
                     (IComponent component, (uint x, uint y, uint allocX, uint allocY) meta, int prioity) compLoc
-                    in childsMapping.OrderBy(x => x.prioity)
+                    in ChildsMapping.OrderBy(x => x.prioity)
                 )
                 {
                     newArr = CopyTo(
-                        changeSize(
+                        ChangeSize(
                             compLoc.component.Render(),
                             (compLoc.meta.allocX, compLoc.meta.allocY),
-                            ConsoleContent.getDefault()
+                            ConsoleContent.GetDefault()
                         ),
                         newArr,
                         (compLoc.meta.x, compLoc.meta.y)
@@ -411,7 +411,7 @@ namespace ui.components
                 _lock = false;
             }
             newArr = RenderPost(newArr);
-            if (newArr.GetLength(0) != allocSize.x || newArr.GetLength(1) != allocSize.y) throw new InvalidOperationException("Cannot change size of ConsoleContent array on RenderPost");
+            if (newArr.GetLength(0) != _allocSize.x || newArr.GetLength(1) != _allocSize.y) throw new InvalidOperationException("Cannot change size of ConsoleContent array on RenderPost");
             return newArr;
         }
 
@@ -427,7 +427,7 @@ namespace ui.components
 
         public bool Deactive(Event deactiveEvent)
         {
-            if (activeHandler.GetCurrActive() != this) return false;
+            if (ActiveHandler.GetCurrActive() != this) return false;
             try
             {
                 _activeLock = true;
@@ -435,7 +435,7 @@ namespace ui.components
                 if (state)
                 {
                     this._isActive = false;
-                    activeHandler.SetInactive(this);
+                    ActiveHandler.SetInactive(this);
                 }
                 return state;
             }
@@ -448,8 +448,8 @@ namespace ui.components
 
         public bool IsActive()
         {
-            if (activeHandler is null) return false;
-            return activeHandler.GetCurrActive() == this;
+            if (ActiveHandler is null) return false;
+            return ActiveHandler.GetCurrActive() == this;
         }
 
         protected virtual bool OnDeactive(Event deactiveEvent)
@@ -468,12 +468,12 @@ namespace ui.components
             try
             {
                 _isActive = true;
-                _isActive = activeHandler.SetActive(this);
+                _isActive = ActiveHandler.SetActive(this);
             }
             catch
             {
                 _isActive = false;
-                if (activeHandler.GetCurrActive() == this) activeHandler.SetInactive(this);
+                if (ActiveHandler.GetCurrActive() == this) ActiveHandler.SetInactive(this);
                 throw;
             }
             if (_isActive)
@@ -501,11 +501,11 @@ namespace ui.components
         {
             string clsName = GetType().Name;
             string content = "";
-            if (root == null)
+            if (_root == null)
                 content = $"{clsName} (allocX={GetAllocSize().x}, allocY={GetAllocSize().y}) - {Debug_Info() ?? ""}\r\n";
             string inner = String.Join(
                 "\n",
-                childsMapping
+                ChildsMapping
                     .Select(x => x)
                     .Select(
                         x =>
@@ -547,23 +547,23 @@ namespace ui.components
         }
     }
 
-    public abstract class Component<S> : BaseComponent where S : ComponentStore
+    public abstract class Component<TS> : BaseComponent where TS : ComponentStore
     {
-        public readonly S store;
+        public readonly TS Store;
 
-        public Component(S store) : base()
+        public Component(TS store) : base()
         {
-            this.store = store;
+            this.Store = store;
         }
 
-        public Component(ComponentConfig config, S store) : base(config)
+        public Component(ComponentConfig config, TS store) : base(config)
         {
-            this.store = store;
+            this.Store = store;
         }
 
-        public virtual S ComponentStoreConstructor()
+        public virtual TS ComponentStoreConstructor()
         {
-            S store = (new EmptyStore() as S);
+            TS store = (new EmptyStore() as TS);
             if (store is null)
             {
                 throw new InvalidOperationException("To use ComponentStore without providing on constructor, ComponentStoreConstructor must be defined on the component");
@@ -573,12 +573,12 @@ namespace ui.components
 
         public Component() : base()
         {
-            this.store = ComponentStoreConstructor();
+            this.Store = ComponentStoreConstructor();
         }
 
         public Component(ComponentConfig config) : base(config)
         {
-            this.store = ComponentStoreConstructor();
+            this.Store = ComponentStoreConstructor();
         }
     }
 

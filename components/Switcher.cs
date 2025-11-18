@@ -6,34 +6,34 @@ using ui.core;
 
 namespace ui.components
 {
-    public class Switcher<S, T> : Component<S>, IEnumerable<IComponent> where S : ComponentStore where T : Switcher<S, T>
+    public class Switcher<TS, T> : Component<TS>, IEnumerable<IComponent> where TS : ComponentStore where T : Switcher<TS, T>
     {
-        List<IComponent> compList = new List<IComponent>();
-        private int idx = 0;
-        private IComponent curr = null;
+        List<IComponent> _compList = new List<IComponent>();
+        private int _idx = 0;
+        private IComponent _curr = null;
 
 
         public Switcher() : base() { }
 
         public Switcher(ComponentConfig config) : base(config) { }
 
-        public Switcher(S store) : base(store) { }
+        public Switcher(TS store) : base(store) { }
 
-        public Switcher(ComponentConfig config, S store) : base(config, store) { }
+        public Switcher(ComponentConfig config, TS store) : base(config, store) { }
 
         public Switcher(IEnumerable<IComponent> components) : base()
         {
-            compList = components.ToList();
+            _compList = components.ToList();
         }
 
         public Switcher(IEnumerable<IComponent> components, ComponentConfig config) : base(config)
         {
-            compList = components.ToList();
+            _compList = components.ToList();
         }
 
         public void Add(IComponent comp)
         {
-            compList.Add(comp);
+            _compList.Add(comp);
         }
 
         public void AddMulti(IEnumerable<IComponent> comps)
@@ -44,47 +44,47 @@ namespace ui.components
 
         protected override (bool isAdd, (IComponent, (uint, uint, uint, uint), int) data) OnAddHandler((IComponent, (uint, uint, uint, uint), int) child)
         {
-            return (child.Item1 == curr, child);
+            return (child.Item1 == _curr, child);
         }
 
         protected override ConsoleContent[,] RenderPre(ConsoleContent[,] content)
         {
-            if (compList.Count == 0)
+            if (_compList.Count == 0)
             {
                 return content;
             }
-            IComponent newComp = compList[idx];
-            if (newComp == curr)
+            IComponent newComp = _compList[_idx];
+            if (newComp == _curr)
             {
                 return content;
             }
-            if (!(curr is null))
+            if (!(_curr is null))
             {
-                RemoveChildComponent(curr);
+                RemoveChildComponent(_curr);
             }
-            curr = newComp;
+            _curr = newComp;
             (uint allocX, uint allocY) = GetAllocSize();
-            AddChildComponent(curr, (0, 0, allocX, allocY), 1);
+            AddChildComponent(_curr, (0, 0, allocX, allocY), 1);
             return base.RenderPre(content);
         }
 
         public void SwitchTo(int idx)
         {
-            if (idx >= compList.Count || idx < 0)
+            if (idx >= _compList.Count || idx < 0)
             {
                 throw new ArgumentOutOfRangeException("idx must between 0 and compList.Count - 1");
             }
-            this.idx = idx;
+            this._idx = idx;
             SetHasUpdate();
         }
 
-        public int GetCurrIdx() => idx;
+        public int GetCurrIdx() => _idx;
 
-        public IComponent GetCurr() => curr;
+        public IComponent GetCurr() => _curr;
 
         IEnumerator<IComponent> IEnumerable<IComponent>.GetEnumerator()
         {
-            return compList.ToList().GetEnumerator();
+            return _compList.ToList().GetEnumerator();
         }
 
         public IEnumerator GetEnumerator()
@@ -95,17 +95,17 @@ namespace ui.components
         protected override void OnResize()
         {
             (uint allocX, uint allocY) = GetAllocSize();
-            if (!(curr is null))
-                SetChildAllocatedSize(curr, (0, 0, allocX, allocY), 1);
+            if (!(_curr is null))
+                SetChildAllocatedSize(_curr, (0, 0, allocX, allocY), 1);
         }
 
         public override string Debug_Info()
         {
-            return $"[{compList.Count} total child components, Active Index: {idx}]";
+            return $"[{_compList.Count} total child components, Active Index: {_idx}]";
         }
     }
 
-    public class Switcher<S> : Switcher<S, Switcher<S>> where S : ComponentStore { }
+    public class Switcher<TS> : Switcher<TS, Switcher<TS>> where TS : ComponentStore { }
 
     public class Switcher : Switcher<EmptyStore, Switcher> { }
 }

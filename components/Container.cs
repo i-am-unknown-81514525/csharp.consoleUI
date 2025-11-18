@@ -4,7 +4,7 @@ using ui.core;
 
 namespace ui.components
 {
-    public class Container<S> : SingleChildComponent<S> where S : ComponentStore
+    public class Container<TS> : SingleChildComponent<TS> where TS : ComponentStore
     {
 
         public Container() : base()

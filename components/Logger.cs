@@ -8,7 +8,7 @@ namespace ui.components
 {
     public class Logger : TextLabel
     {
-        private List<string> history = new List<string>();
+        private List<string> _history = new List<string>();
 
         public Logger() : base()
         {
@@ -20,12 +20,12 @@ namespace ui.components
         public string GetStrRender()
         {
             uint y = GetAllocSize().y;
-            int start = (int)(history.Count - y);
+            int start = (int)(_history.Count - y);
             if (start < 0) start = 0;
             List<string> forRender = new List<string>();
-            for (int iy = start; (iy - start) < y && iy < history.Count; iy++)
+            for (int iy = start; (iy - start) < y && iy < _history.Count; iy++)
             {
-                forRender.Add(history[iy]);
+                forRender.Add(_history[iy]);
             }
             return String.Join("\n", forRender);
         }
@@ -49,7 +49,7 @@ namespace ui.components
         {
             if (!(content is null))
             {
-                history.Add(content);
+                _history.Add(content);
                 InternalUpdate();
             }
         }

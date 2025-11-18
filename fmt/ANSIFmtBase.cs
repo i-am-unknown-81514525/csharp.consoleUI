@@ -2,34 +2,34 @@ using System;
 
 namespace ui.fmt
 {
-    public abstract class ANSIFmtBase : IComparable<ANSIFmtBase>
+    public abstract class AnsiFmtBase : IComparable<AnsiFmtBase>
     {
-        public readonly string fmtString;
+        public readonly string FmtString;
 
 
-        public ANSIFmtBase(string fmtString)
+        public AnsiFmtBase(string fmtString)
         {
-            this.fmtString = fmtString;
+            this.FmtString = fmtString;
         }
 
-        public override string ToString() => fmtString;
+        public override string ToString() => FmtString;
 
-        public int CompareTo(ANSIFmtBase other)
+        public int CompareTo(AnsiFmtBase other)
         {
-            return this.fmtString.CompareTo(other.fmtString);
+            return this.FmtString.CompareTo(other.FmtString);
         }
 
-        public static bool operator ==(ANSIFmtBase left, ANSIFmtBase right) => left.fmtString == right.fmtString;
-        public static bool operator !=(ANSIFmtBase left, ANSIFmtBase right) => !(left == right);
+        public static bool operator ==(AnsiFmtBase left, AnsiFmtBase right) => left.FmtString == right.FmtString;
+        public static bool operator !=(AnsiFmtBase left, AnsiFmtBase right) => !(left == right);
         public override bool Equals(object obj)
         {
-            if (!(obj is ANSIFmtBase)) return false;
-            return this == (ANSIFmtBase)obj;
+            if (!(obj is AnsiFmtBase)) return false;
+            return this == (AnsiFmtBase)obj;
         }
 
         public override int GetHashCode()
         {
-            return this.fmtString.GetHashCode();
+            return this.FmtString.GetHashCode();
         }
     }
 }

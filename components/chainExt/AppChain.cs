@@ -5,51 +5,51 @@ namespace ui.components.chainExt
 {
     public static class AppChain
     {
-        public static T WithTickHandler<S, T>(this T v, Action<App<S, T>> onTickHandler) where S : ComponentStore where T : App<S, T>
+        public static T WithTickHandler<TS, T>(this T v, Action<App<TS, T>> onTickHandler) where TS : ComponentStore where T : App<TS, T>
         {
-            v.onTickHandler = onTickHandler;
+            v.OnTickHandler = onTickHandler;
             return v;
         }
 
-        public static T WithTickHandler<S, T>(this T v, Action onTickHandler) where S : ComponentStore where T : App<S, T>
+        public static T WithTickHandler<TS, T>(this T v, Action onTickHandler) where TS : ComponentStore where T : App<TS, T>
         {
-            v.onTickHandler = (_) => onTickHandler();
+            v.OnTickHandler = (_) => onTickHandler();
             return v;
         }
 
-        public static T WithExitHandler<S, T>(this T v, Action<App<S, T>> onExitHandler) where S : ComponentStore where T : App<S, T>
+        public static T WithExitHandler<TS, T>(this T v, Action<App<TS, T>> onExitHandler) where TS : ComponentStore where T : App<TS, T>
         {
-            v.onExitHandler = onExitHandler;
+            v.OnExitHandler = onExitHandler;
             return v;
         }
 
-        public static T WithExitHandler<S, T>(this T v, Action onExitHandler) where S : ComponentStore where T : App<S, T>
+        public static T WithExitHandler<TS, T>(this T v, Action onExitHandler) where TS : ComponentStore where T : App<TS, T>
         {
-            v.onTickHandler = (_) => onExitHandler();
+            v.OnTickHandler = (_) => onExitHandler();
             return v;
         }
 
         public static T WithTickHandler<T>(this T v, Action<App<EmptyStore, T>> onTickHandler) where T : App<EmptyStore, T>
         {
-            v.onTickHandler = onTickHandler;
+            v.OnTickHandler = onTickHandler;
             return v;
         }
 
         public static T WithTickHandler<T>(this T v, Action onTickHandler) where T : App<EmptyStore, T>
         {
-            v.onTickHandler = (_) => onTickHandler();
+            v.OnTickHandler = (_) => onTickHandler();
             return v;
         }
 
         public static T WithExitHandler<T>(this T v, Action<App<EmptyStore, T>> onExitHandler) where T : App<EmptyStore, T>
         {
-            v.onExitHandler = onExitHandler;
+            v.OnExitHandler = onExitHandler;
             return v;
         }
 
         public static T WithExitHandler<T>(this T v, Action onExitHandler) where T : App<EmptyStore, T>
         {
-            v.onTickHandler = (_) => onExitHandler();
+            v.OnTickHandler = (_) => onExitHandler();
             return v;
         }
     }

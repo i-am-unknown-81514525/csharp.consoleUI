@@ -5,25 +5,25 @@ namespace ui.components.chainExt
 {
     public static class TextLabelChain
     {
-        public static T WithForeground<S, T>(this T v, ForegroundColor foreground) where T : TextLabel<S> where S : ComponentStore
+        public static T WithForeground<TS, T>(this T v, ForegroundColor foreground) where T : TextLabel<TS> where TS : ComponentStore
         {
             v.foreground = foreground;
             return v;
         }
 
-        public static T WithBackground<S, T>(this T v, BackgroundColor background) where T : TextLabel<S> where S : ComponentStore
+        public static T WithBackground<TS, T>(this T v, BackgroundColor background) where T : TextLabel<TS> where TS : ComponentStore
         {
             v.background = background;
             return v;
         }
 
-        public static T WithVAlign<S, T>(this T v, VerticalAlignment vAlign) where T : TextLabel<S> where S : ComponentStore
+        public static T WithVAlign<TS, T>(this T v, VerticalAlignment vAlign) where T : TextLabel<TS> where TS : ComponentStore
         {
             v.vAlign = vAlign;
             return v;
         }
 
-        public static T WithHAlign<S, T>(this T v, HorizontalAlignment hAlign) where T : TextLabel<S> where S : ComponentStore
+        public static T WithHAlign<TS, T>(this T v, HorizontalAlignment hAlign) where T : TextLabel<TS> where TS : ComponentStore
         {
             v.hAlign = hAlign;
             return v;

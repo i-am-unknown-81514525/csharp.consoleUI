@@ -24,24 +24,24 @@ namespace ui.math
 
         // }
 
-        public static BigInteger Pow(BigInteger base_v, BigInteger expo)
+        public static BigInteger Pow(BigInteger baseV, BigInteger expo)
         {
-            BigInteger out_v = 1;
+            BigInteger outV = 1;
             for (int i = 0; i < expo; i++)
             {
-                out_v *= base_v;
+                outV *= baseV;
             }
-            return out_v;
+            return outV;
         }
 
-        public static Fraction Pow(Fraction base_v, BigInteger expo)
+        public static Fraction Pow(Fraction baseV, BigInteger expo)
         {
-            Fraction out_v = 1;
+            Fraction outV = 1;
             for (int i = 0; i < expo; i++)
             {
-                out_v *= base_v;
+                outV *= baseV;
             }
-            return out_v;
+            return outV;
         }
 
         public static BigInteger Abs(this BigInteger v)
@@ -53,7 +53,7 @@ namespace ui.math
             return -v;
         }
 
-        public static long factorize(long num1, long num2)
+        public static long Factorize(long num1, long num2)
         {
             num1 = Math.Abs(num1);
             num2 = Math.Abs(num2);
@@ -67,7 +67,7 @@ namespace ui.math
             return num1;
         }
 
-        public static BigInteger factorize(BigInteger num1, BigInteger num2)
+        public static BigInteger Factorize(BigInteger num1, BigInteger num2)
         {
             if (num1 < 0) num1 = -num1;
             if (num2 < 0) num2 = -num2;
@@ -81,10 +81,10 @@ namespace ui.math
             return num1;
         }
 
-        public static long lMultiple(long num1, long num2) => (num1 / factorize(num1, num2)) * num2;
+        public static long LMultiple(long num1, long num2) => (num1 / Factorize(num1, num2)) * num2;
         
 
-        public static long[] genSieveOp(long n)
+        public static long[] GenSieveOp(long n)
         {
             if (n < 10)
             {
@@ -101,30 +101,30 @@ namespace ui.math
             }
 
             long sqrtv = (long)Math.Floor(Math.Sqrt(n));
-            long[] primes = genSieveOp(sqrtv);
+            long[] primes = GenSieveOp(sqrtv);
             long start = ((sqrtv + 1) / 2) * 2 + 1; // e.g. 5 -> 7, 6 -> 7
             long length = (n - start) / 2 + 1;
             long prevPrimeLength = primes.Length;
             bool[] sieve = new bool[length]; // 7 -> 10: 7 9, 7 -> 11: 7 9 11
-            long iter_n = n + 1;
-            long iter_n_minus_start = iter_n - start;
+            long iterN = n + 1;
+            long iterNMinusStart = iterN - start;
             for (long i = 1; i < prevPrimeLength; i++) // Start at 1 to ignore the first prime: 2 as all multiple of 2 have avoided by design
             {
-                long r_i = primes[i];
-                long init_v = r_i * r_i - start;
-                long r2_i = 2 * r_i;
-                if (init_v < 0)
+                long rI = primes[i];
+                long initV = rI * rI - start;
+                long r2I = 2 * rI;
+                if (initV < 0)
                 {
-                    init_v = (long)Math.Ceiling((decimal)start / r_i) * r_i - start;
+                    initV = (long)Math.Ceiling((decimal)start / rI) * rI - start;
                 }
-                if (init_v % 2 == 1)
+                if (initV % 2 == 1)
                 {
-                    init_v += r_i;
+                    initV += rI;
                 }
-                for (long j = init_v; j < iter_n_minus_start; j += r2_i)
+                for (long j = initV; j < iterNMinusStart; j += r2I)
                 {
-                    long prime_i = j >> 1;
-                    sieve[prime_i] = true;
+                    long primeI = j >> 1;
+                    sieve[primeI] = true;
                 }
             }
 

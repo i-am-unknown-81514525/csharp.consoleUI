@@ -17,55 +17,55 @@ namespace ui.test
 
         protected override LockStatus Validate()
         {
-            return LockStatus.NoLock;
+            return LockStatus.NO_LOCK;
         }
     }
 
     internal class ExitHandler : InputHandler
     {
-        private bool exit = false;
+        private bool _exit = false;
 
         protected override void Handle(RootInputHandler root)
         {
-            if (GetLockStatus() > LockStatus.NoLock)
+            if (GetLockStatus() > LockStatus.NO_LOCK)
             {
-                exit = true;
-                this.SetLockStatus(LockStatus.NoLock);
+                _exit = true;
+                this.SetLockStatus(LockStatus.NO_LOCK);
                 root.LockChangeAnnounce(this);
             }
         }
 
         protected override LockStatus Validate()
         {
-            if (Buffer.Count > 0 && Buffer[0] == (byte)KeyCode.INTERRUPT) return LockStatus.ExclusiveLock;
-            return LockStatus.NoLock;
+            if (Buffer.Count > 0 && Buffer[0] == (byte)KeyCode.INTERRUPT) return LockStatus.EXCLUSIVE_LOCK;
+            return LockStatus.NO_LOCK;
         }
 
-        public bool GetExitStatus() => exit;
+        public bool GetExitStatus() => _exit;
     }
 
     internal class InputTriggerHandler : InputHandler
     {
-        private bool enableInput = false;
+        private bool _enableInput = false;
 
         protected override void Handle(RootInputHandler root)
         {
-            enableInput = false;
-            if (GetLockStatus() > LockStatus.NoLock)
+            _enableInput = false;
+            if (GetLockStatus() > LockStatus.NO_LOCK)
             {
-                enableInput = true;
-                this.SetLockStatus(LockStatus.NoLock);
+                _enableInput = true;
+                this.SetLockStatus(LockStatus.NO_LOCK);
                 root.LockChangeAnnounce(this);
             }
         }
 
         protected override LockStatus Validate()
         {
-            if (Buffer.Count > 0 && Buffer[0] == (byte)'i') return LockStatus.SharedLock;
-            return LockStatus.NoLock;
+            if (Buffer.Count > 0 && Buffer[0] == (byte)'i') return LockStatus.SHARED_LOCK;
+            return LockStatus.NO_LOCK;
         }
 
-        public bool GetTriggerStatus() => enableInput;
+        public bool GetTriggerStatus() => _enableInput;
     }
 
     // ReSharper disable once UnusedMember.Global
@@ -73,12 +73,12 @@ namespace ui.test
     {
         protected override void Handle(RootInputHandler root)
         {
-            if (GetLockStatus() == LockStatus.NoLock)
+            if (GetLockStatus() == LockStatus.NO_LOCK)
             {
                 return;
             }
             Console.Write($"\nLock {GetLockStatus()} -> No Lock\n");
-            SetLockStatus(LockStatus.NoLock);
+            SetLockStatus(LockStatus.NO_LOCK);
             root.LockChangeAnnounce(this);
         }
 
@@ -88,15 +88,15 @@ namespace ui.test
             // ReSharper disable once RedundantExplicitArraySize
             return new LockStatus[3]
             {
-                LockStatus.NoLock,
-                LockStatus.SharedLock,
-                LockStatus.ExclusiveLock
+                LockStatus.NO_LOCK,
+                LockStatus.SHARED_LOCK,
+                LockStatus.EXCLUSIVE_LOCK
             }[Test.Rnd.Next(0, 3)];
         }
     }
 
     // ReSharper disable once InconsistentNaming
-    internal class ANSIStdoutInputHandler : ANSIInputHandler
+    internal class ANSIStdoutInputHandler : AnsiInputHandler
     {
 
         public override bool Handle(byte[] buf)
@@ -118,7 +118,7 @@ namespace ui.test
     {
         protected override LockStatus Validate()
         {
-            return LockStatus.NoLock;
+            return LockStatus.NO_LOCK;
         }
 
         protected override void Handle(RootInputHandler root)
@@ -144,7 +144,7 @@ namespace ui.test
             // Global.InputHandler.Add(new StdoutInputHandler());
             // Global.InputHandler.Add(new StdoutInputHandler());
             ConsoleIntermediateHandler.Setup();
-            ConsoleIntermediateHandler.ANSISetup();
+            ConsoleIntermediateHandler.AnsiSetup();
             try
             {
                 while (true)

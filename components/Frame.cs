@@ -24,27 +24,27 @@ namespace ui.components
         private IComponent _inner = new TextLabel("");
         public IComponent inner { get => _inner; set { SwitchInner(value); SetHasUpdate(); } }
 
-        private readonly IComponent frameInner;
-        private readonly Container titleContainer = new Container();
-        private readonly HorizontalGroupComponent outerGroupComponent = null;
-        private readonly Container innerContainer = new Container();
+        private readonly IComponent _frameInner;
+        private readonly Container _titleContainer = new Container();
+        private readonly HorizontalGroupComponent _outerGroupComponent = null;
+        private readonly Container _innerContainer = new Container();
 
-        private const bool toggleCanNoFrame = true; // future changeable config
+        private const bool ToggleCanNoFrame = true; // future changeable config
 
         public Frame(GroupComponentConfig? titlegroupConfig = null) : base()
         {
             if (titlegroupConfig is null)
                 titlegroupConfig = (new TextLabel(""), 0);
             GroupComponentConfig config = (GroupComponentConfig)titlegroupConfig;
-            innerContainer.Add(inner);
+            _innerContainer.Add(inner);
             _title = config;
-            titleContainer.Add(config.component);
+            _titleContainer.Add(config.Component);
             Add(
-                frameInner = new VerticalGroupComponent() {
+                _frameInner = new VerticalGroupComponent() {
                     (new HorizontalGroupComponent() {
                         (new TextLabel("┌─"), 2),
-                        (outerGroupComponent = new HorizontalGroupComponent() {
-                            (titleContainer, config.splitAmount),
+                        (_outerGroupComponent = new HorizontalGroupComponent() {
+                            (_titleContainer, config.SplitAmount),
                             (new HorizontalBar('─'), (new Fraction(1, 1), 2))
                         }, new Fraction(1, 1)),
                         (new TextLabel("─┐"), 2)
@@ -53,7 +53,7 @@ namespace ui.components
                         new HorizontalGroupComponent() {
                             (new VerticalBar('│'), 1),
                             (new VerticalBar(' '), 1),
-                            (innerContainer, new Fraction(1, 1)),
+                            (_innerContainer, new Fraction(1, 1)),
                             (new VerticalBar(' '), 1),
                             (new VerticalBar('│'), 1)
                         },
@@ -73,23 +73,23 @@ namespace ui.components
 
         public void SwitchTitle(GroupComponentConfig comp)
         {
-            IComponent original = title.component;
-            SplitAmount ori_amount = title.splitAmount;
-            if (comp.component is null) return;
-            if (original is null || original != comp.component)
+            IComponent original = title.Component;
+            SplitAmount oriAmount = title.SplitAmount;
+            if (comp.Component is null) return;
+            if (original is null || original != comp.Component)
             {
                 if (!(original is null))
-                    titleContainer.RemoveChildComponent(original);
-                titleContainer.Add(comp.component);
-                titleContainer.SetHasUpdate();
+                    _titleContainer.RemoveChildComponent(original);
+                _titleContainer.Add(comp.Component);
+                _titleContainer.SetHasUpdate();
             }
-            if (ori_amount != comp.splitAmount)
+            if (oriAmount != comp.SplitAmount)
             {
-                outerGroupComponent.UpdateSplitConfig(titleContainer, comp.splitAmount);
-                outerGroupComponent.SetHasUpdate();
+                _outerGroupComponent.UpdateSplitConfig(_titleContainer, comp.SplitAmount);
+                _outerGroupComponent.SetHasUpdate();
             }
-            comp.component.SetHasUpdate();
-            _title = (comp.component, comp.splitAmount);
+            comp.Component.SetHasUpdate();
+            _title = (comp.Component, comp.SplitAmount);
             SetHasUpdate();
         }
 
@@ -100,9 +100,9 @@ namespace ui.components
             if (original is null || original != comp)
             {
                 if (!(original is null))
-                    innerContainer.RemoveChildComponent(original);
-                innerContainer.Add(comp);
-                innerContainer.SetHasUpdate();
+                    _innerContainer.RemoveChildComponent(original);
+                _innerContainer.Add(comp);
+                _innerContainer.SetHasUpdate();
             }
             _inner = comp;
             comp.SetHasUpdate();
@@ -111,18 +111,18 @@ namespace ui.components
 
         protected override void OnResize()
         {
-            if ((GetAllocSize().x < 3 || GetAllocSize().y < 3) && this.GetInner() == frameInner && toggleCanNoFrame)
+            if ((GetAllocSize().x < 3 || GetAllocSize().y < 3) && this.GetInner() == _frameInner && ToggleCanNoFrame)
             {
-                this.RemoveChildComponent(frameInner);
-                innerContainer.RemoveChildComponent(inner);
+                this.RemoveChildComponent(_frameInner);
+                _innerContainer.RemoveChildComponent(inner);
                 this.Add(inner);
                 SetHasUpdate();
             }
-            else if ((GetAllocSize().x >= 3 && GetAllocSize().y >= 3 || !toggleCanNoFrame) && this.GetInner() == inner)
+            else if ((GetAllocSize().x >= 3 && GetAllocSize().y >= 3 || !ToggleCanNoFrame) && this.GetInner() == inner)
             {
                 this.RemoveChildComponent(inner);
-                this.Add(frameInner);
-                innerContainer.Add(inner);
+                this.Add(_frameInner);
+                _innerContainer.Add(inner);
                 SetHasUpdate();
             }
             base.OnResize();

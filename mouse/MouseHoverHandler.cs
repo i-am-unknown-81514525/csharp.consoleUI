@@ -8,17 +8,17 @@ namespace ui.mouse
 {
     public class MouseHoverHandler : MouseInteractionHandler
     {
-        public readonly IComponent app;
+        public readonly IComponent App;
         public MouseHoverHandler(IComponent app) : base((int)MouseOpCode.HOVER)
         {
-            this.app = app;
+            this.App = app;
         }
 
-        public override void onActive(int opCode, ConsoleLocation loc)
+        public override void OnActive(int opCode, ConsoleLocation loc)
         {
-            app.OnHover(loc);
+            App.OnHover(loc);
         }
 
-        public override void onInactive(int opCode, ConsoleLocation loc) { }
+        public override void OnInactive(int opCode, ConsoleLocation loc) { }
     }
 }

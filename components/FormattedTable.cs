@@ -29,16 +29,16 @@ namespace ui.components
 
         public override void InsertColumn(int idx, SplitAmount amount = null)
         {
-            int insert_idx = (idx * 2 - 1);
-            if (insert_idx < 0)
+            int insertIdx = (idx * 2 - 1);
+            if (insertIdx < 0)
             {
-                inner.InsertVerticalBarCol(0);
-                inner.InsertColumn(0, amount);
+                Inner.InsertVerticalBarCol(0);
+                Inner.InsertColumn(0, amount);
             }
             else
             {
-                inner.InsertColumn(insert_idx, amount);
-                inner.InsertVerticalBarCol(insert_idx);
+                Inner.InsertColumn(insertIdx, amount);
+                Inner.InsertVerticalBarCol(insertIdx);
             }
             size = (size.x + 1, size.y);
             SetHasUpdate();
@@ -48,17 +48,17 @@ namespace ui.components
         {
             if (size.y == 1)
             {
-                inner.InsertHorizontalBarRow(1);
+                Inner.InsertHorizontalBarRow(1);
             }
             if (idx == 0)
             {
-                inner.RemoveRow(1);
-                inner.InsertRow(idx, amount);
-                inner.InsertHorizontalBarRow(1);
+                Inner.RemoveRow(1);
+                Inner.InsertRow(idx, amount);
+                Inner.InsertHorizontalBarRow(1);
             }
             else
             {
-                inner.InsertRow(idx + 1, amount);
+                Inner.InsertRow(idx + 1, amount);
             }
             size = (size.x, size.y + 1);
         }
@@ -68,16 +68,16 @@ namespace ui.components
             if (idx < 0) throw new ArgumentOutOfRangeException("idx must be greater or equal to 0");
             if (idx >= size.x) idx = size.x - 1;
             if (size.x == 1) throw new InvalidOperationException("Table cannot be empty");
-            int remove_idx = (idx * 2 - 1);
-            if (remove_idx < 0)
+            int removeIdx = (idx * 2 - 1);
+            if (removeIdx < 0)
             {
-                inner.RemoveColumn(0);
-                inner.RemoveColumn(0);
+                Inner.RemoveColumn(0);
+                Inner.RemoveColumn(0);
             }
             else
             {
-                inner.RemoveColumn(remove_idx);
-                inner.RemoveColumn(remove_idx);
+                Inner.RemoveColumn(removeIdx);
+                Inner.RemoveColumn(removeIdx);
             }
             size = (size.x - 1, size.y);
             SetHasUpdate();
@@ -90,35 +90,35 @@ namespace ui.components
             if (size.y == 1) throw new InvalidOperationException("Table cannot be empty");
             if (idx == 0)
             {
-                inner.RemoveRow(0);
-                inner.RemoveRow(0); // horizontal bar
-                inner.InsertHorizontalBarRow(1);
+                Inner.RemoveRow(0);
+                Inner.RemoveRow(0); // horizontal bar
+                Inner.InsertHorizontalBarRow(1);
             }
             else
             {
-                int remove_idx = idx + 1;
-                inner.RemoveRow(remove_idx);
+                int removeIdx = idx + 1;
+                Inner.RemoveRow(removeIdx);
             }
             size = (size.x, size.y - 1);
             if (size.y == 1)
             {
-                inner.RemoveRow(1); // the horizontal bar removed when only 1 row remaining
+                Inner.RemoveRow(1); // the horizontal bar removed when only 1 row remaining
             }
             SetHasUpdate();
         }
 
         public override IComponent this[int x, int y]
         {
-            get => inner[x * 2, y == 0 ? 0 : y + 1];
+            get => Inner[x * 2, y == 0 ? 0 : y + 1];
             set
             {
-                inner[x * 2, y == 0 ? 0 : y + 1] = value;
+                Inner[x * 2, y == 0 ? 0 : y + 1] = value;
             }
         }
 
         public override (int x, int y) GetSize()
         {
-            (int x, int y) = inner.GetSize();
+            (int x, int y) = Inner.GetSize();
             if (y > 1)
             {
                 y--;

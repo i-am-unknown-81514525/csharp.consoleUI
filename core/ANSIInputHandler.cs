@@ -2,7 +2,7 @@
 
 namespace ui.core
 {
-    public abstract class ANSIInputHandler
+    public abstract class AnsiInputHandler
     {
         public abstract bool Handle(byte[] buf);
     }

@@ -2,7 +2,7 @@ using System;
 
 namespace ui.fmt
 {
-    public abstract class Color : ANSIFmtBase
+    public abstract class Color : AnsiFmtBase
     {
         public Color(string fmtString) : base(fmtString)
         {

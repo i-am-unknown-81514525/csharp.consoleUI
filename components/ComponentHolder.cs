@@ -9,18 +9,18 @@ namespace ui.components
 
     public sealed class ComponentHolder<T> where T : IComponent
     {
-        public T raw_inner { get; set; }
+        public T rawInner { get; set; }
         public T inner
         {
             get
             {
-                if (!(raw_inner is object)) // is null don't work weirdly
+                if (!(rawInner is object)) // is null don't work weirdly
                 {
                     throw new UninitComponentException();
                 }
-                return raw_inner;
+                return rawInner;
             }
-            set => raw_inner = value;
+            set => rawInner = value;
         }
     }
 }

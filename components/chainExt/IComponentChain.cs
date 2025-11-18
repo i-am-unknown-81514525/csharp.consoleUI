@@ -16,7 +16,7 @@ namespace ui.components.chainExt
             return func(v);
         }
 
-        public static T WithChange<S, T>(this T v, Func<T, S> func) where T : IComponent
+        public static T WithChange<TS, T>(this T v, Func<T, TS> func) where T : IComponent
         {
             func(v);
             return v;

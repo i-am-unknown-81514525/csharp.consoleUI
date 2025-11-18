@@ -10,39 +10,39 @@ namespace ui.test
 {
     public class ValueFieldHandler : InputFieldHandler
     {
-        internal bool componentStatus = true;
-        private bool ignoreI = false;
+        internal bool ComponentStatus = true;
+        private bool _ignoreI = false;
 
         internal void SetComponentStatus(bool status)
         {
-            componentStatus = status;
+            ComponentStatus = status;
         }
 
-        internal bool GetComponentStatus() => componentStatus;
+        internal bool GetComponentStatus() => ComponentStatus;
 
-        protected override void onDefault(byte value)
+        protected override void OnDefault(byte value)
         {
-            base.onDefault(value);
-            Prototype.Set(content);
+            base.OnDefault(value);
+            Prototype.Set(Content);
         }
 
-        protected override void onEnter()
+        protected override void OnEnter()
         {
-            componentStatus = false;
-            Prototype.Next(content);
+            ComponentStatus = false;
+            Prototype.Next(Content);
         }
 
         protected override void Handle(byte value)
         {
-            if (value == (byte)'i' && ignoreI)
+            if (value == (byte)'i' && _ignoreI)
             {
-                ignoreI = false;
+                _ignoreI = false;
                 return;
             }
-            uint pre = cursor;
+            uint pre = Cursor;
             base.Handle(value);
-            File.AppendAllText("log-loc", $"recv {value}, pre {pre}, cursor {cursor}, content {content}\n");
-            Prototype.Set(content);
+            File.AppendAllText("log-loc", $"recv {value}, pre {pre}, cursor {Cursor}, content {Content}\n");
+            Prototype.Set(Content);
             Prototype.WriteTable();
         }
 
@@ -50,15 +50,15 @@ namespace ui.test
         {
             if (GetComponentStatus() && !GetActiveStatus() && (Buffer[0] == 'i' || Buffer[0] == 'i'))
             {
-                ignoreI = true;
+                _ignoreI = true;
                 SetActiveStatus(true);
-                return LockStatus.ExclusiveLock;
+                return LockStatus.EXCLUSIVE_LOCK;
             }
             return base.Validate();
         }
     }
 
-    internal class NornalANSISkipHandler : ANSIInputHandler
+    internal class NornalAnsiSkipHandler : AnsiInputHandler
     {
 
         public override bool Handle(byte[] buf)
@@ -69,27 +69,27 @@ namespace ui.test
 
     public static class Prototype
     {
-        public static uint varCount = 1;
-        public static uint constraintCount = 1;
+        public static uint VarCount = 1;
+        public static uint ConstraintCount = 1;
 
-        public static Fraction[,] table = new Fraction[2, 2];
+        public static Fraction[,] Table = new Fraction[2, 2];
 
-        public static string[,] strTable = new string[2, 2];
+        public static string[,] StrTable = new string[2, 2];
 
-        public static (uint varLoc, uint constLoc) loc = (0, 0);
-        public static ValueFieldHandler handler = null;
+        public static (uint varLoc, uint constLoc) Loc = (0, 0);
+        public static ValueFieldHandler Handler = null;
 
-        public static bool isComplete = false;
+        public static bool IsComplete = false;
         public static bool handleNext = false;
-        public static string contentNext = "";
+        public static string ContentNext = "";
 
 
         public static void WriteTable()
         {
-            ConsoleCanva canva = Global.consoleCanva;
+            ConsoleCanva canva = Global.ConsoleCanva;
             canva.EventLoopPre();
-            uint width = 6 + (16 * ((uint)strTable.GetLength(0) - 1)) + 2 + 4;
-            uint height = 1 + (uint)strTable.GetLength(1) - 1;
+            uint width = 6 + (16 * ((uint)StrTable.GetLength(0) - 1)) + 2 + 4;
+            uint height = 1 + (uint)StrTable.GetLength(1) - 1;
             if (canva.GetConsoleSize().Width < width || canva.GetConsoleSize().Height < height)
             {
                 canva.SetSize(new ConsoleSize((int)width, (int)height));
@@ -97,9 +97,9 @@ namespace ui.test
             canva.SetEmpty();
             for (int y = 0; y < height; y++)
             {
-                ConsoleCanva.WriteStringOnCanva(Global.consoleCanva, y == 0 ? "MAX P=" : "      ", (0, y));
+                ConsoleCanva.WriteStringOnCanva(Global.ConsoleCanva, y == 0 ? "MAX P=" : "      ", (0, y));
             }
-            for (int x = 6; x < 6 + (16 * ((uint)strTable.GetLength(0) - 1)); x += 16)
+            for (int x = 6; x < 6 + (16 * ((uint)StrTable.GetLength(0) - 1)); x += 16)
             {
                 for (int y = 0; y < height; y++)
                 {
@@ -108,82 +108,82 @@ namespace ui.test
                     // File.AppendAllText("log-loc", $"{n} {y}\n");
                     string ansiPrefix = "";
                     string ansiPostfix = "";
-                    if (((uint)n, (uint)y) == loc)
+                    if (((uint)n, (uint)y) == Loc)
                     {
                         ansiPrefix = "\x1b[30;47m";
                         ansiPostfix = "\x1b[37;40m";
                     }
-                    ConsoleCanva.WriteStringOnCanva(Global.consoleCanva, $"+", (x, y));
-                    ConsoleCanva.WriteStringOnCanva(Global.consoleCanva, (strTable[n, y] ?? "").PadRight(11).Substring(0, 11), (x + 1, y), ansiPrefix, ansiPostfix);
-                    ConsoleCanva.WriteStringOnCanva(Global.consoleCanva, $"x_{n}", (x + 12, y));
+                    ConsoleCanva.WriteStringOnCanva(Global.ConsoleCanva, $"+", (x, y));
+                    ConsoleCanva.WriteStringOnCanva(Global.ConsoleCanva, (StrTable[n, y] ?? "").PadRight(11).Substring(0, 11), (x + 1, y), ansiPrefix, ansiPostfix);
+                    ConsoleCanva.WriteStringOnCanva(Global.ConsoleCanva, $"x_{n}", (x + 12, y));
                 }
             }
             for (int y = 0; y < height; y++)
             {
-                int x = 6 + (16 * (table.GetLength(0) - 1));
+                int x = 6 + (16 * (Table.GetLength(0) - 1));
                 string ansiPrefix = "";
                 string ansiPostfix = "";
-                if (((uint)table.GetLength(0) - 1, (uint)y) == loc)
+                if (((uint)Table.GetLength(0) - 1, (uint)y) == Loc)
                 {
                     ansiPrefix = "\x1b[30;47m";
                     ansiPostfix = "\x1b[37;40m";
                 }
                 if (y == 0)
                 {
-                    ConsoleCanva.WriteStringOnCanva(Global.consoleCanva, $"      ", (x, y));
+                    ConsoleCanva.WriteStringOnCanva(Global.ConsoleCanva, $"      ", (x, y));
                     continue;
                 }
-                ConsoleCanva.WriteStringOnCanva(Global.consoleCanva, $"<=", (x, y));
-                ConsoleCanva.WriteStringOnCanva(Global.consoleCanva, (strTable[strTable.GetLength(0) - 1, y] ?? "").PadRight(11).Substring(0, 11), (x + 2, y), ansiPrefix, ansiPostfix);
+                ConsoleCanva.WriteStringOnCanva(Global.ConsoleCanva, $"<=", (x, y));
+                ConsoleCanva.WriteStringOnCanva(Global.ConsoleCanva, (StrTable[StrTable.GetLength(0) - 1, y] ?? "").PadRight(11).Substring(0, 11), (x + 2, y), ansiPrefix, ansiPostfix);
             }
             canva.EventLoopPost();
         }
 
         public static void Set(string value)
         {
-            strTable[loc.varLoc, loc.constLoc] = value;
+            StrTable[Loc.varLoc, Loc.constLoc] = value;
         }
 
         public static void Next(string value)
         {
             handleNext = true;
-            contentNext = value;
+            ContentNext = value;
         }
 
         public static void HandleNext()
         {
             if (!handleNext) return;
-            string value = contentNext;
+            string value = ContentNext;
             handleNext = false;
-            if (handler != null)
+            if (Handler != null)
             {
-                Global.InputHandler.Remove(handler);
+                Global.InputHandler.Remove(Handler);
                 if (Fraction.TryParse(value, out Fraction frac))
                 {
-                    table[loc.varLoc, loc.constLoc] = frac;
-                    uint varLoc = loc.varLoc + 1;
-                    uint constLoc = loc.constLoc;
-                    if (varLoc >= table.GetLength(0) || (varLoc >= table.GetLength(0) - 1 && constLoc == 0))
+                    Table[Loc.varLoc, Loc.constLoc] = frac;
+                    uint varLoc = Loc.varLoc + 1;
+                    uint constLoc = Loc.constLoc;
+                    if (varLoc >= Table.GetLength(0) || (varLoc >= Table.GetLength(0) - 1 && constLoc == 0))
                     {
                         varLoc = 0;
                         constLoc += 1;
                     }
-                    if (constLoc >= table.GetLength(1))
+                    if (constLoc >= Table.GetLength(1))
                     {
                         constLoc = 0;
-                        isComplete = true;
+                        IsComplete = true;
                         return;
                     }
-                    loc = (varLoc, constLoc);
+                    Loc = (varLoc, constLoc);
                 }
             }
-            strTable[loc.varLoc, loc.constLoc] = "";
-            handler = new ValueFieldHandler();
-            handler.SetActiveStatus(true);
-            Global.InputHandler.Add(handler);
+            StrTable[Loc.varLoc, Loc.constLoc] = "";
+            Handler = new ValueFieldHandler();
+            Handler.SetActiveStatus(true);
+            Global.InputHandler.Add(Handler);
         }
 
-        public static Fraction[] getObjFrac(Fraction[,] src)
+        public static Fraction[] GetObjFrac(Fraction[,] src)
         {
             Fraction[] obj = new Fraction[src.GetLength(0) - 1];
             for (int i = 0; i < src.GetLength(0) - 1; i++)
@@ -196,39 +196,39 @@ namespace ui.test
         public static void Start()
         {
             Console.Write("Variable count: ");
-            bool v1 = uint.TryParse(Console.ReadLine(), out varCount);
-            if (varCount >= 10 || !v1 || varCount == 0)
+            bool v1 = uint.TryParse(Console.ReadLine(), out VarCount);
+            if (VarCount >= 10 || !v1 || VarCount == 0)
             {
                 Console.WriteLine("Variable count must be valid integer, 0 < v < 10");
                 Start();
                 return;
             }
             Console.Write("Constraint count: ");
-            v1 = uint.TryParse(Console.ReadLine(), out constraintCount);
-            if (constraintCount >= 10 || !v1 || constraintCount == 0)
+            v1 = uint.TryParse(Console.ReadLine(), out ConstraintCount);
+            if (ConstraintCount >= 10 || !v1 || ConstraintCount == 0)
             {
                 Console.WriteLine("Constraint count must be valid integer, 0 < v < 10");
                 Start();
                 return;
             }
-            table = new Fraction[varCount + 1, constraintCount + 1];
-            strTable = new string[varCount + 1, constraintCount + 1];
+            Table = new Fraction[VarCount + 1, ConstraintCount + 1];
+            StrTable = new string[VarCount + 1, ConstraintCount + 1];
             ExitHandler exitHandler = new ExitHandler();
             Global.InputHandler.Add(exitHandler);
             KeyCodeTranslationHandler keyCodeHandler = new KeyCodeTranslationHandler(Global.InputHandler);
             Global.InputHandler.Add(keyCodeHandler);
-            handler = new ValueFieldHandler();
-            Global.InputHandler.Add(handler);
-            Global.InputHandler.Add(new NornalANSISkipHandler());
-            handler.SetActiveStatus(true);
+            Handler = new ValueFieldHandler();
+            Global.InputHandler.Add(Handler);
+            Global.InputHandler.Add(new NornalAnsiSkipHandler());
+            Handler.SetActiveStatus(true);
             ConsoleHandler.ConsoleIntermediateHandler.Setup();
-            ConsoleHandler.ConsoleIntermediateHandler.ANSISetup();
-            table[table.GetLength(0) - 1, 0] = new Fraction(0);
-            strTable[strTable.GetLength(0) - 1, 0] = "0";
+            ConsoleHandler.ConsoleIntermediateHandler.AnsiSetup();
+            Table[Table.GetLength(0) - 1, 0] = new Fraction(0);
+            StrTable[StrTable.GetLength(0) - 1, 0] = "0";
             WriteTable();
             try
             {
-                while (!isComplete)
+                while (!IsComplete)
                 {
                     bool status = Global.InputHandler.Handle();
                     if (!status)
@@ -248,30 +248,30 @@ namespace ui.test
             {
                 ConsoleHandler.ConsoleIntermediateHandler.Reset();
             }
-            Fraction[,] newTable = new Fraction[table.GetLength(0) + table.GetLength(1) - 1, table.GetLength(1)];
-            for (int c = 0; c < table.GetLength(0) - 1; c++)
+            Fraction[,] newTable = new Fraction[Table.GetLength(0) + Table.GetLength(1) - 1, Table.GetLength(1)];
+            for (int c = 0; c < Table.GetLength(0) - 1; c++)
             {
-                newTable[c, 0] = table[c, 0].asOpposeSign();
+                newTable[c, 0] = Table[c, 0].AsOpposeSign();
             }
-            for (int c = table.GetLength(0) - 1; c < table.GetLength(0) + table.GetLength(1) - 1; c++)
+            for (int c = Table.GetLength(0) - 1; c < Table.GetLength(0) + Table.GetLength(1) - 1; c++)
             {
                 newTable[c, 0] = new Fraction(0);
             }
-            for (int c = 1; c < table.GetLength(1); c++)
+            for (int c = 1; c < Table.GetLength(1); c++)
             {
-                for (int v = 0; v < table.GetLength(0) - 1; v++)
+                for (int v = 0; v < Table.GetLength(0) - 1; v++)
                 {
-                    newTable[v, c] = table[v, c];
+                    newTable[v, c] = Table[v, c];
                 }
-                for (int v = table.GetLength(0) - 1; v < table.GetLength(0) + table.GetLength(1) - 2; v++)
+                for (int v = Table.GetLength(0) - 1; v < Table.GetLength(0) + Table.GetLength(1) - 2; v++)
                 {
                     newTable[v, c] = new Fraction(0);
-                    if (v - (table.GetLength(0) - 1) == c - 1)
+                    if (v - (Table.GetLength(0) - 1) == c - 1)
                     {
                         newTable[v, c] = new Fraction(1);
                     }
                 }
-                newTable[table.GetLength(0) + table.GetLength(1) - 2, c] = table[table.GetLength(0) - 1, c];
+                newTable[Table.GetLength(0) + Table.GetLength(1) - 2, c] = Table[Table.GetLength(0) - 1, c];
             }
             for (int dj = 0; dj < newTable.GetLength(1); dj++)
             {
@@ -281,11 +281,11 @@ namespace ui.test
                 }
                 Console.Write("\n");
             }
-            while (getObjFrac(newTable).Min() < new Fraction(0))
+            while (GetObjFrac(newTable).Min() < new Fraction(0))
             {
-                Fraction frac = getObjFrac(newTable).Min();
-                int i = Array.IndexOf(getObjFrac(newTable), frac);
-                (int j, Fraction rhsV, Fraction fracPivot)[] selections = Enumerable.Range(1, table.GetLength(1) - 1)
+                Fraction frac = GetObjFrac(newTable).Min();
+                int i = Array.IndexOf(GetObjFrac(newTable), frac);
+                (int j, Fraction rhsV, Fraction fracPivot)[] selections = Enumerable.Range(1, Table.GetLength(1) - 1)
                     .Where(idx => newTable[i, idx] > new Fraction(0))
                     .Select(idx => (idx, newTable[newTable.GetLength(0) - 1, idx] / newTable[i, idx], newTable[i, idx])) // idx, RHS/value
                     .Where(x => x.Item2 >= new Fraction(0))
@@ -293,9 +293,9 @@ namespace ui.test
                 if (selections.Length == 0)
                 {
                     string name = $"x_{i}";
-                    if (i >= table.GetLength(0) - 1)
+                    if (i >= Table.GetLength(0) - 1)
                     {
-                        name = $"s_{i - (table.GetLength(0) - 1)}";
+                        name = $"s_{i - (Table.GetLength(0) - 1)}";
                     }
                     Console.WriteLine($"{name} is unbounded");
                     Console.WriteLine($"P = {newTable[newTable.GetLength(0) - 1, 0].ToString()}+inf");
@@ -304,9 +304,9 @@ namespace ui.test
                     {
                         if (x == i) continue;
                         string name1 = $"x_{x}";
-                        if (x >= table.GetLength(0) - 1)
+                        if (x >= Table.GetLength(0) - 1)
                         {
-                            name1 = $"s_{x - (table.GetLength(0) - 1)}";
+                            name1 = $"s_{x - (Table.GetLength(0) - 1)}";
                         }
                         int[] count1 = Enumerable.Range(1, newTable.GetLength(1) - 1).Where(y => newTable[x, y] == 1).ToArray();
                         int[] other = Enumerable.Range(1, newTable.GetLength(1) - 1).Where(y => newTable[x, y] != 0 && newTable[x, y] != 1).ToArray();
@@ -356,9 +356,9 @@ namespace ui.test
             for (int x = 0; x < newTable.GetLength(0) - 1; x++)
             {
                 string name = $"x_{x}";
-                if (x >= table.GetLength(0) - 1)
+                if (x >= Table.GetLength(0) - 1)
                 {
-                    name = $"s_{x - (table.GetLength(0) - 1)}";
+                    name = $"s_{x - (Table.GetLength(0) - 1)}";
                 }
                 int[] count1 = Enumerable.Range(1, newTable.GetLength(1) - 1).Where(y => newTable[x, y] == 1).ToArray();
                 int[] other = Enumerable.Range(1, newTable.GetLength(1) - 1).Where(y => newTable[x, y] != 0 && newTable[x, y] != 1).ToArray();

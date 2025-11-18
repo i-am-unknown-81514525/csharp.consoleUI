@@ -15,7 +15,7 @@ namespace ui.utils
             }
             return dest;
         }
-        public static T[,] changeSize<T>(T[,] src, (uint x, uint y) loc, T defaultValue)
+        public static T[,] ChangeSize<T>(T[,] src, (uint x, uint y) loc, T defaultValue)
         {
             T[,] newArr = new T[loc.x, loc.y];
             if (loc.x == src.GetLength(0) && loc.y == src.GetLength(1))

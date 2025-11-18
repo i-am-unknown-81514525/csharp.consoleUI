@@ -73,9 +73,9 @@ namespace ui.core
 
     public enum LockStatus : int
     {
-        NoLock = 0,
-        SharedLock = 1,
-        ExclusiveLock = 32767
+        NO_LOCK = 0,
+        SHARED_LOCK = 1,
+        EXCLUSIVE_LOCK = 32767
     }
 
     public class RootInputHandler
@@ -85,34 +85,34 @@ namespace ui.core
     // TODO: Add method to set prioity for InputHandler, which would rearrange the list
     {
         private List<InputHandler> _handlers = new List<InputHandler>();
-        private List<ANSIInputHandler> _ansi_handlers = new List<ANSIInputHandler>();
-        private List<InputHandler> _rm_handlers = new List<InputHandler>(); // When running, use these list to prevent invalid state by only process on next loop
+        private List<AnsiInputHandler> _ansiHandlers = new List<AnsiInputHandler>();
+        private List<InputHandler> _rmHandlers = new List<InputHandler>(); // When running, use these list to prevent invalid state by only process on next loop
         // This is not atomic and you cannot add and remove the same handler at the same frame or it might cause unexpected behaviour
         // The guarentee event is if you remove a handler and it is successful, the handler will be removed at the start of next frame
         // However, a handler might still be removed if you perform remove and then add in the same frame
         // It is not guarentee that the unexpected behaviour would occur
-        private List<ANSIInputHandler> _rm_ansi_handlers = new List<ANSIInputHandler>();
-        private List<InputHandler> _add_handlers = new List<InputHandler>();
-        private List<ANSIInputHandler> _add_ansi_handlers = new List<ANSIInputHandler>();
+        private List<AnsiInputHandler> _rmAnsiHandlers = new List<AnsiInputHandler>();
+        private List<InputHandler> _addHandlers = new List<InputHandler>();
+        private List<AnsiInputHandler> _addAnsiHandlers = new List<AnsiInputHandler>();
         private bool _hasLockChange = false;
         private bool _recursivePreventLock = false; // Prevent iner nhandler to call dispatch whcih might cause recurrsion
         private SharedLock _lockStatus = new SharedLock();
 
-        public RootInputHandler(IEnumerable<InputHandler> handlers = null, IEnumerable<ANSIInputHandler> ansi_handlers = null)
+        public RootInputHandler(IEnumerable<InputHandler> handlers = null, IEnumerable<AnsiInputHandler> ansiHandlers = null)
         {
             if (handlers != null)
             {
                 _handlers = handlers.ToList();
             }
-            if (ansi_handlers != null)
+            if (ansiHandlers != null)
             {
-                _ansi_handlers = ansi_handlers.ToList();
+                _ansiHandlers = ansiHandlers.ToList();
             }
         }
 
         public void Add(InputHandler handler)
         {
-            if (!hasLock())
+            if (!HasLock())
             {
                 ProcessFrameAddOrRemoval();
             }
@@ -122,14 +122,14 @@ namespace ui.core
             }
             if (!_handlers.Contains(handler))
             {
-                if (hasLock()) _add_handlers.Add(handler);
+                if (HasLock()) _addHandlers.Add(handler);
                 else _handlers.Add(handler);
             }
         }
 
-        public void Add(ANSIInputHandler handler)
+        public void Add(AnsiInputHandler handler)
         {
-            if (!hasLock())
+            if (!HasLock())
             {
                 ProcessFrameAddOrRemoval();
             }
@@ -137,16 +137,16 @@ namespace ui.core
             {
                 throw new InvalidOperationException("Cannot add ANSI handler: null");
             }
-            if (!_ansi_handlers.Contains(handler))
+            if (!_ansiHandlers.Contains(handler))
             {
-                if (hasLock()) _add_ansi_handlers.Add(handler);
-                else _ansi_handlers.Add(handler);
+                if (HasLock()) _addAnsiHandlers.Add(handler);
+                else _ansiHandlers.Add(handler);
             }
         }
 
         public void Remove(InputHandler handler)
         {
-            if (!hasLock())
+            if (!HasLock())
             {
                 ProcessFrameAddOrRemoval();
             }
@@ -156,16 +156,16 @@ namespace ui.core
             }
             if (Contains(handler))
             {
-                if (hasLock()) _rm_handlers.Add(handler);
+                if (HasLock()) _rmHandlers.Add(handler);
                 else _handlers.Remove(handler);
             }
             else
                 throw new InvalidOperationException("Cannot remove handler as handler does't exist");
         }
 
-        public void Remove(ANSIInputHandler handler)
+        public void Remove(AnsiInputHandler handler)
         {
-            if (!hasLock())
+            if (!HasLock())
             {
                 ProcessFrameAddOrRemoval();
             }
@@ -175,15 +175,15 @@ namespace ui.core
             }
             if (Contains(handler))
             {
-                if (hasLock()) _rm_ansi_handlers.Add(handler);
-                else _ansi_handlers.Remove(handler);
+                if (HasLock()) _rmAnsiHandlers.Add(handler);
+                else _ansiHandlers.Remove(handler);
             }
             else
                 throw new InvalidOperationException("Cannot remove ANSI handler as handler does't exist");
         }
 
-        public bool Contains(InputHandler handler) => (_handlers.Contains(handler) || _add_handlers.Contains(handler)) && !_rm_handlers.Contains(handler);
-        public bool Contains(ANSIInputHandler handler) => (_ansi_handlers.Contains(handler) || _add_ansi_handlers.Contains(handler)) && !_rm_ansi_handlers.Contains(handler);
+        public bool Contains(InputHandler handler) => (_handlers.Contains(handler) || _addHandlers.Contains(handler)) && !_rmHandlers.Contains(handler);
+        public bool Contains(AnsiInputHandler handler) => (_ansiHandlers.Contains(handler) || _addAnsiHandlers.Contains(handler)) && !_rmAnsiHandlers.Contains(handler);
 
         public void LockChangeAnnounce(InputHandler handler)
         {
@@ -206,12 +206,12 @@ namespace ui.core
             }
         }
 
-        protected bool hasLock()
+        protected bool HasLock()
         {
             return _recursivePreventLock;
         }
 
-        protected void checkLock()
+        protected void CheckLock()
         {
             if (_recursivePreventLock)
             {
@@ -219,9 +219,9 @@ namespace ui.core
             }
         }
 
-        private bool ANSIDispatch(List<byte> buf)
+        private bool AnsiDispatch(List<byte> buf)
         {
-            return _ansi_handlers
+            return _ansiHandlers
                     .Select(handler => handler.Handle(buf.ToArray()))
                     .ToArray() // Make sure all handler is ran, before checking if handled by one of the handler
                                // As there might be other handler need to run actions
@@ -238,36 +238,36 @@ namespace ui.core
 
         private void ProcessFrameAddOrRemoval()
         {
-            checkLock();
-            foreach (InputHandler handler in _add_handlers)
+            CheckLock();
+            foreach (InputHandler handler in _addHandlers)
             {
                 if (!_handlers.Contains(handler))
                     _handlers.Add(handler);
             }
-            _add_handlers = new List<InputHandler>();
-            foreach (ANSIInputHandler handler in _add_ansi_handlers)
+            _addHandlers = new List<InputHandler>();
+            foreach (AnsiInputHandler handler in _addAnsiHandlers)
             {
-                if (!_ansi_handlers.Contains(handler))
-                    _ansi_handlers.Add(handler);
+                if (!_ansiHandlers.Contains(handler))
+                    _ansiHandlers.Add(handler);
             }
-            _add_ansi_handlers = new List<ANSIInputHandler>();
-            foreach (InputHandler handler in _rm_handlers)
+            _addAnsiHandlers = new List<AnsiInputHandler>();
+            foreach (InputHandler handler in _rmHandlers)
             {
                 if (_handlers.Contains(handler))
                     _handlers.Remove(handler);
             }
-            _rm_handlers = new List<InputHandler>();
-            foreach (ANSIInputHandler handler in _rm_ansi_handlers)
+            _rmHandlers = new List<InputHandler>();
+            foreach (AnsiInputHandler handler in _rmAnsiHandlers)
             {
-                if (_ansi_handlers.Contains(handler))
-                    _ansi_handlers.Remove(handler);
+                if (_ansiHandlers.Contains(handler))
+                    _ansiHandlers.Remove(handler);
             }
-            _rm_ansi_handlers = new List<ANSIInputHandler>();
+            _rmAnsiHandlers = new List<AnsiInputHandler>();
         }
 
         public bool Handle()
         {
-            if (!hasLock())
+            if (!HasLock())
             {
                 ProcessFrameAddOrRemoval();
             }
@@ -279,32 +279,32 @@ namespace ui.core
                 return true;
             }
             List<byte> buf = new List<byte> { value };
-            List<byte> unhandled_buf = new List<byte> { };
-            string new_part = "";
-            while ((new_part = ReadStdinToEnd()) != "")
+            List<byte> unhandledBuf = new List<byte> { };
+            string newPart = "";
+            while ((newPart = ReadStdinToEnd()) != "")
             {
-                buf = (buf.AsByteBuffer() + new_part).AsList();
-                List<byte> inner_buf = new List<byte>();
+                buf = (buf.AsByteBuffer() + newPart).AsList();
+                List<byte> innerBuf = new List<byte>();
                 foreach (byte b in buf)
                 {
                     if (b == (byte)'\x1b')
                     {
                         bool result = false;
-                        if (inner_buf.Count > 2) //  && inner_buf[1] == (byte)'['
-                            result = ANSIDispatch(inner_buf);
+                        if (innerBuf.Count > 2) //  && inner_buf[1] == (byte)'['
+                            result = AnsiDispatch(innerBuf);
                         if (!result)
-                            unhandled_buf = (unhandled_buf.AsByteBuffer() + inner_buf.AsByteBuffer()).AsList();
-                        inner_buf = new List<byte>();
+                            unhandledBuf = (unhandledBuf.AsByteBuffer() + innerBuf.AsByteBuffer()).AsList();
+                        innerBuf = new List<byte>();
                     }
-                    inner_buf.Add(b);
+                    innerBuf.Add(b);
                 }
-                MultiDispatch(unhandled_buf);
-                unhandled_buf = new List<byte>();
-                buf = inner_buf;
+                MultiDispatch(unhandledBuf);
+                unhandledBuf = new List<byte>();
+                buf = innerBuf;
             }
             bool r1 = false;
             if (buf.Count > 2) //  && inner_buf[1] == (byte)'['
-                r1 = ANSIDispatch(buf);
+                r1 = AnsiDispatch(buf);
             if (!r1)
                 MultiDispatch(buf);
             return true;
@@ -312,7 +312,7 @@ namespace ui.core
 
         public void LocalDispatch(byte value)
         {
-            checkLock();
+            CheckLock();
             ProcessFrameAddOrRemoval();
             _hasLockChange = false; // This is not thread safe
             foreach (InputHandler handler in _handlers)
@@ -344,12 +344,12 @@ namespace ui.core
             foreach (InputHandler handler in prevHandlers) // Previous handelr would be priotize
             {
                 LockStatus status = handler.GetLockStatus();
-                if (status == LockStatus.ExclusiveLock)
+                if (status == LockStatus.EXCLUSIVE_LOCK)
                 {
                     lockValue = new SharedLock(handler, true);
                     break;
                 }
-                else if (status == LockStatus.SharedLock)
+                else if (status == LockStatus.SHARED_LOCK)
                 {
                     lockValue.AddMember(handler);
                 }
@@ -359,12 +359,12 @@ namespace ui.core
                 foreach (InputHandler handler in _handlers) // Then the normal order, the re-call of same handler doesn't matter
                 {
                     LockStatus status = handler.GetLockStatus();
-                    if (status == LockStatus.ExclusiveLock)
+                    if (status == LockStatus.EXCLUSIVE_LOCK)
                     {
                         lockValue = new SharedLock(handler, true);
                         break;
                     }
-                    else if (status == LockStatus.SharedLock)
+                    else if (status == LockStatus.SHARED_LOCK)
                     {
                         lockValue.AddMember(handler);
                     }

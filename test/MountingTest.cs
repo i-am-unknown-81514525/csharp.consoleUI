@@ -10,8 +10,8 @@ namespace ui.test
 {
     public class MountToggleButton : Button<EmptyStore, MountToggleButton>
     {
-        internal GroupComponent parent;
-        internal GroupComponentConfig target;
+        internal GroupComponent Parent;
+        internal GroupComponentConfig Target;
         public MountToggleButton(string text = null) : base(text)
         {
 
@@ -19,20 +19,20 @@ namespace ui.test
 
         public void MountToggle(GroupComponent parent, GroupComponentConfig target)
         {
-            this.parent = parent;
-            this.target = target;
+            this.Parent = parent;
+            this.Target = target;
         }
 
         public override void OnClick(ConsoleLocation loc)
         {
             // base.OnClick(loc);
-            if (target.component.GetMount() is null)
+            if (Target.Component.GetMount() is null)
             {
-                parent.Add(target);
+                Parent.Add(Target);
             }
             else
             {
-                target.component.GetMount().RemoveChildComponent(target.component);
+                Target.Component.GetMount().RemoveChildComponent(Target.Component);
             }
         }
     }
@@ -65,12 +65,12 @@ namespace ui.test
                     }, 1))
                 }
             );
-            toggle.MountToggle((VerticalGroupComponent)mountTest.component.GetMount(), mountTest);
+            toggle.MountToggle((VerticalGroupComponent)mountTest.Component.GetMount(), mountTest);
             try
             {
                 ConsoleIntermediateHandler.Setup();
-                ConsoleIntermediateHandler.ANSISetup();
-                NornalANSISkipHandler ansiSkipHandler = new NornalANSISkipHandler();
+                ConsoleIntermediateHandler.AnsiSetup();
+                NornalAnsiSkipHandler ansiSkipHandler = new NornalAnsiSkipHandler();
                 Global.InputHandler.Add(ansiSkipHandler);
                 KeyCodeTranslationHandler keyCodeHandler = new KeyCodeTranslationHandler(Global.InputHandler);
                 Global.InputHandler.Add(keyCodeHandler);
@@ -81,7 +81,7 @@ namespace ui.test
                 bool isComplete = false;
                 while (!isComplete)
                 {
-                    Global.consoleCanva.EventLoopPre();
+                    Global.ConsoleCanva.EventLoopPre();
                     bool status = Global.InputHandler.Handle();
                     if (!status)
                     {
@@ -92,15 +92,15 @@ namespace ui.test
                     {
                         return;
                     }
-                    Global.consoleCanva.ConsoleWindow = app.Render();
-                    Global.consoleCanva.EventLoopPost();
+                    Global.ConsoleCanva.ConsoleWindow = app.Render();
+                    Global.ConsoleCanva.EventLoopPost();
                 }
             }
             finally
             {
                 ConsoleIntermediateHandler.Reset();
                 Console.WriteLine(app.Debug_WriteStructure());
-                Console.WriteLine(DEBUG.DebugStore.ToString());
+                Console.WriteLine(Debug.DebugStore.ToString());
                 Console.WriteLine(field1.content);
                 Console.WriteLine(field2.content);
             }

@@ -19,8 +19,8 @@ namespace ui.components
 
     internal class PagingTableInner : VirtualTable<FormattedTable>
     {
-        public readonly int col;
-        private readonly Field top;
+        public readonly int Col;
+        private readonly Field _top;
 
         protected override FormattedTable InnerConstructor()
         {
@@ -29,10 +29,10 @@ namespace ui.components
 
         public PagingTableInner(Field top)
         {
-            this.col = top.comp.Length;
-            this.top = new Field(top.comp);
-            ForceResize((col, 2));
-            for (int x = 0; x < col; x++)
+            this.Col = top.comp.Length;
+            this._top = new Field(top.comp);
+            ForceResize((Col, 2));
+            for (int x = 0; x < Col; x++)
             {
                 this[x, 0] = top.comp[x];
             }
@@ -41,19 +41,19 @@ namespace ui.components
         public void PushFields(IEnumerable<Field> fields)
         {
             Field[] fieldsArr = fields.ToArray();
-            ForceResize((col, 1 + fieldsArr.Length));
+            ForceResize((Col, 1 + fieldsArr.Length));
             for (int y = 1; y - 1 < fieldsArr.Length; y++)
             {
-                for (int x = 0; x < inner.GetSize().x; x++)
+                for (int x = 0; x < Inner.GetSize().x; x++)
                 {
                     this[x, y] = new Padding();
                 }
             }
             for (int y = 1; y - 1 < fieldsArr.Length; y++)
             {
-                int arr_y = y - 1;
-                Field field = fieldsArr[arr_y];
-                if (field.comp.Length != inner.GetSize().x)
+                int arrY = y - 1;
+                Field field = fieldsArr[arrY];
+                if (field.comp.Length != Inner.GetSize().x)
                 {
                     throw new InvalidOperationException("Cannot use field with different size");
                 }
@@ -66,27 +66,27 @@ namespace ui.components
 
         public override void InsertColumn(int idx, SplitAmount amount = null)
         {
-            inner.InsertColumn(idx, amount);
+            Inner.InsertColumn(idx, amount);
         }
         public override void InsertRow(int idx, SplitAmount amount = null)
         {
-            inner.InsertRow(idx, amount);
+            Inner.InsertRow(idx, amount);
         }
         public override void RemoveColumn(int idx)
         {
-            inner.RemoveColumn(idx);
+            Inner.RemoveColumn(idx);
         }
         public override void RemoveRow(int idx)
         {
-            inner.RemoveRow(idx);
+            Inner.RemoveRow(idx);
         }
     }
 
     public class PagingTable : Container
     {
-        public BoundedSpinner spinner = new BoundedSpinner("Page", 1, 1, 1);
+        public BoundedSpinner Spinner = new BoundedSpinner("Page", 1, 1, 1);
 
-        private protected PagingTableInner inner;
+        private protected PagingTableInner Inner;
 
         //Reactive of overlap with type int and default value: `0`, Trigger: SetHasUpdate();
         private int _overlap = 0;
@@ -100,81 +100,81 @@ namespace ui.components
             }
         }
 
-        private int pg_idx = 0; // the index of the first field of the page
-        private int pg_end_idx = 0; // the index of the last field of the page
-        private int virt_pg_idx = 0; // the virtual field space when resizing so it return to exact same page after a series of resize. Change on page change
+        private int _pgIdx = 0; // the index of the first field of the page
+        private int _pgEndIdx = 0; // the index of the last field of the page
+        private int _virtPgIdx = 0; // the virtual field space when resizing so it return to exact same page after a series of resize. Change on page change
 
-        protected List<Field> fields = new List<Field>();
+        protected List<Field> Fields = new List<Field>();
 
         public PagingTable(Field top)
         {
-            inner = new PagingTableInner(top);
+            Inner = new PagingTableInner(top);
             Add(new VerticalGroupComponent()
             {
-                inner,
+                Inner,
                 (new HorizontalGroupComponent() {
-                    (spinner, new Fraction(1, 1))
+                    (Spinner, new Fraction(1, 1))
                 }, 1)
             });
-            spinner.onChange = ChangePage;
+            Spinner.OnChange = ChangePage;
         }
 
         public PagingTable(Field top, GroupComponentConfig config, bool isLeft = true)
         {
-            inner = new PagingTableInner(top);
+            Inner = new PagingTableInner(top);
             Add(new VerticalGroupComponent()
             {
-                inner,
+                Inner,
                 (isLeft ? new HorizontalGroupComponent() {
                     config,
-                    (spinner, new Fraction(1, 1))
+                    (Spinner, new Fraction(1, 1))
                 } :
                 new HorizontalGroupComponent() {
-                    (spinner, new Fraction(1, 1)),
+                    (Spinner, new Fraction(1, 1)),
                     config
                 }, 1)
             });
-            spinner.onChange = ChangePage;
+            Spinner.OnChange = ChangePage;
         }
 
         public PagingTable(Field top, GroupComponentConfig left, GroupComponentConfig right)
         {
-            inner = new PagingTableInner(top);
+            Inner = new PagingTableInner(top);
             Add(new VerticalGroupComponent()
             {
-                inner,
+                Inner,
                 (
                     new HorizontalGroupComponent() {
                         left,
-                        (spinner, new Fraction(1, 1)),
+                        (Spinner, new Fraction(1, 1)),
                         right
                     }, 1
                 )
             });
-            spinner.onChange = ChangePage;
+            Spinner.OnChange = ChangePage;
         }
 
         public int GetPageRenderAmount()
         {
             int size = (int)GetAllocSize().y - 3;
-            int act_size = size - overlap;
-            if (act_size < 1) act_size = 1;
-            return act_size;
+            int actSize = size - overlap;
+            if (actSize < 1) actSize = 1;
+            return actSize;
         }
 
         public void ChangePage(int page)
         {
-            pg_idx = virt_pg_idx = GetPageRenderAmount() * (page - 1);
+            _pgIdx = _virtPgIdx = GetPageRenderAmount() * (page - 1);
             UpdateRender();
         }
 
         public void Push(Field item)
         {
-            int curr_count = fields.Count;
-            fields.Add(item);
-            if (curr_count - 2 <= pg_end_idx) // Only update the render if it is in page (or likely)
+            int currCount = Fields.Count;
+            Fields.Add(item);
+            if (currCount - 2 <= _pgEndIdx) // Only update the render if it is in page (or likely)
             {
-                virt_pg_idx = curr_count;
+                _virtPgIdx = currCount;
                 UpdateRender();
             }
             UpdateSpinner();
@@ -182,9 +182,9 @@ namespace ui.components
 
         public void RemoveLast()
         {
-            int rm_idx = fields.Count - 1;
-            fields.RemoveAt(rm_idx);
-            if (pg_idx <= rm_idx && rm_idx <= pg_end_idx)
+            int rmIdx = Fields.Count - 1;
+            Fields.RemoveAt(rmIdx);
+            if (_pgIdx <= rmIdx && rmIdx <= _pgEndIdx)
             {
                 UpdateRender();
             }
@@ -194,44 +194,44 @@ namespace ui.components
         public void UpdateRender()
         {
             Field[] result;
-            (result, pg_idx, pg_end_idx) = RenderWith(virt_pg_idx);
-            inner.PushFields(result);
-            spinner.HiddenChange(pg_idx / GetPageRenderAmount() + 1);
+            (result, _pgIdx, _pgEndIdx) = RenderWith(_virtPgIdx);
+            Inner.PushFields(result);
+            Spinner.HiddenChange(_pgIdx / GetPageRenderAmount() + 1);
             SetHasUpdate();
         }
 
-        protected (Field[], int start, int end) RenderWith(int ref_idx)
+        protected (Field[], int start, int end) RenderWith(int refIdx)
         {
-            int act_size = GetPageRenderAmount();
-            int start_idx = (ref_idx / act_size) * act_size;
-            int end_idx = start_idx + act_size - 1; // To make this inclusive idx
-            if (end_idx >= fields.Count)
+            int actSize = GetPageRenderAmount();
+            int startIdx = (refIdx / actSize) * actSize;
+            int endIdx = startIdx + actSize - 1; // To make this inclusive idx
+            if (endIdx >= Fields.Count)
             {
-                end_idx = fields.Count - 1;
+                endIdx = Fields.Count - 1;
             }
-            int count = end_idx - start_idx + 1;
-            ui.DEBUG.DebugStore.AppendLine($"start_idx={start_idx}, end_idx={end_idx}, count={count} fields.Count={fields.Count}");
-            if (end_idx < 0)
+            int count = endIdx - startIdx + 1;
+            ui.Debug.DebugStore.AppendLine($"start_idx={startIdx}, end_idx={endIdx}, count={count} fields.Count={Fields.Count}");
+            if (endIdx < 0)
             {
                 return (new Field[] { }, 0, 0);
             }
-            if (start_idx > end_idx)
+            if (startIdx > endIdx)
             {
-                return RenderWith(end_idx);
+                return RenderWith(endIdx);
             }
-            return (fields.GetRange(start_idx, count).ToArray(), start_idx, end_idx);
+            return (Fields.GetRange(startIdx, count).ToArray(), startIdx, endIdx);
         }
 
         public void UpdateSpinner()
         {
-            int maxPage = (fields.Count - 1) / GetPageRenderAmount() + 1;
-            if (maxPage != spinner.upper)
+            int maxPage = (Fields.Count - 1) / GetPageRenderAmount() + 1;
+            if (maxPage != Spinner.upper)
             {
-                spinner.upper = maxPage;
+                Spinner.upper = maxPage;
             }
-            if (maxPage < spinner.amount)
+            if (maxPage < Spinner.amount)
             {
-                spinner.HiddenChange(maxPage);
+                Spinner.HiddenChange(maxPage);
             }
         }
 
@@ -244,12 +244,12 @@ namespace ui.components
 
         public Field[] GetFields()
         {
-            return fields.ToArray();
+            return Fields.ToArray();
         }
 
         public int Count()
         {
-            return fields.Count();
+            return Fields.Count();
         }
     }
 }

@@ -5,7 +5,7 @@ using ui.fmt;
 
 namespace ui.components
 {
-    public class Button<S> : Button<S, Button<S>> where S : ComponentStore
+    public class Button<TS> : Button<TS, Button<TS>> where TS : ComponentStore
     {
         public Button(string text = null) : base(text) { }
         public Button(ComponentConfig config, string text = null) : base(config, text) { }
@@ -17,12 +17,12 @@ namespace ui.components
         public Button(ComponentConfig config, string text = null) : base(config, text) { }
     }
 
-    public class Button<S, T> : TextLabel<S> where T : Button<S, T> where S : ComponentStore
+    public class Button<TS, T> : TextLabel<TS> where T : Button<TS, T> where TS : ComponentStore
     {
 
         // Not require component update
 
-        public Action<Button<S, T>, ConsoleLocation> onClickHandler = (_, __) => { };
+        public Action<Button<TS, T>, ConsoleLocation> OnClickHandler = (_, __) => { };
 
         public void SetDefault()
         {
@@ -40,25 +40,25 @@ namespace ui.components
             SetDefault();
         }
 
-        public Button(S store, string text = null) : base(store, text)
+        public Button(TS store, string text = null) : base(store, text)
         {
             SetDefault();
         }
 
-        public Button(ComponentConfig config, S store, string text = null) : base(config, store, text)
+        public Button(ComponentConfig config, TS store, string text = null) : base(config, store, text)
         {
             SetDefault();
         }
 
         public override void OnClick(ConsoleLocation loc)
         {
-            if (activeHandler.GetCurrActive() != null && activeHandler.GetCurrActive() != this)
+            if (ActiveHandler.GetCurrActive() != null && ActiveHandler.GetCurrActive() != this)
             {
                 bool r = SetActive(new ClickEvent(loc)); // Attempt to reset activity handler status
                 if (r) Deactive(null);
-                DEBUG.DebugStore.Append($"Attempt to deactivate handler, success: {r}");
+                Debug.DebugStore.Append($"Attempt to deactivate handler, success: {r}");
             }
-            onClickHandler(this, loc);
+            OnClickHandler(this, loc);
         }
     }
 }

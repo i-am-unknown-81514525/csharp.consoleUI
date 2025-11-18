@@ -6,33 +6,33 @@ namespace ui.utils
 {
     public class ByteBuffer
     {
-        private byte[] buf;
+        private byte[] _buf;
 
         public ByteBuffer(byte[] buf)
         {
-            this.buf = (byte[])buf.Clone();
+            this._buf = (byte[])buf.Clone();
         }
 
         public ByteBuffer(IEnumerable<byte> buf)
         {
-            this.buf = buf.ToArray();
+            this._buf = buf.ToArray();
         }
 
-        public List<byte> AsList() => buf.ToList();
+        public List<byte> AsList() => _buf.ToList();
 
-        public byte[] AsArray() => buf.ToArray();
+        public byte[] AsArray() => _buf.ToArray();
 
-        public char[] AsCharArray() => buf.Select(x => (char)x).ToArray();
+        public char[] AsCharArray() => _buf.Select(x => (char)x).ToArray();
 
-        public string AsString() => buf.Aggregate("", (prev, curr) => prev + (char)curr);
+        public string AsString() => _buf.Aggregate("", (prev, curr) => prev + (char)curr);
 
         public ByteBuffer Clone()
         {
-            return new ByteBuffer((byte[])buf.Clone());
+            return new ByteBuffer((byte[])_buf.Clone());
         }
 
-        public int Length { get => buf.Length; }
-        public int Count { get => buf.Length; }
+        public int length { get => _buf.Length; }
+        public int count { get => _buf.Length; }
 
         public static ByteBuffer operator +(ByteBuffer curr, IEnumerable<char> other)
         {

@@ -23,7 +23,7 @@ namespace ui.components
 
     public class BoundedSpinner : Container
     {
-        public Action<int> onChange = (value) => { };
+        public Action<int> OnChange = (value) => { };
 
         //Reactive of amount with type int and default value: `0`, Trigger: SetHasUpdate();
         private int _amount = 0;
@@ -35,11 +35,11 @@ namespace ui.components
             }
             set
             {
-                valueLabel.text = value.ToString();
+                ValueLabel.text = value.ToString();
                 _amount = value;
                 SetHasUpdate();
                 UpdateColor();
-                onChange(amount);
+                OnChange(amount);
             }
         }
 
@@ -60,23 +60,23 @@ namespace ui.components
         private int _upper = int.MaxValue;
         public int upper { get => _upper; set { _upper = value; SetHasUpdate(); UpdateColor(); } }
 
-        public string content { get => textLabel.text; set { textLabel.text = value; SetHasUpdate(); } }
+        public string content { get => TextLabel.text; set { TextLabel.text = value; SetHasUpdate(); } }
 
-        public TextLabel textLabel = new TextLabel("");
+        public TextLabel TextLabel = new TextLabel("");
 
-        public DisableButton descButton = new DisableButton("[-]");
+        public DisableButton DescButton = new DisableButton("[-]");
 
-        public TextLabel valueLabel = new TextLabel("");
+        public TextLabel ValueLabel = new TextLabel("");
 
-        public DisableButton ascButton = new DisableButton("[+]");
+        public DisableButton AscButton = new DisableButton("[+]");
 
-        private HorizontalGroupComponent group = new HorizontalGroupComponent();
+        private HorizontalGroupComponent _group = new HorizontalGroupComponent();
 
         public void HiddenChange(int value)
         {
             if (_amount != value)
             {
-                valueLabel.text = value.ToString();
+                ValueLabel.text = value.ToString();
                 _amount = value;
                 SetHasUpdate();
                 UpdateColor();
@@ -86,25 +86,25 @@ namespace ui.components
 
         private void LoadComponents()
         {
-            descButton.onClickHandler = (button, loc) =>
+            DescButton.OnClickHandler = (button, loc) =>
             {
-                if (!button.store.disabled)
+                if (!button.Store.disabled)
                 {
                     amount--;
                 }
             };
-            ascButton.onClickHandler = (button, loc) =>
+            AscButton.OnClickHandler = (button, loc) =>
             {
-                if (!button.store.disabled)
+                if (!button.Store.disabled)
                 {
                     amount++;
                 }
             };
-            group.Add(textLabel);
-            group.Add((descButton, 3));
-            group.Add(valueLabel);
-            group.Add((ascButton, 3));
-            Add(group);
+            _group.Add(TextLabel);
+            _group.Add((DescButton, 3));
+            _group.Add(ValueLabel);
+            _group.Add((AscButton, 3));
+            Add(_group);
         }
 
         public BoundedSpinner(int amount = 0, int lower = int.MinValue, int upper = int.MaxValue)
@@ -128,24 +128,24 @@ namespace ui.components
         {
             if (amount <= lower)
             {
-                descButton.WithBackground<DisableStore, DisableButton>(BackgroundColorEnum.RED);
-                descButton.store.disabled = true;
+                DescButton.WithBackground<DisableStore, DisableButton>(BackgroundColorEnum.RED);
+                DescButton.Store.disabled = true;
             }
             else
             {
-                descButton.WithBackground<DisableStore, DisableButton>(BackgroundColorEnum.WHITE);
-                descButton.store.disabled = false;
+                DescButton.WithBackground<DisableStore, DisableButton>(BackgroundColorEnum.WHITE);
+                DescButton.Store.disabled = false;
             }
 
             if (amount >= upper)
             {
-                ascButton.WithBackground<DisableStore, DisableButton>(BackgroundColorEnum.RED);
-                ascButton.store.disabled = true;
+                AscButton.WithBackground<DisableStore, DisableButton>(BackgroundColorEnum.RED);
+                AscButton.Store.disabled = true;
             }
             else
             {
-                ascButton.WithBackground<DisableStore, DisableButton>(BackgroundColorEnum.WHITE);
-                ascButton.store.disabled = false;
+                AscButton.WithBackground<DisableStore, DisableButton>(BackgroundColorEnum.WHITE);
+                AscButton.Store.disabled = false;
             }
         }
     }

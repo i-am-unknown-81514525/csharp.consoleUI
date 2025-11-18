@@ -8,13 +8,13 @@ using System.Text;
 namespace ui.components
 {
 
-    public class Table<S> : SingleChildComponent<S>, ITable where S : ComponentStore
+    public class Table<TS> : SingleChildComponent<TS>, ITable where TS : ComponentStore
     {
 
         private HorizontalGroupComponent _horizontal = new HorizontalGroupComponent();
         private List<VerticalGroupComponent> _verticalGroups = new List<VerticalGroupComponent>();
         private List<SplitAmount> _vSize = new List<SplitAmount>();
-        private (int x, int y) size = (0, 0);
+        private (int x, int y) _size = (0, 0);
 
         public Table(SplitAmount vSplit = null, SplitAmount hSplit = null) : base()
         {
@@ -40,7 +40,7 @@ namespace ui.components
             }
         }
 
-        public (int x, int y) GetSize() => size;
+        public (int x, int y) GetSize() => _size;
 
         public void Resize((int x, int y) newSize)
         {
@@ -81,22 +81,22 @@ namespace ui.components
             Resize(newSize);
         }
 
-        public void AddColumn(SplitAmount amount = null) => InsertColumn(size.x, amount);
-        public void AddRow(SplitAmount amount = null) => InsertRow(size.y, amount);
+        public void AddColumn(SplitAmount amount = null) => InsertColumn(_size.x, amount);
+        public void AddRow(SplitAmount amount = null) => InsertRow(_size.y, amount);
 
         public void InsertColumn(int idx, SplitAmount amount = null)
         {
             if (amount is null) amount = new Fraction(1, 1);
             if (idx < 0) throw new ArgumentOutOfRangeException("idx must be greater or equal to 0");
-            if (idx > size.x) throw new ArgumentOutOfRangeException("idx must be less than or equal to size.x"); // idx = size.x;
+            if (idx > _size.x) throw new ArgumentOutOfRangeException("idx must be less than or equal to size.x"); // idx = size.x;
             VerticalGroupComponent vert = new VerticalGroupComponent();
-            for (int y = 0; y < size.y; y++)
+            for (int y = 0; y < _size.y; y++)
             {
                 vert.Add((new Container(new Padding()), _vSize[y]));
             }
             _verticalGroups.Insert(idx, vert);
             _horizontal.Insert(idx, (vert, amount));
-            size = (size.x + 1, size.y);
+            _size = (_size.x + 1, _size.y);
             SetHasUpdate();
         }
 
@@ -104,21 +104,21 @@ namespace ui.components
         {
             if (amount is null) amount = 1;
             if (idx < 0) throw new ArgumentOutOfRangeException("idx must be greater or equal to 0");
-            if (idx > size.y) throw new ArgumentOutOfRangeException("idx must be less than or equal to size.y"); // idx = size.y;
-            for (int x = 0; x < size.x; x++)
+            if (idx > _size.y) throw new ArgumentOutOfRangeException("idx must be less than or equal to size.y"); // idx = size.y;
+            for (int x = 0; x < _size.x; x++)
             {
                 _verticalGroups[x].Insert(idx, (new Container(new Padding()), amount));
             }
             _vSize.Insert(idx, amount);
-            size = (size.x, size.y + 1);
+            _size = (_size.x, _size.y + 1);
             SetHasUpdate();
         }
 
         public void RemoveColumn(int idx)
         {
             if (idx < 0) throw new ArgumentOutOfRangeException("idx must be greater or equal to 0");
-            if (idx >= size.x) throw new ArgumentOutOfRangeException("idx must be less than to size.x"); // idx = size.x - 1;
-            if (size.x == 1) throw new InvalidOperationException("Table cannot be empty");
+            if (idx >= _size.x) throw new ArgumentOutOfRangeException("idx must be less than to size.x"); // idx = size.x - 1;
+            if (_size.x == 1) throw new InvalidOperationException("Table cannot be empty");
             for (int y = 0; y < GetSize().y; y++)
             {
                 this[idx, y] = new Padding();
@@ -126,26 +126,26 @@ namespace ui.components
             VerticalGroupComponent vert = _verticalGroups[idx];
             _verticalGroups.RemoveAt(idx);
             _horizontal.RemoveChildComponent(vert);
-            size = (size.x - 1, size.y);
+            _size = (_size.x - 1, _size.y);
             SetHasUpdate();
         }
 
         public void RemoveRow(int idx)
         {
             if (idx < 0) throw new ArgumentOutOfRangeException("idx must be greater or equal to 0");
-            if (idx >= size.y) throw new ArgumentOutOfRangeException("idx must be less than size.x"); // idx = size.y - 1;
-            if (size.y == 1) throw new InvalidOperationException("Table cannot be empty");
+            if (idx >= _size.y) throw new ArgumentOutOfRangeException("idx must be less than size.x"); // idx = size.y - 1;
+            if (_size.y == 1) throw new InvalidOperationException("Table cannot be empty");
             for (int x = 0; x < GetSize().x; x++)
             {
                 this[x, idx] = new Padding();
             }
-            for (int x = 0; x < size.x; x++)
+            for (int x = 0; x < _size.x; x++)
             {
                 VerticalGroupComponent vert = _verticalGroups[x];
                 vert.RemoveChildComponent(vert.GetMapping().Select(m => m.component).ToArray()[idx]);
             }
             _vSize.RemoveAt(idx);
-            size = (size.x, size.y - 1);
+            _size = (_size.x, _size.y - 1);
             SetHasUpdate();
         }
 

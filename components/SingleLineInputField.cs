@@ -8,8 +8,8 @@ namespace ui.components
 {
     public class ComponentInputFieldHandler : InputFieldHandler
     {
-        protected Action postHandler;
-        protected Action<Event> exitHandler;
+        protected Action PostHandler;
+        protected Action<Event> ExitHandler;
 
         public ComponentInputFieldHandler(Action postHandler = null, Action<Event> exitHandler = null)
         {
@@ -19,45 +19,45 @@ namespace ui.components
 
         public bool SetHandler(Action postHandler)
         {
-            if (!(this.postHandler is null))
+            if (!(this.PostHandler is null))
                 return false;
-            this.postHandler = postHandler;
+            this.PostHandler = postHandler;
             return true;
         }
 
         public bool SetHandler(Action<Event> exitHandler)
         {
-            if (!(this.exitHandler is null))
+            if (!(this.ExitHandler is null))
                 return false;
-            this.exitHandler = exitHandler;
+            this.ExitHandler = exitHandler;
             return true;
         }
 
         protected override void Handle(RootInputHandler root)
         {
             base.Handle(root);
-            if (postHandler != null)
-                postHandler();
+            if (PostHandler != null)
+                PostHandler();
         }
 
-        protected override void onEnter()
+        protected override void OnEnter()
         {
             // base.onEnter();
             this.Deactive(Global.InputHandler);
         }
 
-        protected override void onDeactive()
+        protected override void OnDeactive()
         {
-            base.onDeactive();
-            if (exitHandler != null)
-                exitHandler(new TypeEvent('\n'));
+            base.OnDeactive();
+            if (ExitHandler != null)
+                ExitHandler(new TypeEvent('\n'));
         }
     }
 
     public class SingleLineInputField<T> : NoChildComponent<T> where T : ComponentStore
     {
         //Reactive of content with type string and default value: `""`, Trigger: SetHasUpdate();
-        public string content { get => inputFieldHandler.GetContent(); set { inputFieldHandler.SetContent(value); SetHasUpdate(); } }
+        public string content { get => InputFieldHandler.GetContent(); set { InputFieldHandler.SetContent(value); SetHasUpdate(); } }
 
         //Reactive of active with type (ForegroundColor foreground, BackgroundColor background) and default value: `(ForegroundColorEnum.BLACK, BackgroundColorEnum.WHITE)`, Trigger: SetHasUpdate();
         private (ForegroundColor foreground, BackgroundColor background) _active = (ForegroundColorEnum.BLACK, BackgroundColorEnum.YELLOW);
@@ -67,7 +67,7 @@ namespace ui.components
         private (ForegroundColor foreground, BackgroundColor background) _deactive = (ForegroundColorEnum.WHITE, BackgroundColorEnum.BLACK);
         public (ForegroundColor foreground, BackgroundColor background) deactive { get => _deactive; set { _deactive = value; SetHasUpdate(); } }
 
-        protected ComponentInputFieldHandler inputFieldHandler = new ComponentInputFieldHandler();
+        protected ComponentInputFieldHandler InputFieldHandler = new ComponentInputFieldHandler();
 
         //Reactive of underline with type bool and default value: `true`, Trigger: SetHasUpdate();
         private bool _underline = true;
@@ -75,8 +75,8 @@ namespace ui.components
 
         public SingleLineInputField(string content = "") : base()
         {
-            inputFieldHandler.SetHandler(OnTypeEventTrigger);
-            inputFieldHandler.SetHandler(OnExitEventTrigger);
+            InputFieldHandler.SetHandler(OnTypeEventTrigger);
+            InputFieldHandler.SetHandler(OnExitEventTrigger);
             this.content = content ?? "";
             SetHasUpdate();
         }
@@ -87,9 +87,9 @@ namespace ui.components
             bool isActive = IsActive();
             if (!isActive) // This would have been a toggle of state since type event only occur on change in active/deactive, or a type event
             {
-                Global.consoleCanva.cursorPosition = null;
+                Global.ConsoleCanva.CursorPosition = null;
             }
-            setCursorPos();
+            SetCursorPos();
         }
 
         protected void OnExitEventTrigger(Event curr)
@@ -97,7 +97,7 @@ namespace ui.components
             if (IsActive())
             {
                 Deactive(null);
-                inputFieldHandler.SetCursorPosition((uint)inputFieldHandler.GetContent().Length);
+                InputFieldHandler.SetCursorPosition((uint)InputFieldHandler.GetContent().Length);
                 OnExitHandler();
                 SetHasUpdate();
             }
@@ -110,30 +110,30 @@ namespace ui.components
 
         protected override void OnActive()
         {
-            if (!Global.InputHandler.Contains(inputFieldHandler))
-                Global.InputHandler.Add(inputFieldHandler);
-            inputFieldHandler.SetActiveStatus(true);
+            if (!Global.InputHandler.Contains(InputFieldHandler))
+                Global.InputHandler.Add(InputFieldHandler);
+            InputFieldHandler.SetActiveStatus(true);
             SetHasUpdate();
-            setCursorPos();
+            SetCursorPos();
         }
 
         protected override bool OnDeactive(Event deactiveEvent)
         {
             bool canConvertToTypeEvent = !((deactiveEvent as TypeEvent) is null);
-            DEBUG.DebugStore.Append($"input field deactive event: {canConvertToTypeEvent}\r\n");
+            Debug.DebugStore.Append($"input field deactive event: {canConvertToTypeEvent}\r\n");
             if (canConvertToTypeEvent)
                 return false;
-            if (Global.InputHandler.Contains(inputFieldHandler))
+            if (Global.InputHandler.Contains(InputFieldHandler))
             {
-                Global.consoleCanva.cursorPosition = null;
-                Global.InputHandler.Remove(inputFieldHandler);
-                DEBUG.DebugStore.Append($"input field removed handler\r\n");
+                Global.ConsoleCanva.CursorPosition = null;
+                Global.InputHandler.Remove(InputFieldHandler);
+                Debug.DebugStore.Append($"input field removed handler\r\n");
             }
             else
             {
-                DEBUG.DebugStore.Append($"input field handler already missing\r\n");
+                Debug.DebugStore.Append($"input field handler already missing\r\n");
             }
-            Global.consoleCanva.cursorPosition = null;
+            Global.ConsoleCanva.CursorPosition = null;
             SetHasUpdate();
             return true;
         }
@@ -145,9 +145,9 @@ namespace ui.components
                 Deactive(new NotRenderEvent());
         }
 
-        protected int getStartIdx()
+        protected int GetStartIdx()
         {
-            uint cursorIdx = inputFieldHandler.cursorPos;
+            uint cursorIdx = InputFieldHandler.cursorPos;
             uint size = GetAllocSize().x;
             int startIdx = (int)cursorIdx - (int)size;
             if (startIdx < 0)
@@ -157,9 +157,9 @@ namespace ui.components
             return startIdx;
         }
 
-        protected (string render, int cursorPos) getRenderContent()
+        protected (string render, int cursorPos) GetRenderContent()
         {
-            uint cursorIdx = inputFieldHandler.cursorPos;
+            uint cursorIdx = InputFieldHandler.cursorPos;
             uint size = GetAllocSize().x;
             int startIdx = (int)cursorIdx - (int)size;
             int displayCursorPos = (int)size - 1;
@@ -177,7 +177,7 @@ namespace ui.components
             if (size.x < 1 || size.y < 1) return content;
             bool isActive = IsActive();
             (ForegroundColor fore, BackgroundColor back) = isActive ? active : deactive;
-            (string renderContent, int cursorPos) = getRenderContent();
+            (string renderContent, int cursorPos) = GetRenderContent();
             string prefix = TextColorFormatter.Constructor(fore, back);
             string postfix = TextColorFormatter.Constructor(ForegroundColorEnum.LIB_DEFAULT, BackgroundColorEnum.LIB_DEFAULT);
             string lastlinepre = prefix;
@@ -234,37 +234,37 @@ namespace ui.components
                     };
                 }
             }
-            setCursorPos();
+            SetCursorPos();
             return content;
         }
 
         public override void OnClick(ConsoleLocation consoleLocation)
         {
-            (int y, int x) = this.GetAbsolutePos((consoleLocation.y, consoleLocation.x));
+            (int y, int x) = this.GetAbsolutePos((consoleLocation.Y, consoleLocation.X));
             bool isActive = !IsActive() ? SetActive(new ClickEvent(new ConsoleLocation(x, y))) : true;
             if (isActive)
             {
-                int startIdx = getStartIdx();
-                inputFieldHandler.SetCursorPosition((uint)(startIdx + x));
-                setCursorPos();
+                int startIdx = GetStartIdx();
+                InputFieldHandler.SetCursorPosition((uint)(startIdx + x));
+                SetCursorPos();
             }
             SetHasUpdate();
         }
 
-        protected void setCursorPos()
+        protected void SetCursorPos()
         {
             if (IsActive())
             {
-                (string _, int cursorPos) = getRenderContent();
+                (string _, int cursorPos) = GetRenderContent();
                 (int row, int col) = this.GetAbsolutePos((0, cursorPos));
-                Global.consoleCanva.cursorPosition = (row + 1, col + 1);
+                Global.ConsoleCanva.CursorPosition = (row + 1, col + 1);
             }
         }
 
         protected override void OnResize()
         {
             base.OnResize();
-            setCursorPos();
+            SetCursorPos();
             SetHasUpdate();
         }
 

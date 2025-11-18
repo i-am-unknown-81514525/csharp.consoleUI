@@ -6,7 +6,7 @@ namespace ui.components.chainExt
     {
         public static T WithRequired<T>(this T v, Func<bool> required) where T : PageSwitcher
         {
-            v.required = required;
+            v.Required = required;
             return v;
         }
     }

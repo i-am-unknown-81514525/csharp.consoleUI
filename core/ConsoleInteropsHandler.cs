@@ -39,7 +39,7 @@ namespace ui.core
             [DllImport("libstdin_handler.dll", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
             private static extern void open_website(string ptr);
 
-            public static byte readStdin() => read_stdin();
+            public static byte ReadStdin() => read_stdin();
 
             public static void Setup()
             {
@@ -99,9 +99,9 @@ namespace ui.core
 
             [DllImport("libstdin_handler", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
             private static extern void open_website(string ptr);
-            public static byte readStdin() => read_stdin();
+            public static byte ReadStdin() => read_stdin();
 
-            private static void addPath(string name)
+            private static void AddPath(string name)
             {
                 string content = Environment.GetEnvironmentVariable(name);
                 string path = Environment.CurrentDirectory;
@@ -114,11 +114,11 @@ namespace ui.core
 
             public static void Setup()
             {
-                addPath("LD_LIBRARY_PATH"); // linux
-                addPath("DYLD_LIBRARY_PATH"); //macbook
-                addPath("DYLD_FRAMEWORK_PATH");
-                addPath("DYLD_FALLBACK_FRAMEWORK_PATH");
-                addPath("DYLD_FALLBACK_LIBRARY_PATH");
+                AddPath("LD_LIBRARY_PATH"); // linux
+                AddPath("DYLD_LIBRARY_PATH"); //macbook
+                AddPath("DYLD_FRAMEWORK_PATH");
+                AddPath("DYLD_FALLBACK_FRAMEWORK_PATH");
+                AddPath("DYLD_FALLBACK_LIBRARY_PATH");
                 init();
             }
 
@@ -163,22 +163,22 @@ namespace ui.core
                 }
             }
 
-            public static string ToANSI(string content, string control = "[", string special = "\x1b") => special + control + content;
+            public static string ToAnsi(string content, string control = "[", string special = "\x1b") => special + control + content;
 
-            public static void ANSISetup()
+            public static void AnsiSetup()
             {
-                Console.Write($"{ToANSI("?1049h")}{ToANSI("=19h")}{ToANSI("=7l")}{ToANSI("?25l")}{ToANSI("38;2;128;130;155m")}{ToANSI("0m")}{ToANSI("6n")}{ToANSI("?1004h")}{ToANSI("?9h")}{ToANSI("?1001h")}{ToANSI("?1000h")}{ToANSI("?1003h", "[", "\x1b")}{ToANSI("?25h")}{ToANSI("?40l")}{ToANSI("?3l")}{ToANSI("?1006h")}");
+                Console.Write($"{ToAnsi("?1049h")}{ToAnsi("=19h")}{ToAnsi("=7l")}{ToAnsi("?25l")}{ToAnsi("38;2;128;130;155m")}{ToAnsi("0m")}{ToAnsi("6n")}{ToAnsi("?1004h")}{ToAnsi("?9h")}{ToAnsi("?1001h")}{ToAnsi("?1000h")}{ToAnsi("?1003h", "[", "\x1b")}{ToAnsi("?25h")}{ToAnsi("?40l")}{ToAnsi("?3l")}{ToAnsi("?1006h")}");
             }
 
             public static byte Read()
             {
                 if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
                 {
-                    return WindowConsoleHandler.readStdin();
+                    return WindowConsoleHandler.ReadStdin();
                 }
                 else
                 {
-                    return PosixConsoleHandler.readStdin();
+                    return PosixConsoleHandler.ReadStdin();
                 }
             }
 

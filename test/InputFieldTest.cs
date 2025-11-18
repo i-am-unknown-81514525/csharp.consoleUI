@@ -35,8 +35,8 @@ namespace ui.test
             try
             {
                 ConsoleIntermediateHandler.Setup();
-                ConsoleIntermediateHandler.ANSISetup();
-                NornalANSISkipHandler ansiSkipHandler = new NornalANSISkipHandler();
+                ConsoleIntermediateHandler.AnsiSetup();
+                NornalAnsiSkipHandler ansiSkipHandler = new NornalAnsiSkipHandler();
                 Global.InputHandler.Add(ansiSkipHandler);
                 KeyCodeTranslationHandler keyCodeHandler = new KeyCodeTranslationHandler(Global.InputHandler);
                 Global.InputHandler.Add(keyCodeHandler);
@@ -47,7 +47,7 @@ namespace ui.test
                 bool isComplete = false;
                 while (!isComplete)
                 {
-                    Global.consoleCanva.EventLoopPre();
+                    Global.ConsoleCanva.EventLoopPre();
                     bool status = Global.InputHandler.Handle();
                     if (!status)
                     {
@@ -58,8 +58,8 @@ namespace ui.test
                     {
                         return;
                     }
-                    Global.consoleCanva.ConsoleWindow = app.Render();
-                    Global.consoleCanva.EventLoopPost();
+                    Global.ConsoleCanva.ConsoleWindow = app.Render();
+                    Global.ConsoleCanva.EventLoopPost();
                 }
             }
             finally

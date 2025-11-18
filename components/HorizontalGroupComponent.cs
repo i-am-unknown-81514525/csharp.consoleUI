@@ -6,7 +6,7 @@ namespace ui.components
     {
         public HorizontalGroupComponent() : base()
         {
-            direction = Direction.HORIZONTAL;
+            Direction = Direction.HORIZONTAL;
         }
     }
 }

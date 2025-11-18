@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace ui.fmt
 {
-    public abstract class Style : ANSIFmtBase
+    public abstract class Style : AnsiFmtBase
     {
         public Style(string fmtString) : base(fmtString)
         {

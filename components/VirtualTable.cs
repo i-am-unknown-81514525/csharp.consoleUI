@@ -9,7 +9,7 @@ namespace ui.components
 
     public abstract class VirtualTable<T> : Container, ITable where T : ITable
     {
-        protected readonly T inner;
+        protected readonly T Inner;
         protected virtual (int x, int y) size
         {
             get => GetSize();
@@ -22,11 +22,11 @@ namespace ui.components
 
         public VirtualTable() : base()
         {
-            inner = InnerConstructor();
-            Add(inner);
+            Inner = InnerConstructor();
+            Add(Inner);
         }
 
-        public virtual (int x, int y) GetSize() => inner.GetSize();
+        public virtual (int x, int y) GetSize() => Inner.GetSize();
 
         public virtual void Resize((int x, int y) newSize)
         {
@@ -64,7 +64,7 @@ namespace ui.components
                     RemoveRow(y);
                 }
             }
-            DEBUG.DebugStore.AppendLine($"{newSize}, {GetSize()}");
+            Debug.DebugStore.AppendLine($"{newSize}, {GetSize()}");
             Resize(newSize);
         }
 
@@ -81,15 +81,15 @@ namespace ui.components
 
         public override string AsLatex()
         {
-            return inner.AsLatex();
+            return Inner.AsLatex();
         }
 
         public virtual IComponent this[int x, int y]
         {
-            get => inner[x, y];
+            get => Inner[x, y];
             set
             {
-                inner[x, y] = value;
+                Inner[x, y] = value;
             }
         }
 

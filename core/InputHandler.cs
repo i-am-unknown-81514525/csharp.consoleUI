@@ -7,8 +7,8 @@ namespace ui.core
 {
     public abstract class InputHandler
     {
-        private LockStatus _prevLockStatus = LockStatus.NoLock;
-        private LockStatus _lockStatus = LockStatus.NoLock;
+        private LockStatus _prevLockStatus = LockStatus.NO_LOCK;
+        private LockStatus _lockStatus = LockStatus.NO_LOCK;
         internal List<byte> Buffer = new List<byte>(); // buffer should only be stored when a lock is acquired
         private bool _allowModifyStatus = false;
 
@@ -26,7 +26,7 @@ namespace ui.core
 
         public bool DropUnused()
         {
-            if (_lockStatus == LockStatus.NoLock)
+            if (_lockStatus == LockStatus.NO_LOCK)
             {
                 ResetBuffer();
                 return true;
@@ -43,25 +43,25 @@ namespace ui.core
         {
             if (lockStatus == null || lockStatus.GetLockCount() == 0)
             {
-                if (_lockStatus != LockStatus.NoLock)
+                if (_lockStatus != LockStatus.NO_LOCK)
                 {
                     throw new LockConflictException("Invalid lock status: the handler held a lock when parameter claim no lock");
                 }
                 return false; // No lock so no reset
             }
-            if (_lockStatus == LockStatus.NoLock)
+            if (_lockStatus == LockStatus.NO_LOCK)
             {
                 ResetBuffer(); // Someone held lock and it is not itself
                 return true;
             }
-            else if (_lockStatus == LockStatus.SharedLock && !lockStatus.GetIsShared())
+            else if (_lockStatus == LockStatus.SHARED_LOCK && !lockStatus.GetIsShared())
             {
                 ResetBuffer();
-                _lockStatus = LockStatus.NoLock;
+                _lockStatus = LockStatus.NO_LOCK;
                 return true; // Itself held shared lock but someone took exclusive access
                              // Therefore the code should volunterarily give up access
             }
-            else if (_lockStatus == LockStatus.SharedLock) //  implies: && lockStatus.GetIsShared()
+            else if (_lockStatus == LockStatus.SHARED_LOCK) //  implies: && lockStatus.GetIsShared()
             {
                 if (lockStatus.GetLockedHandler().Contains(this))
                 {
@@ -69,11 +69,11 @@ namespace ui.core
                 }
                 throw new LockConflictException("Invalid lock status: the handler held an shared lock when parameter claim the handler don't held the lock");
             }
-            else if (_lockStatus == LockStatus.ExclusiveLock && lockStatus.GetIsShared())
+            else if (_lockStatus == LockStatus.EXCLUSIVE_LOCK && lockStatus.GetIsShared())
             {
                 throw new LockConflictException("Invalid lock status: the handler held an exclsuive lock when parameter claim only shared lock");
             }
-            else if (_lockStatus == LockStatus.ExclusiveLock) //  implies:  && !lockStatus.GetIsShared()
+            else if (_lockStatus == LockStatus.EXCLUSIVE_LOCK) //  implies:  && !lockStatus.GetIsShared()
             {
                 if (lockStatus.GetLockedHandler().Contains(this))
                 {
@@ -82,7 +82,7 @@ namespace ui.core
                     return false;
                 }
                 ResetBuffer();
-                _lockStatus = LockStatus.NoLock; // Exclusive lock held but handler at prioity take the exclusive lock first
+                _lockStatus = LockStatus.NO_LOCK; // Exclusive lock held but handler at prioity take the exclusive lock first
                 return true;
             }
             throw new NotImplementedException("Unexpected case");
@@ -99,9 +99,9 @@ namespace ui.core
             }
             catch (Exception)
             {
-                if (!DEBUG.InputHandler_IgnoreHanlderValidateException) throw;
+                if (!Debug.InputHandlerIgnoreHanlderValidateException) throw;
                 #pragma warning disable CS0162 // Unreachable code detected
-                return LockStatus.NoLock;
+                return LockStatus.NO_LOCK;
                 #pragma warning restore CS0162 // Unreachable code detected
             }
             _lockStatus = status;
@@ -129,12 +129,12 @@ namespace ui.core
             }
             catch (Exception)
             {
-                if (_lockStatus != LockStatus.NoLock)
+                if (_lockStatus != LockStatus.NO_LOCK)
                 {
-                    _lockStatus = LockStatus.NoLock;
+                    _lockStatus = LockStatus.NO_LOCK;
                     root.LockChangeAnnounce(this);
                 }
-                if (!DEBUG.InputHandler_IgnoreHandlerHandleException) throw;
+                if (!Debug.InputHandlerIgnoreHandlerHandleException) throw;
             }
             finally
             {

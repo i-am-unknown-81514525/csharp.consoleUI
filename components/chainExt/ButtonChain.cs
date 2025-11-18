@@ -7,51 +7,51 @@ namespace ui.components.chainExt
     {
 
 
-        public static T WithHandler<S, T>(this T v, Action<Button<S, T>, ConsoleLocation> onClickHandler) where T : Button<S, T> where S : ComponentStore
+        public static T WithHandler<TS, T>(this T v, Action<Button<TS, T>, ConsoleLocation> onClickHandler) where T : Button<TS, T> where TS : ComponentStore
         {
-            v.onClickHandler = onClickHandler;
+            v.OnClickHandler = onClickHandler;
             return v;
         }
 
-        public static T WithHandler<S, T>(this T v, Action<ConsoleLocation> onClickHandler) where T : Button<S, T> where S : ComponentStore
+        public static T WithHandler<TS, T>(this T v, Action<ConsoleLocation> onClickHandler) where T : Button<TS, T> where TS : ComponentStore
         {
-            v.onClickHandler = (_, loc) => onClickHandler(loc);
+            v.OnClickHandler = (_, loc) => onClickHandler(loc);
             return v;
         }
 
-        public static T WithHandler<S, T, R>(this T v, Func<Button<S, T>, ConsoleLocation, R> onClickHandler) where T : Button<S, T> where S : ComponentStore
+        public static T WithHandler<TS, T, TR>(this T v, Func<Button<TS, T>, ConsoleLocation, TR> onClickHandler) where T : Button<TS, T> where TS : ComponentStore
         {
-            v.onClickHandler = (b, loc) => { onClickHandler(b, loc); };
+            v.OnClickHandler = (b, loc) => { onClickHandler(b, loc); };
             return v;
         }
 
-        public static T WithHandler<S, T, R>(this T v, Func<ConsoleLocation, R> onClickHandler) where T : Button<S, T> where S : ComponentStore
+        public static T WithHandler<TS, T, TR>(this T v, Func<ConsoleLocation, TR> onClickHandler) where T : Button<TS, T> where TS : ComponentStore
         {
-            v.onClickHandler = (_, loc) => { onClickHandler(loc); };
+            v.OnClickHandler = (_, loc) => { onClickHandler(loc); };
             return v;
         }
 
         public static T WithHandler<T>(this T v, Action<Button<EmptyStore, T>, ConsoleLocation> onClickHandler) where T : Button<EmptyStore, T>
         {
-            v.onClickHandler = onClickHandler;
+            v.OnClickHandler = onClickHandler;
             return v;
         }
 
         public static T WithHandler<T>(this T v, Action<ConsoleLocation> onClickHandler) where T : Button<EmptyStore, T>
         {
-            v.onClickHandler = (_, loc) => onClickHandler(loc);
+            v.OnClickHandler = (_, loc) => onClickHandler(loc);
             return v;
         }
 
-        public static T WithHandler<T, R>(this T v, Func<Button<EmptyStore, T>, ConsoleLocation, R> onClickHandler) where T : Button<EmptyStore, T>
+        public static T WithHandler<T, TR>(this T v, Func<Button<EmptyStore, T>, ConsoleLocation, TR> onClickHandler) where T : Button<EmptyStore, T>
         {
-            v.onClickHandler = (b, loc) => { onClickHandler(b, loc); };
+            v.OnClickHandler = (b, loc) => { onClickHandler(b, loc); };
             return v;
         }
 
-        public static T WithHandler<T, R>(this T v, Func<ConsoleLocation, R> onClickHandler) where T : Button<EmptyStore, T>
+        public static T WithHandler<T, TR>(this T v, Func<ConsoleLocation, TR> onClickHandler) where T : Button<EmptyStore, T>
         {
-            v.onClickHandler = (_, loc) => { onClickHandler(loc); };
+            v.OnClickHandler = (_, loc) => { onClickHandler(loc); };
             return v;
         }
     }

@@ -3,43 +3,43 @@ using ui.utils;
 
 namespace ui.core
 {
-    public abstract class MouseInteractionHandler : ANSIInputHandler
+    public abstract class MouseInteractionHandler : AnsiInputHandler
     {
-        public readonly int opCode;
-        public readonly bool isAllOpCode;
+        public readonly int OpCode;
+        public readonly bool IsAllOpCode;
 
         public MouseInteractionHandler()
         {
-            isAllOpCode = true;
-            opCode = 0;
+            IsAllOpCode = true;
+            OpCode = 0;
         }
 
         public MouseInteractionHandler(int opCode)
         {
-            isAllOpCode = false;
-            this.opCode = opCode;
+            IsAllOpCode = false;
+            this.OpCode = opCode;
         }
 
-        public abstract void onActive(int opCode, ConsoleLocation loc);
-        public abstract void onInactive(int opCode, ConsoleLocation loc);
+        public abstract void OnActive(int opCode, ConsoleLocation loc);
+        public abstract void OnInactive(int opCode, ConsoleLocation loc);
 
         public void Handle((int opCode, int col, int row, bool isActive) data)
         {
             Action<int, ConsoleLocation> fn;
-            if (data.isActive) fn = onActive;
-            else fn = onInactive;
-            fn(data.opCode, ANSIConverter.ToConsoleLocation(data.row, data.col));
+            if (data.isActive) fn = OnActive;
+            else fn = OnInactive;
+            fn(data.opCode, AnsiConverter.ToConsoleLocation(data.row, data.col));
         }
 
         public override bool Handle(byte[] buf)
         {
             string content = buf.AsByteBuffer().AsString();
-            if (!RegexChecker.IsMouseActivityANSISeq(content))
+            if (!RegexChecker.IsMouseActivityAnsiSeq(content))
             {
                 return false;
             }
             (int opCode, int col, int row, bool isActive) data = RegexChecker.RetrieveMouseActicity(content);
-            if (!isAllOpCode && data.opCode != opCode)
+            if (!IsAllOpCode && data.opCode != OpCode)
             {
                 return false;
             }

@@ -1,7 +1,7 @@
 using ui.core;
 namespace ui.input
 {
-    public class NornalANSISkipHandler : ANSIInputHandler
+    public class NornalAnsiSkipHandler : AnsiInputHandler
     {
 
         public override bool Handle(byte[] buf)

@@ -21,13 +21,13 @@ namespace ui.components
 
         public override void InsertRow(int idx, ui.utils.SplitAmount amount = null)
         {
-            inner.InsertRow(idx, amount);
+            Inner.InsertRow(idx, amount);
             _horizontalBarRow = _horizontalBarRow.Select(x => x >= idx ? x + 1 : x).ToList();
             for (int x = 0; x < GetSize().x; x++)
             {
                 if (_verticalBarCol.Contains(x))
                 {
-                    inner[(x, idx)] = new VerticalBar('│');
+                    Inner[(x, idx)] = new VerticalBar('│');
                 }
             }
             SetHasUpdate();
@@ -36,7 +36,7 @@ namespace ui.components
         public override void RemoveRow(int idx)
         {
             if (_horizontalBarRow.Contains(idx)) _horizontalBarRow.Remove(idx);
-            inner.RemoveRow(idx);
+            Inner.RemoveRow(idx);
             _horizontalBarRow = _horizontalBarRow.Select(x => x > idx ? x - 1 : x).ToList();
             SetHasUpdate();
         }
@@ -63,13 +63,13 @@ namespace ui.components
             //     // idx_normal = idx * 2;
             //     // idx_intersect = idx_normal + 1;
             // }
-            inner.InsertColumn(idx, amount);
+            Inner.InsertColumn(idx, amount);
             _verticalBarCol = _verticalBarCol.Select(y => y >= idx ? y + 1 : y).ToList();
 
             foreach (int y in _horizontalBarRow)
             {
-                DEBUG.DebugStore.AppendLine($"Write horizontal to {y}");
-                inner[(idx, y)] = new HorizontalBar('─');
+                Debug.DebugStore.AppendLine($"Write horizontal to {y}");
+                Inner[(idx, y)] = new HorizontalBar('─');
                 // inner[(idx_intersect, y)] = new HorizontalBar('┼');
             }
             SetHasUpdate();
@@ -80,23 +80,23 @@ namespace ui.components
             if (idx > size.y) idx = size.y;
             InsertRow(idx, 1);
             int y = idx;
-            DEBUG.DebugStore.AppendLine($"Write horizontal to {y} from bar insert");
-            for (int x = 0; x < inner.GetSize().x; x++)
+            Debug.DebugStore.AppendLine($"Write horizontal to {y} from bar insert");
+            for (int x = 0; x < Inner.GetSize().x; x++)
             {
                 if (_verticalBarCol.Contains(x))
                 {
-                    inner[(x, y)] = new TextLabel("┼");
+                    Inner[(x, y)] = new TextLabel("┼");
                 }
                 else
                 {
-                    inner[(x, y)] = new HorizontalBar('─');
+                    Inner[(x, y)] = new HorizontalBar('─');
                     // inner[(x, y)] = new VerticalBar('│');
                 }
             }
             _horizontalBarRow.Add(idx);
         }
 
-        public void AddHorizontalBarRow() => InsertHorizontalBarRow(inner.GetSize().y);
+        public void AddHorizontalBarRow() => InsertHorizontalBarRow(Inner.GetSize().y);
 
         public void InsertVerticalBarCol(int idx)
         {
@@ -109,26 +109,26 @@ namespace ui.components
             // {
             //     throw new InvalidOperationException($"DEBUG: x={x}, inner.GetSize().x={inner.GetSize().x} prev,size.x={curr} size.x={size.x} prev,idx={idx}");
             // }
-            for (int y = 0; y < inner.GetSize().y; y++)
+            for (int y = 0; y < Inner.GetSize().y; y++)
             {
                 if (_horizontalBarRow.Contains(y))
                 {
-                    inner[(x, y)] = new TextLabel("┼");
+                    Inner[(x, y)] = new TextLabel("┼");
                 }
                 else
                 {
                     // inner[(x, y)] = new HorizontalBar('─');
-                    inner[(x, y)] = new VerticalBar('│');
+                    Inner[(x, y)] = new VerticalBar('│');
                 }
             }
             _verticalBarCol.Add(idx);
         }
 
-        public void AddVerticalBarCol() => InsertVerticalBarCol(inner.GetSize().x);
+        public void AddVerticalBarCol() => InsertVerticalBarCol(Inner.GetSize().x);
 
         public LatexTable((int x, int y) size) : base()
         {
-            Add(inner);
+            Add(Inner);
             for (int x = 1; x < size.x; x++)
             {
                 AddColumn();
@@ -147,7 +147,7 @@ namespace ui.components
 
         public override void RemoveColumn(int idx)
         {
-            inner.RemoveColumn(idx);
+            Inner.RemoveColumn(idx);
             if (_verticalBarCol.Contains(idx))
             {
                 _verticalBarCol.Remove(idx);
@@ -158,21 +158,21 @@ namespace ui.components
 
         public override IComponent this[int x, int y]
         {
-            get => inner[x, y];
+            get => Inner[x, y];
             set
             {
                 if (_horizontalBarRow.Contains(y) || _verticalBarCol.Contains(x))
                 {
                     throw new InvalidOperationException("Cannot overwrite bar/row");
                 }
-                inner[x, y] = value;
+                Inner[x, y] = value;
             }
         }
 
         public override string AsLatex()
         {
-            string table_config = Enumerable.Range(0, GetSize().x).Select(x => _verticalBarCol.Contains(x) ? '|' : 'c').AsByteBuffer().AsString();
-            int[] arrangement = Enumerable.Range(0, GetSize().x).Where(i => table_config[i] == 'c').ToArray();
+            string tableConfig = Enumerable.Range(0, GetSize().x).Select(x => _verticalBarCol.Contains(x) ? '|' : 'c').AsByteBuffer().AsString();
+            int[] arrangement = Enumerable.Range(0, GetSize().x).Where(i => tableConfig[i] == 'c').ToArray();
             List<string> contents = new List<string>();
             for (int y = 0; y < GetSize().y; y++)
             {
@@ -187,7 +187,7 @@ namespace ui.components
                 }
                 contents.Add(content);
             }
-            return $"\\begin{{tabular}}{{ {table_config} }}\n{String.Join("\n", contents)}\n\\end{{tabular}}";
+            return $"\\begin{{tabular}}{{ {tableConfig} }}\n{String.Join("\n", contents)}\n\\end{{tabular}}";
         }
 
         public override string Debug_Info()

@@ -5,11 +5,11 @@ namespace ui.components
 {
     public struct ComponentConfig
     {
-        public ActiveStatusHandler activeStatusHandler;
+        public ActiveStatusHandler ActiveStatusHandler;
 
         public ComponentConfig(ActiveStatusHandler statusHandler)
         {
-            activeStatusHandler = statusHandler;
+            ActiveStatusHandler = statusHandler;
         }
     }
 }

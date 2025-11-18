@@ -86,7 +86,7 @@ namespace ui.test
             app.WithExitHandler((appObj) =>
             {
                 Console.WriteLine(appObj.Debug_WriteStructure());
-                Console.WriteLine(ui.DEBUG.DebugStore.ToString());
+                Console.WriteLine(ui.Debug.DebugStore.ToString());
             }).Run();
         }
     }
