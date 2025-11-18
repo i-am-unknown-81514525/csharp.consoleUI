@@ -157,7 +157,7 @@ namespace ui.components
             {
                 (uint lx, uint ly) = (compLoc.location.x, compLoc.location.y);
                 (uint hx, uint hy) = (lx + compLoc.location.allocX, ly + compLoc.location.allocY);
-                if (lx <= location.X && location.X <= lx && ly <= location.Y && location.Y <= hy)
+                if (lx <= location.X && location.X <= hx && ly <= location.Y && location.Y <= hy)
                 {
                     _lock = true;
                     try
