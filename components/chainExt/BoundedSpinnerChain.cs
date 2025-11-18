@@ -12,7 +12,7 @@ namespace ui.components.chainExt
 
         public static T WithChangeHandler<T>(this T v, Action<T, int> handler) where T : BoundedSpinner
         {
-            v.OnChange = (i) => handler(v, i);
+            v.OnChange = i => handler(v, i);
             return v;
         }
 

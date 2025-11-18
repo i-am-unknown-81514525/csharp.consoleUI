@@ -17,7 +17,7 @@ namespace ui.components
         }
 
 
-        public FormattedTable() : base()
+        public FormattedTable()
         {
 
         }

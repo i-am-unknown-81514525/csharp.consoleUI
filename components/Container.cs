@@ -1,17 +1,13 @@
-using System;
-using System.Linq;
-using ui.core;
-
 namespace ui.components
 {
     public class Container<TS> : SingleChildComponent<TS> where TS : ComponentStore
     {
 
-        public Container() : base()
+        public Container()
         {
         }
 
-        public Container(IComponent component) : base()
+        public Container(IComponent component)
         {
             Add(component);
         }
@@ -41,7 +37,8 @@ namespace ui.components
 
     public class Container : Container<EmptyStore>
     {
-        public Container() : base() { }
+        public Container()
+        { }
         public Container(IComponent component) : base(component) { }
         public Container(ComponentConfig config) : base(config) { }
         public Container(IComponent component, ComponentConfig config) : base(component, config) { }

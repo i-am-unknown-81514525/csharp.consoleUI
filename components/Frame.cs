@@ -1,7 +1,5 @@
-using ui.components.chainExt;
 using ui.math;
 using ui.utils;
-using ui.core;
 
 namespace ui.components
 {
@@ -26,12 +24,12 @@ namespace ui.components
 
         private readonly IComponent _frameInner;
         private readonly Container _titleContainer = new Container();
-        private readonly HorizontalGroupComponent _outerGroupComponent = null;
+        private readonly HorizontalGroupComponent _outerGroupComponent;
         private readonly Container _innerContainer = new Container();
 
         private const bool ToggleCanNoFrame = true; // future changeable config
 
-        public Frame(GroupComponentConfig? titlegroupConfig = null) : base()
+        public Frame(GroupComponentConfig? titlegroupConfig = null)
         {
             if (titlegroupConfig is null)
                 titlegroupConfig = (new TextLabel(""), 0);
@@ -40,27 +38,27 @@ namespace ui.components
             _title = config;
             _titleContainer.Add(config.Component);
             Add(
-                _frameInner = new VerticalGroupComponent() {
-                    (new HorizontalGroupComponent() {
+                _frameInner = new VerticalGroupComponent {
+                    (new HorizontalGroupComponent {
                         (new TextLabel("┌─"), 2),
-                        (_outerGroupComponent = new HorizontalGroupComponent() {
+                        (_outerGroupComponent = new HorizontalGroupComponent {
                             (_titleContainer, config.SplitAmount),
                             (new HorizontalBar('─'), (new Fraction(1, 1), 2))
                         }, new Fraction(1, 1)),
                         (new TextLabel("─┐"), 2)
                     }, 1),
                     (
-                        new HorizontalGroupComponent() {
+                        new HorizontalGroupComponent {
                             (new VerticalBar('│'), 1),
-                            (new VerticalBar(' '), 1),
+                            (new VerticalBar(), 1),
                             (_innerContainer, new Fraction(1, 1)),
-                            (new VerticalBar(' '), 1),
+                            (new VerticalBar(), 1),
                             (new VerticalBar('│'), 1)
                         },
                         new Fraction(1, 1)
                     ),
                     (
-                        new HorizontalGroupComponent() {
+                        new HorizontalGroupComponent {
                             (new TextLabel("└─"), 2),
                             (new HorizontalBar('─'), new Fraction(1, 1)),
                             (new TextLabel("─┘"), 2)

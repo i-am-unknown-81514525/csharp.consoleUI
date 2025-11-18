@@ -1,11 +1,8 @@
 using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
 using ui.core;
-using ui.math;
-using ui.utils;
 using static ui.utils.Array2DHandler;
-using System.Collections;
 
 namespace ui.components
 {
@@ -14,7 +11,8 @@ namespace ui.components
     public class UnpermitHierarchyChangeException : InvalidOperationException
     {
         public UnpermitHierarchyChangeException(string message) : base(message) { }
-        public UnpermitHierarchyChangeException() : base() { }
+        public UnpermitHierarchyChangeException()
+        { }
     }
 
     public class AlreadyInitException : InvalidOperationException { }
@@ -23,7 +21,7 @@ namespace ui.components
     public abstract class BaseComponent : IComponent
     {
         protected ActiveStatusHandler ActiveHandler;
-        private IComponent _root = null;
+        private IComponent _root;
 
         private (uint x, uint y) _allocSize = (0, 0);
         protected List<(IComponent component, (uint x, uint y, uint allocX, uint allocY) location, int prioity)> ChildsMapping =
@@ -36,21 +34,21 @@ namespace ui.components
 
         private bool _localHasUpdate = true;
 
-        private bool _lock = false; // Any active change called to upper level class would enable this lock
+        private bool _lock; // Any active change called to upper level class would enable this lock
 
-        private bool _isActive = false;
+        private bool _isActive;
 
-        private bool _activeLock = false; // When onDeactive, calling setActive would have the unintend side-effect,
+        private bool _activeLock; // When onDeactive, calling setActive would have the unintend side-effect,
                                           // where _isActive would is still depend on onDeactive return result, not the calling of onActive
                                           // Or under undiscover side effect (UB)
                                           // Therefore the usage of such is restricted with apporiate error message
                                           // To ask the developer to return false instead.
 
-        private bool _frameRecurrLock = false;
+        private bool _frameRecurrLock;
 
-        private bool _isInit = false;
+        private bool _isInit;
 
-        private bool _rerender = false;
+        private bool _rerender;
 
         public BaseComponent(ComponentConfig config)
         {
@@ -76,7 +74,7 @@ namespace ui.components
 
         public void UnInit()
         {
-            if (GetMount() is null || GetMount().IsInit() == false)
+            if (GetMount() is null || !GetMount().IsInit())
                 _isInit = false;
             foreach (IComponent component in GetMapping().Select(x => x.component))
                 component.UnInit();
@@ -551,7 +549,7 @@ namespace ui.components
     {
         public readonly TS Store;
 
-        public Component(TS store) : base()
+        public Component(TS store)
         {
             Store = store;
         }
@@ -571,7 +569,7 @@ namespace ui.components
             return store;
         }
 
-        public Component() : base()
+        public Component()
         {
             Store = ComponentStoreConstructor();
         }
@@ -589,7 +587,8 @@ namespace ui.components
             return new EmptyStore();
         }
 
-        public Component() : base() { }
+        public Component()
+        { }
         public Component(ComponentConfig config) : base(config) { }
     }
 }

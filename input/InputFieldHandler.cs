@@ -7,11 +7,11 @@ namespace ui.input
 {
     public class InputFieldHandler : InputHandler
     {
-        protected uint Cursor = 0; // Position the place/delete // -1 for position to backspace
+        protected uint Cursor; // Position the place/delete // -1 for position to backspace
 
-        private bool _isActive = false;
+        private bool _isActive;
 
-        protected byte? CurrBuf = null;
+        protected byte? CurrBuf;
 
         protected string Content = "";
 

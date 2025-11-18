@@ -1,6 +1,4 @@
-using System;
 using ui.core;
-using ui.events;
 using ui.fmt;
 using ui.utils;
 
@@ -29,7 +27,7 @@ namespace ui.components
         public HorizontalAlignment hAlign { get => _hAlign; set { _hAlign = value; SetHasUpdate(); } }
 
 
-        public TextLabel(string text = null) : base()
+        public TextLabel(string text = null)
         {
             _text = text ?? "";
         }

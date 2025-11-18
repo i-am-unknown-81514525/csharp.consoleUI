@@ -1,8 +1,8 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System;
-using ui.utils;
 using ui.math;
+using ui.utils;
 
 namespace ui.components
 {
@@ -89,7 +89,7 @@ namespace ui.components
         private protected PagingTableInner Inner;
 
         //Reactive of overlap with type int and default value: `0`, Trigger: SetHasUpdate();
-        private int _overlap = 0;
+        private int _overlap;
         public int overlap
         {
             get => _overlap; set
@@ -100,19 +100,19 @@ namespace ui.components
             }
         }
 
-        private int _pgIdx = 0; // the index of the first field of the page
-        private int _pgEndIdx = 0; // the index of the last field of the page
-        private int _virtPgIdx = 0; // the virtual field space when resizing so it return to exact same page after a series of resize. Change on page change
+        private int _pgIdx; // the index of the first field of the page
+        private int _pgEndIdx; // the index of the last field of the page
+        private int _virtPgIdx; // the virtual field space when resizing so it return to exact same page after a series of resize. Change on page change
 
         protected List<Field> Fields = new List<Field>();
 
         public PagingTable(Field top)
         {
             Inner = new PagingTableInner(top);
-            Add(new VerticalGroupComponent()
+            Add(new VerticalGroupComponent
             {
                 Inner,
-                (new HorizontalGroupComponent() {
+                (new HorizontalGroupComponent {
                     (Spinner, new Fraction(1, 1))
                 }, 1)
             });
@@ -122,14 +122,14 @@ namespace ui.components
         public PagingTable(Field top, GroupComponentConfig config, bool isLeft = true)
         {
             Inner = new PagingTableInner(top);
-            Add(new VerticalGroupComponent()
+            Add(new VerticalGroupComponent
             {
                 Inner,
-                (isLeft ? new HorizontalGroupComponent() {
+                (isLeft ? new HorizontalGroupComponent {
                     config,
                     (Spinner, new Fraction(1, 1))
                 } :
-                new HorizontalGroupComponent() {
+                new HorizontalGroupComponent {
                     (Spinner, new Fraction(1, 1)),
                     config
                 }, 1)
@@ -140,11 +140,11 @@ namespace ui.components
         public PagingTable(Field top, GroupComponentConfig left, GroupComponentConfig right)
         {
             Inner = new PagingTableInner(top);
-            Add(new VerticalGroupComponent()
+            Add(new VerticalGroupComponent
             {
                 Inner,
                 (
-                    new HorizontalGroupComponent() {
+                    new HorizontalGroupComponent {
                         left,
                         (Spinner, new Fraction(1, 1)),
                         right

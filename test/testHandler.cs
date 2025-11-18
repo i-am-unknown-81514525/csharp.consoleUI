@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading;
 using ui.core;
 using static ui.core.ConsoleHandler;
 
@@ -23,7 +24,7 @@ namespace ui.test
 
     internal class ExitHandler : InputHandler
     {
-        private bool _exit = false;
+        private bool _exit;
 
         protected override void Handle(RootInputHandler root)
         {
@@ -46,7 +47,7 @@ namespace ui.test
 
     internal class InputTriggerHandler : InputHandler
     {
-        private bool _enableInput = false;
+        private bool _enableInput;
 
         protected override void Handle(RootInputHandler root)
         {
@@ -151,7 +152,7 @@ namespace ui.test
                 {
                     Global.InputHandler.Handle();
                     if (exitHandler.GetExitStatus()) break;
-                    System.Threading.Thread.Sleep(10);
+                    Thread.Sleep(10);
                 }
                 ConsoleIntermediateHandler.Reset();
             }

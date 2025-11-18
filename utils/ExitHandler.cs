@@ -4,7 +4,7 @@ namespace ui.utils
 {
     public class ExitHandler : InputHandler
     {
-        private bool _exit = false;
+        private bool _exit;
 
         protected override void Handle(RootInputHandler root)
         {

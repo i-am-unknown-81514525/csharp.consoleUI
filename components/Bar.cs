@@ -1,5 +1,6 @@
 using ui.core;
 using ui.fmt;
+using ui.utils;
 
 namespace ui.components
 {
@@ -9,7 +10,7 @@ namespace ui.components
 
         protected string DisplayChar;
 
-        public HorizontalBar(char displayChar = ' ') : base()
+        public HorizontalBar(char displayChar = ' ')
         {
             DisplayChar = displayChar.ToString();
         }
@@ -24,13 +25,13 @@ namespace ui.components
             uint placeY = 0;
             switch (vAlign)
             {
-                case utils.VerticalAlignment.TOP:
+                case VerticalAlignment.TOP:
                     placeY = 0;
                     break;
-                case utils.VerticalAlignment.MIDDLE:
+                case VerticalAlignment.MIDDLE:
                     placeY = GetAllocSize().y / 2;
                     break;
-                case utils.VerticalAlignment.BOTTOM:
+                case VerticalAlignment.BOTTOM:
                     placeY = GetAllocSize().y - 1;
                     break;
             }
@@ -62,7 +63,7 @@ namespace ui.components
 
         protected string DisplayChar;
 
-        public VerticalBar(char displayChar = ' ') : base()
+        public VerticalBar(char displayChar = ' ')
         {
             DisplayChar = displayChar.ToString();
         }
@@ -77,13 +78,13 @@ namespace ui.components
             uint placeX = 0;
             switch (hAlign)
             {
-                case utils.HorizontalAlignment.LEFT:
+                case HorizontalAlignment.LEFT:
                     placeX = 0;
                     break;
-                case utils.HorizontalAlignment.MIDDLE:
+                case HorizontalAlignment.MIDDLE:
                     placeX = GetAllocSize().x / 2;
                     break;
-                case utils.HorizontalAlignment.RIGHT:
+                case HorizontalAlignment.RIGHT:
                     placeX = GetAllocSize().x - 1;
                     break;
             }

@@ -3,7 +3,7 @@ namespace ui.components
 
     public abstract class NoChildComponent<T> : Component<T> where T : ComponentStore
     {
-        protected NoChildComponent() : base()
+        protected NoChildComponent()
         {
         }
 
@@ -27,7 +27,7 @@ namespace ui.components
 
     public abstract class NoChildComponent : Component<EmptyStore>
     {
-        protected NoChildComponent() : base()
+        protected NoChildComponent()
         {
         }
 

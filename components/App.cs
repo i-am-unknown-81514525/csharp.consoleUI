@@ -1,12 +1,9 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using ui.utils;
+using System.Threading;
 using ui.core;
-using ui.mouse;
 using ui.input;
-
+using ui.mouse;
+using ui.utils;
 using static ui.core.ConsoleHandler;
 
 namespace ui.components
@@ -28,9 +25,9 @@ namespace ui.components
     public class App<TS, T> : SingleChildComponent<TS> where T : App<TS, T> where TS : ComponentStore
     {
 
-        public Action<App<TS, T>> OnTickHandler = (_) => { };
+        public Action<App<TS, T>> OnTickHandler = _ => { };
 
-        public Action<App<TS, T>> OnExitHandler = (_) => { };
+        public Action<App<TS, T>> OnExitHandler = _ => { };
 
         public App(BaseComponent component) : base(new ComponentConfig(new ActiveStatusHandler()))
         {
@@ -87,7 +84,7 @@ namespace ui.components
                     bool haveUpdate = GetHasUpdate();
                     Global.ConsoleCanva.ConsoleWindow = Render();
                     Global.ConsoleCanva.EventLoopPost(haveUpdate);
-                    System.Threading.Thread.Sleep(1);
+                    Thread.Sleep(1);
                 }
             }
             finally

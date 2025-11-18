@@ -1,5 +1,3 @@
-using System;
-
 namespace ui.fmt
 {
     public abstract class Color : AnsiFmtBase
@@ -26,7 +24,7 @@ namespace ui.fmt
         public static implicit operator ForegroundColor(ForegroundColorEnum fEnum) => new ForegroundColor(fEnum);
     }
 
-    public enum ForegroundColorEnum : int
+    public enum ForegroundColorEnum
     {
         BLACK = 30,
         RED = 31,
@@ -57,7 +55,7 @@ namespace ui.fmt
         public static implicit operator BackgroundColor(BackgroundColorEnum bEnum) => new BackgroundColor(bEnum);
     }
 
-    public enum BackgroundColorEnum : int
+    public enum BackgroundColorEnum
     {
         BLACK = 40,
         RED = 41,

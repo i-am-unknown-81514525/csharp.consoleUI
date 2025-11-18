@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using ui.math;
 using ui.utils;
-using System.Text;
 
 namespace ui.components
 {
@@ -16,14 +16,14 @@ namespace ui.components
         private List<SplitAmount> _vSize = new List<SplitAmount>();
         private (int x, int y) _size = (0, 0);
 
-        public Table(SplitAmount vSplit = null, SplitAmount hSplit = null) : base()
+        public Table(SplitAmount vSplit = null, SplitAmount hSplit = null)
         {
             Add(_horizontal);
             AddRow(vSplit);
             AddColumn(hSplit);
         }
 
-        public Table((int x, int y) size) : base()
+        public Table((int x, int y) size)
         {
             Add(_horizontal);
             if (size.x < 1 || size.y < 1)

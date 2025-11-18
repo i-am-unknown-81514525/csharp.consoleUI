@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using ui;
 
 namespace ui.core
 {
@@ -10,7 +9,7 @@ namespace ui.core
         private LockStatus _prevLockStatus = LockStatus.NO_LOCK;
         private LockStatus _lockStatus = LockStatus.NO_LOCK;
         internal List<byte> Buffer = new List<byte>(); // buffer should only be stored when a lock is acquired
-        private bool _allowModifyStatus = false;
+        private bool _allowModifyStatus;
 
         public LockStatus GetLockStatus() => _lockStatus;
         internal LockStatus GetPrevLockStatus() => _prevLockStatus;
@@ -50,14 +49,16 @@ namespace ui.core
                 ResetBuffer(); // Someone held lock and it is not itself
                 return true;
             }
-            else if (_lockStatus == LockStatus.SHARED_LOCK && !lockStatus.GetIsShared())
+
+            if (_lockStatus == LockStatus.SHARED_LOCK && !lockStatus.GetIsShared())
             {
                 ResetBuffer();
                 _lockStatus = LockStatus.NO_LOCK;
                 return true; // Itself held shared lock but someone took exclusive access
-                             // Therefore the code should volunterarily give up access
+                // Therefore the code should volunterarily give up access
             }
-            else if (_lockStatus == LockStatus.SHARED_LOCK) //  implies: && lockStatus.GetIsShared()
+
+            if (_lockStatus == LockStatus.SHARED_LOCK) //  implies: && lockStatus.GetIsShared()
             {
                 if (lockStatus.GetLockedHandler().Contains(this))
                 {
@@ -65,11 +66,13 @@ namespace ui.core
                 }
                 throw new LockConflictException("Invalid lock status: the handler held an shared lock when parameter claim the handler don't held the lock");
             }
-            else if (_lockStatus == LockStatus.EXCLUSIVE_LOCK && lockStatus.GetIsShared())
+
+            if (_lockStatus == LockStatus.EXCLUSIVE_LOCK && lockStatus.GetIsShared())
             {
                 throw new LockConflictException("Invalid lock status: the handler held an exclsuive lock when parameter claim only shared lock");
             }
-            else if (_lockStatus == LockStatus.EXCLUSIVE_LOCK) //  implies:  && !lockStatus.GetIsShared()
+
+            if (_lockStatus == LockStatus.EXCLUSIVE_LOCK) //  implies:  && !lockStatus.GetIsShared()
             {
                 if (lockStatus.GetLockedHandler().Contains(this))
                 {

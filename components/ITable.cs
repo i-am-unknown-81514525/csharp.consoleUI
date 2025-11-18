@@ -1,3 +1,5 @@
+using ui.utils;
+
 namespace ui.components
 {
     public interface ITable : IComponent
@@ -5,10 +7,10 @@ namespace ui.components
         (int x, int y) GetSize();
         void Resize((int x, int y) newSize);
         void ForceResize((int x, int y) newSize);
-        void AddColumn(utils.SplitAmount amount = null);
-        void AddRow(utils.SplitAmount amount = null);
-        void InsertColumn(int idx, utils.SplitAmount amount = null);
-        void InsertRow(int idx, utils.SplitAmount amount = null);
+        void AddColumn(SplitAmount amount = null);
+        void AddRow(SplitAmount amount = null);
+        void InsertColumn(int idx, SplitAmount amount = null);
+        void InsertRow(int idx, SplitAmount amount = null);
         void RemoveColumn(int idx);
         void RemoveRow(int idx);
         IComponent this[int x, int y]

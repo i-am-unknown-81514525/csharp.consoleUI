@@ -1,9 +1,9 @@
 using System;
-using ui;
+using System.Threading;
 using ui.components;
 using ui.core;
-using ui.mouse;
 using ui.math;
+using ui.mouse;
 using static ui.core.ConsoleHandler;
 
 namespace ui.test
@@ -23,12 +23,12 @@ namespace ui.test
             //     }
             // );
             App app = new App(
-                new VerticalGroupComponent() {
-                    (new HorizontalGroupComponent() {
+                new VerticalGroupComponent {
+                    (new HorizontalGroupComponent {
                         (field1 = new SingleLineInputField(), new Fraction(3, 4)),
                         (new TextLabel(""), new Fraction(1, 4))
                     }, 1),
-                    (new HorizontalGroupComponent() {
+                    (new HorizontalGroupComponent {
                         (field2 = new SingleLineInputField(), new Fraction(3, 4)),
                         (new ExitButton("Confirm"), new Fraction(1, 4))
                     }, 1)
@@ -53,7 +53,7 @@ namespace ui.test
                     bool status = Global.InputHandler.Handle();
                     if (!status)
                     {
-                        System.Threading.Thread.Sleep(1);
+                        Thread.Sleep(1);
                         continue;
                     }
                     if (exitHandler.GetExitStatus())

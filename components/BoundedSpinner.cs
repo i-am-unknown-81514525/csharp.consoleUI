@@ -1,13 +1,12 @@
 using System;
 using ui.components.chainExt;
 using ui.fmt;
-using ui.utils;
 
 namespace ui.components
 {
     public class DisableStore : ComponentStore
     {
-        public bool disabled { get; set; } = false;
+        public bool disabled { get; set; }
     }
 
     public class DisableButton : Button<DisableStore>
@@ -23,10 +22,10 @@ namespace ui.components
 
     public class BoundedSpinner : Container
     {
-        public Action<int> OnChange = (value) => { };
+        public Action<int> OnChange = value => { };
 
         //Reactive of amount with type int and default value: `0`, Trigger: SetHasUpdate();
-        private int _amount = 0;
+        private int _amount;
         public int amount
         {
             get

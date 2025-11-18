@@ -4,6 +4,5 @@ namespace ui.events
 {
     public class NotRenderEvent : Event
     {
-        public NotRenderEvent() { }
     }
 }

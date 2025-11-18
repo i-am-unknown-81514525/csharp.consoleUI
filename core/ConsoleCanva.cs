@@ -38,7 +38,7 @@ namespace ui.core
         private ConsoleSize _minSize = new ConsoleSize(60, 40);
         public ConsoleContent[,] ConsoleWindow = new ConsoleContent[120, 80];
 
-        private ConsoleContent[,] _previous = null;
+        private ConsoleContent[,] _previous;
         public (int row, int col)? CursorPosition = null;
 
         protected void ApplyToNew((int width, int height) size)
@@ -204,7 +204,7 @@ namespace ui.core
         public static ConsoleCanva WriteStringOnCanva(ConsoleCanva canva, string text, (int x, int y) topLeft, string ansiPrefix = "", string ansiPostfix = "")
         {
             if (string.IsNullOrEmpty(text)) return canva;
-            return OverwriteOnCanva(canva, GetContentArr(text, ansiPrefix, ansiPostfix), topLeft, true);
+            return OverwriteOnCanva(canva, GetContentArr(text, ansiPrefix, ansiPostfix), topLeft);
         }
 
         public static ConsoleContent[,] GetContentArr(string text, string ansiPrefix = "", string ansiPostfix = "")
@@ -213,7 +213,7 @@ namespace ui.core
             ConsoleContent[,] data = new ConsoleContent[text.Length, 1];
             for (int i = 0; i < text.Length; i++)
             {
-                data[i, 0] = new ConsoleContent()
+                data[i, 0] = new ConsoleContent
                 {
                     content = text[i].ToString(),
                     ansiPrefix = ansiPrefix,
@@ -231,7 +231,7 @@ namespace ui.core
             ConsoleContent[] data = new ConsoleContent[text.Length];
             for (int i = 0; i < text.Length; i++)
             {
-                data[i] = new ConsoleContent()
+                data[i] = new ConsoleContent
                 {
                     content = text[i].ToString(),
                     ansiPrefix = ansiPrefix,

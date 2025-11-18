@@ -1,8 +1,8 @@
 using System;
-using ui.input;
 using ui.core;
 using ui.events;
 using ui.fmt;
+using ui.input;
 
 namespace ui.components
 {
@@ -73,7 +73,7 @@ namespace ui.components
         private bool _underline = true;
         public bool underline { get => _underline; set { _underline = value; SetHasUpdate(); } }
 
-        public SingleLineInputField(string content = "") : base()
+        public SingleLineInputField(string content = "")
         {
             InputFieldHandler.SetHandler(OnTypeEventTrigger);
             InputFieldHandler.SetHandler(OnExitEventTrigger);
@@ -127,11 +127,11 @@ namespace ui.components
             {
                 Global.ConsoleCanva.CursorPosition = null;
                 Global.InputHandler.Remove(InputFieldHandler);
-                Debug.DebugStore.Append($"input field removed handler\r\n");
+                Debug.DebugStore.Append("input field removed handler\r\n");
             }
             else
             {
-                Debug.DebugStore.Append($"input field handler already missing\r\n");
+                Debug.DebugStore.Append("input field handler already missing\r\n");
             }
             Global.ConsoleCanva.CursorPosition = null;
             SetHasUpdate();

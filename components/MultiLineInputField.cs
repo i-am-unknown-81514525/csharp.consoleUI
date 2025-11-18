@@ -1,9 +1,9 @@
 using System;
 using System.Linq;
-using ui.input;
 using ui.core;
 using ui.events;
 using ui.fmt;
+using ui.input;
 
 namespace ui.components
 {
@@ -72,7 +72,7 @@ namespace ui.components
 
         protected (uint row, uint column) TopLeft = (0, 0);
 
-        public MultiLineInputField(string content = "") : base()
+        public MultiLineInputField(string content = "")
         {
             InputFieldHandler.SetHandler(OnTypeEventTrigger);
             InputFieldHandler.SetHandler(OnExitEventTrigger);
@@ -128,11 +128,11 @@ namespace ui.components
             {
                 Global.ConsoleCanva.CursorPosition = null;
                 Global.InputHandler.Remove(InputFieldHandler);
-                Debug.DebugStore.Append($"input field removed handler\r\n");
+                Debug.DebugStore.Append("input field removed handler\r\n");
             }
             else
             {
-                Debug.DebugStore.Append($"input field handler already missing\r\n");
+                Debug.DebugStore.Append("input field handler already missing\r\n");
             }
             Global.ConsoleCanva.CursorPosition = null;
             SetHasUpdate();

@@ -1,8 +1,8 @@
-using System.Collections.Generic;
 using System;
+using System.Collections.Generic;
 using ui.core;
-using ui.utils;
 using ui.fmt;
+using ui.utils;
 
 namespace ui.components
 {
@@ -10,7 +10,7 @@ namespace ui.components
     {
         private List<string> _history = new List<string>();
 
-        public Logger() : base()
+        public Logger()
         {
             vAlign = VerticalAlignment.TOP;
             hAlign = HorizontalAlignment.LEFT;

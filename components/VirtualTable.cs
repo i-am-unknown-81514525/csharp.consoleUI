@@ -1,7 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using ui.math;
 using ui.utils;
 
 namespace ui.components
@@ -20,7 +17,7 @@ namespace ui.components
         }
         protected abstract T InnerConstructor();
 
-        public VirtualTable() : base()
+        public VirtualTable()
         {
             Inner = InnerConstructor();
             Add(Inner);

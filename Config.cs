@@ -1,5 +1,3 @@
-using System;
-
 namespace ui
 {
     public static class Config

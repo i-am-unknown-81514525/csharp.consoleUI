@@ -2,7 +2,6 @@ using System;
 using ui.components;
 using ui.components.chainExt;
 using ui.math;
-using ui.fmt;
 
 namespace ui.test
 {
@@ -13,14 +12,14 @@ namespace ui.test
             Switcher switcher = null;
             int idx = 0;
             new App(
-                switcher = new Switcher()
+                switcher = new Switcher
                 {
-                    new VerticalGroupComponent() {
+                    new VerticalGroupComponent {
                         (
                             new Frame()
                                 .WithInner(new Button("Switch")
                                     .WithHandler(
-                                        (loc) => {
+                                        loc => {
                                             idx++;
                                             idx %= 2;
                                             switcher.SwitchTo(idx);
@@ -44,7 +43,7 @@ namespace ui.test
                     new Frame()
                         .WithInner(new Button("Switch")
                             .WithHandler(
-                                (loc) => {
+                                loc => {
                                     idx++;
                                     idx %= 2;
                                     switcher.SwitchTo(idx);
@@ -55,7 +54,7 @@ namespace ui.test
                         )
                 }
             ).WithExitHandler(
-                (app) =>
+                app =>
                 {
                     Console.WriteLine(app.Debug_WriteStructure());
                 }

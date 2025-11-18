@@ -1,5 +1,3 @@
-using System;
-
 namespace ui.components
 {
     public class OverlayApp : App

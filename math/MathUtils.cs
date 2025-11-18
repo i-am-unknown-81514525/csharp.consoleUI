@@ -88,7 +88,7 @@ namespace ui.math
         {
             if (n < 10)
             {
-                long[] presetTo10 = new long[] { 2, 3, 5, 7 };
+                long[] presetTo10 = { 2, 3, 5, 7 };
                 List<long> output = new List<long>();
                 for (long i = 0; i < presetTo10.Length; i++)
                 {

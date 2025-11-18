@@ -1,5 +1,5 @@
-using ui.fmt;
 using ui.core;
+using ui.fmt;
 
 namespace ui.components
 {
@@ -17,7 +17,7 @@ namespace ui.components
         {
             (uint x, uint y) = GetAllocSize();
             ConsoleContent[,] content = new ConsoleContent[x, y];
-            ConsoleContent item = new ConsoleContent()
+            ConsoleContent item = new ConsoleContent
             {
                 content = " ",
                 ansiPrefix = TextColorFormatter.Constructor(foreground, background),

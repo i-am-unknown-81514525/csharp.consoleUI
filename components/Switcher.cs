@@ -9,11 +9,12 @@ namespace ui.components
     public class Switcher<TS, T> : Component<TS>, IEnumerable<IComponent> where TS : ComponentStore where T : Switcher<TS, T>
     {
         List<IComponent> _compList = new List<IComponent>();
-        private int _idx = 0;
-        private IComponent _curr = null;
+        private int _idx;
+        private IComponent _curr;
 
 
-        public Switcher() : base() { }
+        public Switcher()
+        { }
 
         public Switcher(ComponentConfig config) : base(config) { }
 
@@ -21,7 +22,7 @@ namespace ui.components
 
         public Switcher(ComponentConfig config, TS store) : base(config, store) { }
 
-        public Switcher(IEnumerable<IComponent> components) : base()
+        public Switcher(IEnumerable<IComponent> components)
         {
             _compList = components.ToList();
         }

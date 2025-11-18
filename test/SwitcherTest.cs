@@ -1,9 +1,10 @@
 using System;
+using System.Threading;
 using ui.components;
 using ui.components.chainExt;
 using ui.core;
-using ui.mouse;
 using ui.math;
+using ui.mouse;
 using static ui.core.ConsoleHandler;
 
 namespace ui.test
@@ -16,13 +17,13 @@ namespace ui.test
             Switcher switcher = null;
             int idx = 0;
             App app = new App(
-                switcher = new Switcher()
+                switcher = new Switcher
                 {
-                    new VerticalGroupComponent() {
+                    new VerticalGroupComponent {
                         (
                             new Button("Switch")
                                 .WithHandler(
-                                    (loc) => {
+                                    loc => {
                                         idx++;
                                         idx %= 2;
                                         switcher.SwitchTo(idx);
@@ -32,7 +33,7 @@ namespace ui.test
                     },
                     new Button("Switch")
                         .WithHandler(
-                            (loc) => {
+                            loc => {
                                 idx++;
                                 idx %= 2;
                                 switcher.SwitchTo(idx);
@@ -59,7 +60,7 @@ namespace ui.test
                     bool status = Global.InputHandler.Handle();
                     if (!status)
                     {
-                        System.Threading.Thread.Sleep(1);
+                        Thread.Sleep(1);
                         continue;
                     }
                     if (exitHandler.GetExitStatus())

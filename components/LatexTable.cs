@@ -15,7 +15,7 @@ namespace ui.components
             return new Table((1, 1));
         }
 
-        public LatexTable() : base()
+        public LatexTable()
         {
         }
 
@@ -126,7 +126,7 @@ namespace ui.components
 
         public void AddVerticalBarCol() => InsertVerticalBarCol(Inner.GetSize().x);
 
-        public LatexTable((int x, int y) size) : base()
+        public LatexTable((int x, int y) size)
         {
             Add(Inner);
             for (int x = 1; x < size.x; x++)

@@ -1,5 +1,4 @@
 using System;
-using ui.core;
 
 namespace ui.components.chainExt
 {
@@ -13,7 +12,7 @@ namespace ui.components.chainExt
 
         public static T WithTickHandler<TS, T>(this T v, Action onTickHandler) where TS : ComponentStore where T : App<TS, T>
         {
-            v.OnTickHandler = (_) => onTickHandler();
+            v.OnTickHandler = _ => onTickHandler();
             return v;
         }
 
@@ -25,7 +24,7 @@ namespace ui.components.chainExt
 
         public static T WithExitHandler<TS, T>(this T v, Action onExitHandler) where TS : ComponentStore where T : App<TS, T>
         {
-            v.OnTickHandler = (_) => onExitHandler();
+            v.OnTickHandler = _ => onExitHandler();
             return v;
         }
 
@@ -37,7 +36,7 @@ namespace ui.components.chainExt
 
         public static T WithTickHandler<T>(this T v, Action onTickHandler) where T : App<EmptyStore, T>
         {
-            v.OnTickHandler = (_) => onTickHandler();
+            v.OnTickHandler = _ => onTickHandler();
             return v;
         }
 
@@ -49,7 +48,7 @@ namespace ui.components.chainExt
 
         public static T WithExitHandler<T>(this T v, Action onExitHandler) where T : App<EmptyStore, T>
         {
-            v.OnTickHandler = (_) => onExitHandler();
+            v.OnTickHandler = _ => onExitHandler();
             return v;
         }
     }

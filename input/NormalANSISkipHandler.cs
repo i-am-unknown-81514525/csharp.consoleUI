@@ -1,4 +1,5 @@
 using ui.core;
+
 namespace ui.input
 {
     public class NornalAnsiSkipHandler : AnsiInputHandler

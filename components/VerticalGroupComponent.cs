@@ -1,10 +1,8 @@
-using System;
-
 namespace ui.components
 {
     public class VerticalGroupComponent : GroupComponent
     {
-        public VerticalGroupComponent() : base()
+        public VerticalGroupComponent()
         {
             Direction = Direction.VERTICAL;
         }

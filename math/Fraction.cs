@@ -1,11 +1,9 @@
 using System;
-using System.Runtime.CompilerServices;
-using System.Numerics;
-using System.Linq;
 using System.Collections.Generic;
-using ui.utils;
-using ui.LatexExt;
+using System.Numerics;
 using System.Text;
+using ui.LatexExt;
+using ui.utils;
 
 namespace ui.math
 {
@@ -151,7 +149,7 @@ namespace ui.math
             // Overflow safe
             if (Denominator == long.MinValue && Numerator == long.MinValue)
                 return new Fraction(1, 1);
-            else if (Denominator == long.MinValue)
+            if (Denominator == long.MinValue)
                 return new Fraction(Numerator, -Denominator);
             return new Fraction(-Numerator, Denominator);
         }
@@ -471,9 +469,10 @@ namespace ui.math
                 }
                 return builder.ToString();
             }
-            else if (
+
+            if (
                 (value.integer.Abs().ToString().Length + value.length_0 +
-                (value.remaining == 0 ? -1 : 1)) < length
+                 (value.remaining == 0 ? -1 : 1)) < length
             )
             {
                 builder.Append(value.integer.ToString());
@@ -486,13 +485,14 @@ namespace ui.math
                 }
                 return builder.ToString();
             }
-            else if (
+
+            if (
                 value.integer.Abs().ToString().Length < length
             )
             {
                 return value.integer.Abs().ToString();
             }
-            else
+
             {
                 bool isNeg = value.integer < 0;
                 string content = value.integer.Abs().ToString();

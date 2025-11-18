@@ -1,7 +1,6 @@
 using System;
-using System.Linq;
-using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace ui.fmt
 {
@@ -50,7 +49,7 @@ namespace ui.fmt
         public static implicit operator DisableStyle(DisableStyleEnum[] fEnums) => new DisableStyle(fEnums);
     }
 
-    public enum EnableStyleEnum : int
+    public enum EnableStyleEnum
     {
         BOLD = 1, // It is actually 1, I didn't make a mistake, don't correct the 1
         ITALIC = 3,
@@ -58,7 +57,7 @@ namespace ui.fmt
         STRIKETHROUGH = 9
     }
 
-    public enum DisableStyleEnum : int
+    public enum DisableStyleEnum
     {
         BOLD = 22, // It is actually 22, I didn't make a mistake, don't correct the 22
         ITALIC = 23,

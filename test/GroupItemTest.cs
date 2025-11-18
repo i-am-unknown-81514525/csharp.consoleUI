@@ -1,5 +1,5 @@
 using System;
-using ui;
+using System.Threading;
 using ui.components;
 using ui.core;
 using ui.mouse;
@@ -12,18 +12,18 @@ namespace ui.test
         public static void Setup()
         {
             App app = new App(
-                new VerticalGroupComponent()
+                new VerticalGroupComponent
                 {
-                    new HorizontalGroupComponent() {
-                        new CounterButton("Click me 1", 0),
+                    new HorizontalGroupComponent {
+                        new CounterButton("Click me 1"),
                         (new Seperator(), 2),
-                        new CounterButton("Click me 2", 0)
+                        new CounterButton("Click me 2")
                     },
                     (new Seperator(), 1),
-                    new HorizontalGroupComponent() {
-                        new CounterButton("Click me 3", 0),
+                    new HorizontalGroupComponent {
+                        new CounterButton("Click me 3"),
                         (new Seperator(), 2),
-                        new CounterButton("Click me 4", 0)
+                        new CounterButton("Click me 4")
                     }
                 }
             );
@@ -46,7 +46,7 @@ namespace ui.test
                     bool status = Global.InputHandler.Handle();
                     if (!status)
                     {
-                        System.Threading.Thread.Sleep(1);
+                        Thread.Sleep(1);
                         continue;
                     }
                     if (exitHandler.GetExitStatus())

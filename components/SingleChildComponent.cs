@@ -1,7 +1,7 @@
 using System;
-using System.Linq;
-using System.Collections.Generic;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace ui.components
 {
@@ -9,7 +9,7 @@ namespace ui.components
     public abstract class SingleChildComponent<T> : Component<T>, IEnumerable<IComponent> where T : ComponentStore
     {
 
-        protected SingleChildComponent() : base()
+        protected SingleChildComponent()
         {
         }
         protected SingleChildComponent(ComponentConfig config) : base(config)
@@ -64,10 +64,8 @@ namespace ui.components
             {
                 return GetMapping()[0].component.AsLatex();
             }
-            else
-            {
-                return "[EMPTY]";
-            }
+
+            return "[EMPTY]";
         }
     }
 }

@@ -1,5 +1,6 @@
 using System;
 using ui.math;
+
 // ReSharper disable All
 
 namespace ui.test

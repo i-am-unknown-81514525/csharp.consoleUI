@@ -1,9 +1,5 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ui.core
 {
@@ -176,10 +172,8 @@ namespace ui.core
                 {
                     return WindowConsoleHandler.ReadStdin();
                 }
-                else
-                {
-                    return PosixConsoleHandler.ReadStdin();
-                }
+
+                return PosixConsoleHandler.ReadStdin();
             }
 
             public static void Reset()
@@ -200,10 +194,8 @@ namespace ui.core
                 {
                     return WindowConsoleHandler.StdinDataRemain();
                 }
-                else
-                {
-                    return PosixConsoleHandler.StdinDataRemain();
-                }
+
+                return PosixConsoleHandler.StdinDataRemain();
                 // Task<bool> task = Task<bool>.Run(
                 //     () =>
                 //     {
@@ -227,10 +219,8 @@ namespace ui.core
                 {
                     return WindowConsoleHandler.ReadStdinToEnd();
                 }
-                else
-                {
-                    return PosixConsoleHandler.ReadStdinToEnd();
-                }
+
+                return PosixConsoleHandler.ReadStdinToEnd();
                 // Task<string> task = Task<string>.Run(
                 //     () =>
                 //     {
@@ -264,10 +254,8 @@ namespace ui.core
                 {
                     return WindowConsoleHandler.ReadClipboard();
                 }
-                else
-                {
-                    return PosixConsoleHandler.ReadClipboard();
-                }
+
+                return PosixConsoleHandler.ReadClipboard();
             }
 
             public static void WriteClipboard(string content)

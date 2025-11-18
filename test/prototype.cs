@@ -1,10 +1,12 @@
 using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using ui.math;
+using System.Threading;
 using ui.core;
 using ui.input;
-using System.IO;
-using System.Collections.Generic;
+using ui.math;
+
 // ReSharper disable All
 
 namespace ui.test
@@ -234,7 +236,7 @@ namespace ui.test
                     bool status = Global.InputHandler.Handle();
                     if (!status)
                     {
-                        System.Threading.Thread.Sleep(1);
+                        Thread.Sleep(1);
                         continue;
                     }
                     if (exitHandler.GetExitStatus())
@@ -242,7 +244,7 @@ namespace ui.test
                         return;
                     }
                     HandleNext();
-                    Prototype.WriteTable();
+                    WriteTable();
                 }
             }
             finally

@@ -1,9 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using static ui.core.ConsoleHandler.ConsoleIntermediateHandler;
 using ui.utils;
+using static ui.core.ConsoleHandler.ConsoleIntermediateHandler;
 
 namespace ui.core
 {
@@ -71,7 +70,7 @@ namespace ui.core
         public int GetLockCount() => GetLockedHandler().Length;
     }
 
-    public enum LockStatus : int
+    public enum LockStatus
     {
         NO_LOCK = 0,
         SHARED_LOCK = 1,
@@ -94,8 +93,8 @@ namespace ui.core
         private List<AnsiInputHandler> _rmAnsiHandlers = new List<AnsiInputHandler>();
         private List<InputHandler> _addHandlers = new List<InputHandler>();
         private List<AnsiInputHandler> _addAnsiHandlers = new List<AnsiInputHandler>();
-        private bool _hasLockChange = false;
-        private bool _recursivePreventLock = false; // Prevent iner nhandler to call dispatch whcih might cause recurrsion
+        private bool _hasLockChange;
+        private bool _recursivePreventLock; // Prevent iner nhandler to call dispatch whcih might cause recurrsion
         private SharedLock _lockStatus = new SharedLock();
 
         public RootInputHandler(IEnumerable<InputHandler> handlers = null, IEnumerable<AnsiInputHandler> ansiHandlers = null)
@@ -349,7 +348,8 @@ namespace ui.core
                     lockValue = new SharedLock(handler, true);
                     break;
                 }
-                else if (status == LockStatus.SHARED_LOCK)
+
+                if (status == LockStatus.SHARED_LOCK)
                 {
                     lockValue.AddMember(handler);
                 }
@@ -364,7 +364,8 @@ namespace ui.core
                         lockValue = new SharedLock(handler, true);
                         break;
                     }
-                    else if (status == LockStatus.SHARED_LOCK)
+
+                    if (status == LockStatus.SHARED_LOCK)
                     {
                         lockValue.AddMember(handler);
                     }

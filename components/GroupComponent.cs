@@ -2,9 +2,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using ui.utils;
-using ui.math;
 using ui.core;
+using ui.math;
+using ui.utils;
 
 namespace ui.components
 {
@@ -39,7 +39,7 @@ namespace ui.components
         protected Direction Direction;
         protected Dictionary<IComponent, SplitConfig> SplitMapping = new Dictionary<IComponent, SplitConfig>();
 
-        protected GroupComponent() : base()
+        protected GroupComponent()
         {
         }
 

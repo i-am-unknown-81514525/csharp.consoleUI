@@ -1,18 +1,17 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
 namespace ui.utils
 {
 
-    public enum VerticalAlignment : int
+    public enum VerticalAlignment
     {
         TOP = 0,
         MIDDLE = 1,
         BOTTOM = 2,
     }
-    public enum HorizontalAlignment : int
+    public enum HorizontalAlignment
     {
         LEFT = 0,
         MIDDLE = 1,

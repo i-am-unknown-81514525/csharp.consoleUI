@@ -1,9 +1,9 @@
 using System;
-using ui;
+using System.Threading;
 using ui.components;
+using ui.components.chainExt;
 using ui.core;
 using ui.mouse;
-using ui.components.chainExt;
 using static ui.core.ConsoleHandler;
 
 namespace ui.test
@@ -34,7 +34,7 @@ namespace ui.test
         {
             this.baseText = baseText;
             this.count = count;
-            this.WithHandler((_) => { this.count++; });
+            this.WithHandler(_ => { this.count++; });
         }
 
         public override string Debug_Info() => text;
@@ -46,7 +46,7 @@ namespace ui.test
         public static void Setup()
         {
             App app = new App(
-                new CounterButton("Click me", 0)
+                new CounterButton("Click me")
             );
             try
             {
@@ -67,7 +67,7 @@ namespace ui.test
                     bool status = Global.InputHandler.Handle();
                     if (!status)
                     {
-                        System.Threading.Thread.Sleep(1);
+                        Thread.Sleep(1);
                         continue;
                     }
                     if (exitHandler.GetExitStatus())

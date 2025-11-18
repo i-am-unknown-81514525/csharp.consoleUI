@@ -1,15 +1,15 @@
 using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
 using ui.math;
 
 namespace ui.utils
 {
     public sealed class SplitConfig
     {
-        private bool _isSet = false;
+        private bool _isSet;
         private SplitHandler _handler;
-        private int _amount = 0;
+        private int _amount;
 
         public SplitConfig(SplitHandler handler)
         {
@@ -161,22 +161,16 @@ namespace ui.utils
                 {
                     return -1;
                 }
-                else
-                {
-                    return 1;
-                }
+
+                return 1;
             }
-            else
+
+            if (GetSize() < right.GetSize())
             {
-                if (GetSize() < right.GetSize())
-                {
-                    return -1;
-                }
-                else
-                {
-                    return 1;
-                }
+                return -1;
             }
+
+            return 1;
         }
     }
 
