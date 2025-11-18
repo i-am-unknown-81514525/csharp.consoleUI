@@ -183,6 +183,7 @@ namespace ui.components
                 }
                 else
                 {
+                    // ReSharper disable once AccessToModifiedClosure
                     content = String.Join(" & ", arrangement.Select(x => this[x, y].AsLatex())) + "\\\\";
                 }
                 contents.Add(content);

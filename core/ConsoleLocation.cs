@@ -2,7 +2,7 @@ using System;
 
 namespace ui.core
 {
-    public struct ConsoleLocation
+    public readonly struct ConsoleLocation : IEquatable<ConsoleLocation>
     {
 
         public readonly int X; // x
@@ -21,8 +21,13 @@ namespace ui.core
         public static bool operator !=(ConsoleLocation left, ConsoleLocation right) => !(left == right);
         public override bool Equals(object obj)
         {
-            if (!(obj is ConsoleLocation)) return false;
-            return this == (ConsoleLocation)obj;
+            if (!(obj is ConsoleLocation location)) return false;
+            return this == location;
+        }
+
+        public bool Equals(ConsoleLocation obj)
+        {
+            return this == obj;
         }
 
         public override int GetHashCode() => (X << 16) + Y;

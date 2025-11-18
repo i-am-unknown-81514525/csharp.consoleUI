@@ -12,22 +12,22 @@ namespace ui.core
         }
 
         private static readonly Dictionary<string, KeyCode> Translation = new Dictionary<string, KeyCode> {
-            { "\x1b[2~", KeyCode.INSERT },
-            { "\x1b[5~", KeyCode.PG_UP },
-            { "\x1b[6~" , KeyCode.PG_DOWN },
-            { "\x1b[H" , KeyCode.HOME },
-            { "\x1b[F", KeyCode.END },
-            { "\x1b[3~", KeyCode.ESC },
-            { "\x1b[O", KeyCode.SPECIAL_UNFOCUS },
-            { "\x1b[I", KeyCode.SPECIAL_FOCUS },
-            { "\x1b[A", KeyCode.ARR_UP },
-            { "\x1b[B", KeyCode.ARR_DOWN },
-            { "\x1b[C", KeyCode.ARR_RIGHT },
-            { "\x1b[D", KeyCode.ARR_LEFT },
-            { "\x1bOA", KeyCode.ARR_UP },
-            { "\x1bOB", KeyCode.ARR_DOWN },
-            { "\x1bOC", KeyCode.ARR_RIGHT },
-            { "\x1bOD", KeyCode.ARR_LEFT },
+            { "\u001b[2~", KeyCode.INSERT },
+            { "\u001b[5~", KeyCode.PG_UP },
+            { "\u001b[6~" , KeyCode.PG_DOWN },
+            { "\u001b[H" , KeyCode.HOME },
+            { "\u001b[F", KeyCode.END },
+            { "\u001b[3~", KeyCode.ESC },
+            { "\u001b[O", KeyCode.SPECIAL_UNFOCUS },
+            { "\u001b[I", KeyCode.SPECIAL_FOCUS },
+            { "\u001b[A", KeyCode.ARR_UP },
+            { "\u001b[B", KeyCode.ARR_DOWN },
+            { "\u001b[C", KeyCode.ARR_RIGHT },
+            { "\u001b[D", KeyCode.ARR_LEFT },
+            { "\u001bOA", KeyCode.ARR_UP },
+            { "\u001bOB", KeyCode.ARR_DOWN },
+            { "\u001bOC", KeyCode.ARR_RIGHT },
+            { "\u001bOD", KeyCode.ARR_LEFT },
         };
         public override bool Handle(byte[] buf)
         {

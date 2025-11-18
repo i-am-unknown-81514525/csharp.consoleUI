@@ -9,7 +9,7 @@ using System.Text;
 
 namespace ui.math
 {
-    public struct Fraction : IComparable<Fraction>, ILatex
+    public readonly struct Fraction : IComparable<Fraction>, ILatex, IEquatable<Fraction>
     {
         public readonly BigInteger Numerator, Denominator;
 
@@ -508,6 +508,11 @@ namespace ui.math
                 builder.Append(pow.ToString());
                 return builder.ToString();
             }
+        }
+
+        public bool Equals(Fraction other)
+        {
+            return this == other;
         }
     }
 

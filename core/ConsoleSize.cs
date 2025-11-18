@@ -2,7 +2,7 @@ using System;
 
 namespace ui.core
 {
-    public struct ConsoleSize
+    public readonly struct ConsoleSize : IEquatable<ConsoleSize>
     {
 
         public readonly int Width; // x
@@ -31,5 +31,10 @@ namespace ui.core
         }
 
         public override int GetHashCode() => (Height << 16) + Width;
+
+        public bool Equals(ConsoleSize other)
+        {
+            return this == other;
+        }
     }
 }

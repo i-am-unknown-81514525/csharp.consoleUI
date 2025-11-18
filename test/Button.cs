@@ -27,7 +27,7 @@ namespace ui.test
         public int count
         {
             get => Count;
-            set { Count = value; ; base.text = text; }
+            set { Count = value; base.text = text; }
         }
 
         public CounterButton(string baseText = "", int count = 0) : base($"{baseText} [{count}]")

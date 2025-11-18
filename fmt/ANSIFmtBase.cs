@@ -16,7 +16,7 @@ namespace ui.fmt
 
         public int CompareTo(AnsiFmtBase other)
         {
-            return this.FmtString.CompareTo(other.FmtString);
+            return String.Compare(this.FmtString, other.FmtString, StringComparison.Ordinal);
         }
 
         public static bool operator ==(AnsiFmtBase left, AnsiFmtBase right) => left.FmtString == right.FmtString;
