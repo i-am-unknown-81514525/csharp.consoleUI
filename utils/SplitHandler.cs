@@ -65,6 +65,8 @@ namespace ui.utils
         public SplitAmount(Fraction frac, uint prioity = 1)
         {
             if (prioity < 1) throw new ArgumentOutOfRangeException();
+            this.prioity = prioity;
+
             _isFraction = true;
             _frac = frac;
         }
