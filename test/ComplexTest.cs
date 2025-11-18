@@ -72,7 +72,7 @@ namespace ui.test
                         (
                             new FormattedTable(
                                 (5, 5)
-                            ) {}
+                            )
                         ).WithComponentConstructor(
                             () => new SingleLineInputField().WithChange((c) => c.underline = false)
                         ),
@@ -86,7 +86,7 @@ namespace ui.test
             app.WithExitHandler((appObj) =>
             {
                 Console.WriteLine(appObj.Debug_WriteStructure());
-                Console.WriteLine(ui.Debug.DebugStore.ToString());
+                Console.WriteLine(Debug.DebugStore.ToString());
             }).Run();
         }
     }

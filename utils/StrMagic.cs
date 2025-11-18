@@ -10,12 +10,12 @@ namespace ui.utils
 
         public ByteBuffer(byte[] buf)
         {
-            this._buf = (byte[])buf.Clone();
+            _buf = (byte[])buf.Clone();
         }
 
         public ByteBuffer(IEnumerable<byte> buf)
         {
-            this._buf = buf.ToArray();
+            _buf = buf.ToArray();
         }
 
         public List<byte> AsList() => _buf.ToList();

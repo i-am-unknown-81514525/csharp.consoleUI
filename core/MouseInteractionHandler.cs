@@ -17,7 +17,7 @@ namespace ui.core
         public MouseInteractionHandler(int opCode)
         {
             IsAllOpCode = false;
-            this.OpCode = opCode;
+            OpCode = opCode;
         }
 
         public abstract void OnActive(int opCode, ConsoleLocation loc);

@@ -11,7 +11,7 @@ namespace ui.mouse
         public readonly IComponent App;
         public MouseHoverHandler(IComponent app) : base((int)MouseOpCode.HOVER)
         {
-            this.App = app;
+            App = app;
         }
 
         public override void OnActive(int opCode, ConsoleLocation loc)

@@ -12,10 +12,6 @@ namespace ui.core
         internal List<byte> Buffer = new List<byte>(); // buffer should only be stored when a lock is acquired
         private bool _allowModifyStatus = false;
 
-        public InputHandler() {
-            Buffer = new List<byte>();
-        }
-
         public LockStatus GetLockStatus() => _lockStatus;
         internal LockStatus GetPrevLockStatus() => _prevLockStatus;
 

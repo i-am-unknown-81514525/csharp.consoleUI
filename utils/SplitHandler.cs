@@ -13,7 +13,7 @@ namespace ui.utils
 
         public SplitConfig(SplitHandler handler)
         {
-            this._handler = handler;
+            _handler = handler;
         }
 
         public void Update()
@@ -66,14 +66,14 @@ namespace ui.utils
         {
             if (prioity < 1) throw new ArgumentOutOfRangeException();
             _isFraction = true;
-            this._frac = frac;
+            _frac = frac;
         }
 
         public SplitAmount(int size)
         {
             _isFraction = false;
             prioity = 0;
-            this._size = size;
+            _size = size;
         }
 
         public bool IsFraction() => _isFraction;
@@ -139,25 +139,25 @@ namespace ui.utils
             {
                 return 0;
             }
-            if (this.prioity < right.prioity)
+            if (prioity < right.prioity)
             {
                 return 1; // larger
             }
-            if (this.prioity > right.prioity)
+            if (prioity > right.prioity)
             {
                 return -1; // smaller
             }
-            if (!this.IsFraction() && right.IsFraction())
+            if (!IsFraction() && right.IsFraction())
             {
                 return 1;
             }
-            if (this.IsFraction() && !right.IsFraction())
+            if (IsFraction() && !right.IsFraction())
             {
                 return -1;
             }
-            if (this.IsFraction())
+            if (IsFraction())
             {
-                if (this.GetFraction() < right.GetFraction())
+                if (GetFraction() < right.GetFraction())
                 {
                     return -1;
                 }
@@ -168,7 +168,7 @@ namespace ui.utils
             }
             else
             {
-                if (this.GetSize() < right.GetSize())
+                if (GetSize() < right.GetSize())
                 {
                     return -1;
                 }
@@ -190,7 +190,7 @@ namespace ui.utils
         public SplitHandler(int totalSize)
         {
             if (totalSize <= 0) throw new ArgumentOutOfRangeException();
-            this.TotalSize = totalSize;
+            TotalSize = totalSize;
         }
 
         public int? GetSize(SplitConfig config)
@@ -204,7 +204,7 @@ namespace ui.utils
         public void SetTotalSize(int totalSize)
         {
             if (totalSize < 0) throw new ArgumentOutOfRangeException();
-            this.TotalSize = totalSize;
+            TotalSize = totalSize;
             Update();
         }
 
@@ -298,8 +298,8 @@ namespace ui.utils
         public SplitConfig AddSplit(SplitAmount amount)
         {
             SplitConfig config = new SplitConfig(this);
-            this.Amount[config] = amount;
-            this.Size[config] = null;
+            Amount[config] = amount;
+            Size[config] = null;
             Update();
             return config;
         }

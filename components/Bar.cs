@@ -11,11 +11,11 @@ namespace ui.components
 
         public HorizontalBar(char displayChar = ' ') : base()
         {
-            this.DisplayChar = displayChar.ToString();
+            DisplayChar = displayChar.ToString();
         }
         public HorizontalBar(ComponentConfig config, char displayChar = ' ') : base(config)
         {
-            this.DisplayChar = displayChar.ToString();
+            DisplayChar = displayChar.ToString();
         }
 
         protected override ConsoleContent[,] RenderSelf()
@@ -64,11 +64,11 @@ namespace ui.components
 
         public VerticalBar(char displayChar = ' ') : base()
         {
-            this.DisplayChar = displayChar.ToString();
+            DisplayChar = displayChar.ToString();
         }
         public VerticalBar(ComponentConfig config, char displayChar = ' ') : base(config)
         {
-            this.DisplayChar = displayChar.ToString();
+            DisplayChar = displayChar.ToString();
         }
 
         protected override ConsoleContent[,] RenderSelf()

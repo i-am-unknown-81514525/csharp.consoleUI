@@ -12,7 +12,7 @@ namespace ui.mouse
         public readonly IComponent App;
         public MouseClickHandler(IComponent app) : base((int)MouseOpCode.CLICK)
         {
-            this.App = app;
+            App = app;
         }
 
         public override void OnActive(int opCode, ConsoleLocation loc)

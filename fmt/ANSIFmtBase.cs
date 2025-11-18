@@ -9,14 +9,14 @@ namespace ui.fmt
 
         public AnsiFmtBase(string fmtString)
         {
-            this.FmtString = fmtString;
+            FmtString = fmtString;
         }
 
         public override string ToString() => FmtString;
 
         public int CompareTo(AnsiFmtBase other)
         {
-            return String.Compare(this.FmtString, other.FmtString, StringComparison.Ordinal);
+            return String.Compare(FmtString, other.FmtString, StringComparison.Ordinal);
         }
 
         public static bool operator ==(AnsiFmtBase left, AnsiFmtBase right) => left.FmtString == right.FmtString;
@@ -29,7 +29,7 @@ namespace ui.fmt
 
         public override int GetHashCode()
         {
-            return this.FmtString.GetHashCode();
+            return FmtString.GetHashCode();
         }
     }
 }

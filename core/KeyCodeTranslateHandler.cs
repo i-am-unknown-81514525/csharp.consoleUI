@@ -8,7 +8,7 @@ namespace ui.core
         private RootInputHandler _handler;
         public KeyCodeTranslationHandler(RootInputHandler handler)
         {
-            this._handler = handler;
+            _handler = handler;
         }
 
         private static readonly Dictionary<string, KeyCode> Translation = new Dictionary<string, KeyCode> {

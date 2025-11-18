@@ -142,7 +142,7 @@ namespace ui.core
 
         public ConsoleSize GetConsoleSize()
         {
-            return this._size;
+            return _size;
         }
 
         public void EventLoopPost(bool render = true)

@@ -157,7 +157,7 @@ namespace ui.components
             set
             {
                 Container container = ((Container)_verticalGroups[x].GetMapping().Select(m => m.component).ToArray()[y]);
-                if (object.ReferenceEquals(container.GetInner(), value))
+                if (ReferenceEquals(container.GetInner(), value))
                 {
                     return;
                 }

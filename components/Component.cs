@@ -323,7 +323,7 @@ namespace ui.components
         {
             OnVisibleInternal();
             SetHasUpdate();
-            foreach (BaseComponent comp in this.GetMapping().Select(x => x.component))
+            foreach (BaseComponent comp in GetMapping().Select(x => x.component))
             {
                 comp.OnVisible();
             }
@@ -355,7 +355,7 @@ namespace ui.components
         internal void OnHide()
         {
             OnHideInternal();
-            foreach (BaseComponent comp in this.GetMapping().Select(x => x.component))
+            foreach (BaseComponent comp in GetMapping().Select(x => x.component))
             {
                 comp.OnHide();
             }
@@ -434,7 +434,7 @@ namespace ui.components
                 bool state = OnDeactive(deactiveEvent);
                 if (state)
                 {
-                    this._isActive = false;
+                    _isActive = false;
                     ActiveHandler.SetInactive(this);
                 }
                 return state;
@@ -553,12 +553,12 @@ namespace ui.components
 
         public Component(TS store) : base()
         {
-            this.Store = store;
+            Store = store;
         }
 
         public Component(ComponentConfig config, TS store) : base(config)
         {
-            this.Store = store;
+            Store = store;
         }
 
         public virtual TS ComponentStoreConstructor()
@@ -573,12 +573,12 @@ namespace ui.components
 
         public Component() : base()
         {
-            this.Store = ComponentStoreConstructor();
+            Store = ComponentStoreConstructor();
         }
 
         public Component(ComponentConfig config) : base(config)
         {
-            this.Store = ComponentStoreConstructor();
+            Store = ComponentStoreConstructor();
         }
     }
 

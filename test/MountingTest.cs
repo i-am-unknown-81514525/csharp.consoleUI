@@ -19,8 +19,8 @@ namespace ui.test
 
         public void MountToggle(GroupComponent parent, GroupComponentConfig target)
         {
-            this.Parent = parent;
-            this.Target = target;
+            Parent = parent;
+            Target = target;
         }
 
         public override void OnClick(ConsoleLocation loc)

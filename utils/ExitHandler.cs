@@ -11,7 +11,7 @@ namespace ui.utils
             if (GetLockStatus() > LockStatus.NO_LOCK)
             {
                 _exit = true;
-                this.SetLockStatus(LockStatus.NO_LOCK);
+                SetLockStatus(LockStatus.NO_LOCK);
                 root.LockChangeAnnounce(this);
             }
         }

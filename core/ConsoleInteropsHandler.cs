@@ -167,7 +167,7 @@ namespace ui.core
 
             public static void AnsiSetup()
             {
-                Console.Write($"{ToAnsi("?1049h")}{ToAnsi("=19h")}{ToAnsi("=7l")}{ToAnsi("?25l")}{ToAnsi("38;2;128;130;155m")}{ToAnsi("0m")}{ToAnsi("6n")}{ToAnsi("?1004h")}{ToAnsi("?9h")}{ToAnsi("?1001h")}{ToAnsi("?1000h")}{ToAnsi("?1003h", "[", "\x1b")}{ToAnsi("?25h")}{ToAnsi("?40l")}{ToAnsi("?3l")}{ToAnsi("?1006h")}");
+                Console.Write($"{ToAnsi("?1049h")}{ToAnsi("=19h")}{ToAnsi("=7l")}{ToAnsi("?25l")}{ToAnsi("38;2;128;130;155m")}{ToAnsi("0m")}{ToAnsi("6n")}{ToAnsi("?1004h")}{ToAnsi("?9h")}{ToAnsi("?1001h")}{ToAnsi("?1000h")}{ToAnsi("?1003h")}{ToAnsi("?25h")}{ToAnsi("?40l")}{ToAnsi("?3l")}{ToAnsi("?1006h")}");
             }
 
             public static byte Read()

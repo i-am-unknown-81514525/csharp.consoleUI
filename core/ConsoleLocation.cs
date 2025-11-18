@@ -11,8 +11,8 @@ namespace ui.core
         public ConsoleLocation(int x, int y)
         {
             if (x < 0 || y < 0) throw new InvalidOperationException("Cannot set negative size");
-            this.Y = y;
-            this.X = x;
+            Y = y;
+            X = x;
         }
 
         public bool Validate() => X > 0 && Y > 0; // The difference is this function check for if it can be displayed

@@ -85,7 +85,7 @@ namespace ui.components
                     }
                     UpdateAllocSize();
                     bool haveUpdate = GetHasUpdate();
-                    Global.ConsoleCanva.ConsoleWindow = this.Render();
+                    Global.ConsoleCanva.ConsoleWindow = Render();
                     Global.ConsoleCanva.EventLoopPost(haveUpdate);
                     System.Threading.Thread.Sleep(1);
                 }

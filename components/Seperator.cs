@@ -15,7 +15,7 @@ namespace ui.components
 
         protected virtual ConsoleContent[,] RenderSelf()
         {
-            (uint x, uint y) = this.GetAllocSize();
+            (uint x, uint y) = GetAllocSize();
             ConsoleContent[,] content = new ConsoleContent[x, y];
             ConsoleContent item = new ConsoleContent()
             {

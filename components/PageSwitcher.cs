@@ -31,10 +31,10 @@ namespace ui.components
 
         public PageSwitcher(Switcher switcher, Func<bool> required, string content, int page) : base(content)
         {
-            this.Required = required;
+            Required = required;
             OnClickHandler = (_, __) =>
             {
-                if (this.Required())
+                if (Required())
                 {
                     switcher.SwitchTo(page);
                 }
@@ -43,10 +43,10 @@ namespace ui.components
 
         public PageSwitcher(Switcher switcher, Func<bool> required, int page, string content = null) : base(content ?? $"Go To Page {page}")
         {
-            this.Required = required;
+            Required = required;
             OnClickHandler = (_, __) =>
             {
-                if (this.Required())
+                if (Required())
                 {
                     switcher.SwitchTo(page);
                 }
@@ -55,10 +55,10 @@ namespace ui.components
 
         public PageSwitcher(Switcher switcher, string content, Func<bool> required, int page) : base(content)
         {
-            this.Required = required;
+            Required = required;
             OnClickHandler = (_, __) =>
             {
-                if (this.Required())
+                if (Required())
                 {
                     switcher.SwitchTo(page);
                 }
@@ -67,10 +67,10 @@ namespace ui.components
 
         public PageSwitcher(Switcher switcher, int page, Func<bool> required, string content = null) : base(content ?? $"Go To Page {page}")
         {
-            this.Required = required;
+            Required = required;
             OnClickHandler = (_, __) =>
             {
-                if (this.Required())
+                if (Required())
                 {
                     switcher.SwitchTo(page);
                 }
@@ -102,10 +102,10 @@ namespace ui.components
 
         public PageSwitcher(ComponentHolder<Switcher> switcher, Func<bool> required, string content, int page) : base(content)
         {
-            this.Required = required;
+            Required = required;
             OnClickHandler = (_, __) =>
             {
-                if (this.Required())
+                if (Required())
                 {
                     switcher.inner.SwitchTo(page);
                 }
@@ -114,10 +114,10 @@ namespace ui.components
 
         public PageSwitcher(ComponentHolder<Switcher> switcher, Func<bool> required, int page, string content = null) : base(content ?? $"Go To Page {page}")
         {
-            this.Required = required;
+            Required = required;
             OnClickHandler = (_, __) =>
             {
-                if (this.Required())
+                if (Required())
                 {
                     switcher.inner.SwitchTo(page);
                 }
@@ -126,10 +126,10 @@ namespace ui.components
 
         public PageSwitcher(ComponentHolder<Switcher> switcher, string content, Func<bool> required, int page) : base(content)
         {
-            this.Required = required;
+            Required = required;
             OnClickHandler = (_, __) =>
             {
-                if (this.Required())
+                if (Required())
                 {
                     switcher.inner.SwitchTo(page);
                 }
@@ -138,10 +138,10 @@ namespace ui.components
 
         public PageSwitcher(ComponentHolder<Switcher> switcher, int page, Func<bool> required, string content = null) : base(content ?? $"Go To Page {page}")
         {
-            this.Required = required;
+            Required = required;
             OnClickHandler = (_, __) =>
             {
-                if (this.Required())
+                if (Required())
                 {
                     switcher.inner.SwitchTo(page);
                 }

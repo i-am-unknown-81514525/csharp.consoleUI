@@ -29,8 +29,8 @@ namespace ui.components
 
         public PagingTableInner(Field top)
         {
-            this.Col = top.comp.Length;
-            this._top = new Field(top.comp);
+            Col = top.comp.Length;
+            _top = new Field(top.comp);
             ForceResize((Col, 2));
             for (int x = 0; x < Col; x++)
             {
@@ -210,7 +210,7 @@ namespace ui.components
                 endIdx = Fields.Count - 1;
             }
             int count = endIdx - startIdx + 1;
-            ui.Debug.DebugStore.AppendLine($"start_idx={startIdx}, end_idx={endIdx}, count={count} fields.Count={Fields.Count}");
+            Debug.DebugStore.AppendLine($"start_idx={startIdx}, end_idx={endIdx}, count={count} fields.Count={Fields.Count}");
             if (endIdx < 0)
             {
                 return (new Field[] { }, 0, 0);

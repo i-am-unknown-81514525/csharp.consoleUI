@@ -21,8 +21,8 @@ namespace ui.components
 
         public GroupComponentConfig(IComponent component, SplitAmount splitAmount)
         {
-            this.Component = component;
-            this.SplitAmount = splitAmount;
+            Component = component;
+            SplitAmount = splitAmount;
         }
 
         public static implicit operator GroupComponentConfig(
@@ -147,6 +147,7 @@ namespace ui.components
             {
                 (IComponent component, (uint x, uint y, uint allocX, uint allocY) _, int prioity) = ChildsMapping[idx];
                 SplitConfig config = SplitMapping[component];
+                System.Diagnostics.Debug.Assert(SplitHandler != null, nameof(SplitHandler) + " != null");
                 uint size = (uint)SplitHandler.GetSize(config);
                 if (Direction == Direction.VERTICAL)
                 {

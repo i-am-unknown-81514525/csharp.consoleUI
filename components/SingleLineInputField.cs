@@ -19,17 +19,17 @@ namespace ui.components
 
         public bool SetHandler(Action postHandler)
         {
-            if (!(this.PostHandler is null))
+            if (!(PostHandler is null))
                 return false;
-            this.PostHandler = postHandler;
+            PostHandler = postHandler;
             return true;
         }
 
         public bool SetHandler(Action<Event> exitHandler)
         {
-            if (!(this.ExitHandler is null))
+            if (!(ExitHandler is null))
                 return false;
-            this.ExitHandler = exitHandler;
+            ExitHandler = exitHandler;
             return true;
         }
 
@@ -43,7 +43,7 @@ namespace ui.components
         protected override void OnEnter()
         {
             // base.onEnter();
-            this.Deactive(Global.InputHandler);
+            Deactive(Global.InputHandler);
         }
 
         protected override void OnDeactive()
@@ -240,7 +240,7 @@ namespace ui.components
 
         public override void OnClick(ConsoleLocation consoleLocation)
         {
-            (int y, int x) = this.GetAbsolutePos((consoleLocation.Y, consoleLocation.X));
+            (int y, int x) = GetAbsolutePos((consoleLocation.Y, consoleLocation.X));
             bool isActive = !IsActive() ? SetActive(new ClickEvent(new ConsoleLocation(x, y))) : true;
             if (isActive)
             {
@@ -256,7 +256,7 @@ namespace ui.components
             if (IsActive())
             {
                 (string _, int cursorPos) = GetRenderContent();
-                (int row, int col) = this.GetAbsolutePos((0, cursorPos));
+                (int row, int col) = GetAbsolutePos((0, cursorPos));
                 Global.ConsoleCanva.CursorPosition = (row + 1, col + 1);
             }
         }

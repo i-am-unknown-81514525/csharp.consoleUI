@@ -30,7 +30,7 @@ namespace ui.test
             if (GetLockStatus() > LockStatus.NO_LOCK)
             {
                 _exit = true;
-                this.SetLockStatus(LockStatus.NO_LOCK);
+                SetLockStatus(LockStatus.NO_LOCK);
                 root.LockChangeAnnounce(this);
             }
         }
@@ -54,7 +54,7 @@ namespace ui.test
             if (GetLockStatus() > LockStatus.NO_LOCK)
             {
                 _enableInput = true;
-                this.SetLockStatus(LockStatus.NO_LOCK);
+                SetLockStatus(LockStatus.NO_LOCK);
                 root.LockChangeAnnounce(this);
             }
         }

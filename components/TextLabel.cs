@@ -61,7 +61,7 @@ namespace ui.components
 
         protected virtual ConsoleContent[,] RenderSelf()
         {
-            (uint x, uint y) = this.GetAllocSize();
+            (uint x, uint y) = GetAllocSize();
             ConsoleContent[,] content = new ConsoleContent[x, y];
             if (x == 0 || y == 0) return content;
             string iContent = (text ?? "").Align((vAlign, (int)y), (hAlign, (int)x));

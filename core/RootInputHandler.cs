@@ -279,8 +279,8 @@ namespace ui.core
                 return true;
             }
             List<byte> buf = new List<byte> { value };
-            List<byte> unhandledBuf = new List<byte> { };
-            string newPart = "";
+            List<byte> unhandledBuf = new List<byte>();
+            string newPart;
             while ((newPart = ReadStdinToEnd()) != "")
             {
                 buf = (buf.AsByteBuffer() + newPart).AsList();

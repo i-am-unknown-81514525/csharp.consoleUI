@@ -74,7 +74,7 @@ namespace ui.components
             {
                 throw new ArgumentOutOfRangeException($"idx({idx}) must between 0 and compList.Count - 1");
             }
-            this._idx = idx;
+            _idx = idx;
             SetHasUpdate();
         }
 

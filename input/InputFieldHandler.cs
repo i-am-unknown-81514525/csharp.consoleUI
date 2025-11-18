@@ -223,7 +223,7 @@ namespace ui.input
 
         public void SetActiveStatus(bool isActive)
         {
-            this._isActive = isActive;
+            _isActive = isActive;
         }
 
         public bool GetActiveStatus() => _isActive;
