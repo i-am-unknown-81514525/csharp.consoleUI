@@ -44,7 +44,7 @@ namespace ui.components
 
         public override void InsertColumn(int idx, ui.utils.SplitAmount amount = null)
         {
-            if (idx < 0) throw new ArgumentOutOfRangeException("idx must be greater than 0");
+            if (idx < 0) throw new ArgumentOutOfRangeException($"idx must be greater than 0 (given: {idx})");
             // int idx_intersect, idx_normal;
             // int idx_normal;
             // if (idx >= GetSize().x)

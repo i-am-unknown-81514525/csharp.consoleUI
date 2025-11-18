@@ -5,6 +5,7 @@ using ui.core;
 using ui.input;
 using System.IO;
 using System.Collections.Generic;
+// ReSharper disable All
 
 namespace ui.test
 {

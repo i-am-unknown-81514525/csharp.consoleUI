@@ -65,7 +65,7 @@ namespace ui.components
 
         public override void RemoveColumn(int idx)
         {
-            if (idx < 0) throw new ArgumentOutOfRangeException("idx must be greater or equal to 0");
+            if (idx < 0) throw new ArgumentOutOfRangeException($"idx must be greater or equal to 0 (given: {idx})");
             if (idx >= size.x) idx = size.x - 1;
             if (size.x == 1) throw new InvalidOperationException("Table cannot be empty");
             int removeIdx = (idx * 2 - 1);
@@ -85,7 +85,7 @@ namespace ui.components
 
         public override void RemoveRow(int idx)
         {
-            if (idx < 0) throw new ArgumentOutOfRangeException("idx must be greater or equal to 0");
+            if (idx < 0) throw new ArgumentOutOfRangeException($"idx must be greater or equal to 0 (given:{idx})");
             if (idx >= size.y) idx = size.y - 1;
             if (size.y == 1) throw new InvalidOperationException("Table cannot be empty");
             if (idx == 0)

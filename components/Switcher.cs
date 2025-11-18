@@ -72,7 +72,7 @@ namespace ui.components
         {
             if (idx >= _compList.Count || idx < 0)
             {
-                throw new ArgumentOutOfRangeException("idx must between 0 and compList.Count - 1");
+                throw new ArgumentOutOfRangeException($"idx({idx}) must between 0 and compList.Count - 1");
             }
             this._idx = idx;
             SetHasUpdate();
@@ -89,7 +89,7 @@ namespace ui.components
 
         public IEnumerator GetEnumerator()
         {
-            return GetEnumerator();
+            return ((IEnumerable<IComponent>)this).GetEnumerator();
         }
 
         protected override void OnResize()

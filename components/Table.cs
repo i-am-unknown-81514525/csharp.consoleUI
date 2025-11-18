@@ -87,8 +87,8 @@ namespace ui.components
         public void InsertColumn(int idx, SplitAmount amount = null)
         {
             if (amount is null) amount = new Fraction(1, 1);
-            if (idx < 0) throw new ArgumentOutOfRangeException("idx must be greater or equal to 0");
-            if (idx > _size.x) throw new ArgumentOutOfRangeException("idx must be less than or equal to size.x"); // idx = size.x;
+            if (idx < 0) throw new ArgumentOutOfRangeException($"idx must be greater or equal to 0 (given: {idx})");
+            if (idx > _size.x) throw new ArgumentOutOfRangeException($"idx must be less than or equal to size.x (given: {idx})"); // idx = size.x;
             VerticalGroupComponent vert = new VerticalGroupComponent();
             for (int y = 0; y < _size.y; y++)
             {
@@ -103,8 +103,8 @@ namespace ui.components
         public void InsertRow(int idx, SplitAmount amount = null)
         {
             if (amount is null) amount = 1;
-            if (idx < 0) throw new ArgumentOutOfRangeException("idx must be greater or equal to 0");
-            if (idx > _size.y) throw new ArgumentOutOfRangeException("idx must be less than or equal to size.y"); // idx = size.y;
+            if (idx < 0) throw new ArgumentOutOfRangeException($"idx must be greater or equal to 0 (given: {idx})");
+            if (idx > _size.y) throw new ArgumentOutOfRangeException($"idx must be less than or equal to size.y (given: {idx})"); // idx = size.y;
             for (int x = 0; x < _size.x; x++)
             {
                 _verticalGroups[x].Insert(idx, (new Container(new Padding()), amount));
@@ -116,8 +116,8 @@ namespace ui.components
 
         public void RemoveColumn(int idx)
         {
-            if (idx < 0) throw new ArgumentOutOfRangeException("idx must be greater or equal to 0");
-            if (idx >= _size.x) throw new ArgumentOutOfRangeException("idx must be less than to size.x"); // idx = size.x - 1;
+            if (idx < 0) throw new ArgumentOutOfRangeException($"idx must be greater or equal to 0 (given: {idx})");
+            if (idx >= _size.x) throw new ArgumentOutOfRangeException($"idx must be less than to size.x (given: {idx})"); // idx = size.x - 1;
             if (_size.x == 1) throw new InvalidOperationException("Table cannot be empty");
             for (int y = 0; y < GetSize().y; y++)
             {
@@ -132,8 +132,8 @@ namespace ui.components
 
         public void RemoveRow(int idx)
         {
-            if (idx < 0) throw new ArgumentOutOfRangeException("idx must be greater or equal to 0");
-            if (idx >= _size.y) throw new ArgumentOutOfRangeException("idx must be less than size.x"); // idx = size.y - 1;
+            if (idx < 0) throw new ArgumentOutOfRangeException($"idx must be greater or equal to 0 (given: {idx})");
+            if (idx >= _size.y) throw new ArgumentOutOfRangeException($"idx must be less than size.x (given: {idx})"); // idx = size.y - 1;
             if (_size.y == 1) throw new InvalidOperationException("Table cannot be empty");
             for (int x = 0; x < GetSize().x; x++)
             {

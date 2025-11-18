@@ -185,7 +185,7 @@ namespace ui.components
 
         public IEnumerator GetEnumerator()
         {
-            return GetEnumerator();
+            return ((IEnumerable<GroupComponentConfig>)this).GetEnumerator();
         }
 
         protected override ConsoleContent[,] RenderPre(ConsoleContent[,] content)

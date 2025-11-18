@@ -154,8 +154,8 @@ namespace ui.components
                 TopLeft = InputFieldHandler.size2D;
                 SetHasUpdate();
             }
-            string[] content = InputFieldHandler.GetContent().Split('\n');
-            int maxLength = content.Max(x => x.Length);
+            string[] arrContent = InputFieldHandler.GetContent().Split('\n');
+            int maxLength = arrContent.Max(x => x.Length);
             if (maxLength < TopLeft.column)
             {
                 TopLeft = (TopLeft.row, (uint)maxLength);
